@@ -1,3 +1,12 @@
+ESTRUTURACAO DAS PASTAS:
+/INFVsZombies
+│
+├── root(raiz, nao é uma pasta) -> fica os arquivos ".c"
+├── include/        → Headers .h (separados)
+├── resources/      → Imagens, áudios, fontes
+├── output/         → game.exe e objetos .o
+├── Makefile
+└── .vscode/
 ==============================================================================
 ==============================================================================
 //BASICO
