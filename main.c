@@ -1,104 +1,145 @@
 #include "raylib.h"
+//refers to the screens of the game
+    //LOGO(made by pedro)
+    //HOMEPAGE(START,LEADERBOARD,CONFIGURATIONS,EXIT)
+    //CONFIGURATIONS
+    //LEADERBOARD
+    //EXIT(isnt necessarily an screen, but let's consider it for the moment)
+    //START(asking name and gender)
+        //->GAMEOPTIONS (deck of plants)?
+            //GAMEPLAY
+typedef enum GameScreen {LOGO = 0, HOMEPAGE, GAMEPLAY, ENDING } GameScreen;
 
-#define MAX_INPUT_CHARS 9
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 450
+int main (void){
+    //initialization
+    const int screenWidth = 800;
+    const int screenHeight = 450;
 
-int init(int, char*);
-int update(int, char*);
-void draw(int, char*);
+    InitWindow(screenWidth, screenHeight,"raylib [core] example - basic screen manager");
+    
+    GameScreen currentScreen = LOGO;
 
-int main(void) {
-    char nome[MAX_INPUT_CHARS + 1]="\0";
-    int contLetras;
-    char *nomep;
+       // TODO: Initialize all required variables and load all required data here!
 
-    nomep=nome;
+    int framesCounter = 0;          // Useful to count frames
 
-    contLetras = init(contLetras, nomep);
+    SetTargetFPS(60);               // Set desired framerate (frames-per-second)
+    //--------------------------------------------------------------------------------------
 
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Meu nome");
+    // Main game loop
+    while (!WindowShouldClose())    // Detect window close button or ESC key
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        switch (currentScreen)
+        {
+            case LOGO:
+            {
+                // TODO: Update LOGO screen variables here!
 
-    SetTargetFPS(10);
+                framesCounter++;    // Count frames
 
-    while (!WindowShouldClose()) {
-        contLetras=update(contLetras, nomep);
-        draw(contLetras, nomep);
+                // Wait for 7 seconds (420 frames) before jumping to HOMEPAGE screen
+                if (framesCounter > 420)
+                {
+                    currentScreen = HOMEPAGE;
+                }
+            } break;
+            case HOMEPAGE:
+            {
+                // TODO: Update HOMEPAGE screen variables here!
+
+                // Press enter to change to GAMEPLAY screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = GAMEPLAY;
+                }
+            } break;
+            case GAMEPLAY:
+            {
+                // TODO: Update GAMEPLAY screen variables here!
+
+                // Press enter to change to ENDING screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = ENDING;
+                }
+            } break;
+            case ENDING:
+            {
+                // TODO: Update ENDING screen variables here!
+
+                // Press enter to return to HOMEPAGE screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = HOMEPAGE;
+                }
+            } break;
+            default: break;
+        }
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+
+            ClearBackground(RAYWHITE);
+
+            switch(currentScreen)
+            {
+                case LOGO:
+                {
+                    // TODO: Draw LOGO screen here!
+                    DrawText("Pedrokas's gaming enterprise® \n\t\t\t\t\t\t\t\tpresents... ", 70, 150, 40, DARKGREEN);
+
+                } break;
+                case HOMEPAGE:
+                {
+                    // TODO: Draw HOMEPAGE screen here!
+                    DrawRectangle(0, 0, screenWidth, screenHeight, GREEN);
+                    DrawRectangle((screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30, 110, 240, 40, WHITE);
+                    DrawRectangle((screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30, 170, 240, 40, WHITE);
+                    DrawRectangle((screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30, 230, 240, 40, WHITE);
+                    DrawRectangle((screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30, 290, 240, 40, WHITE);
+                    DrawRectangle((screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30, 350, 240, 40, WHITE);
+                    DrawText("INF vs ZOMBIES", (screenWidth-MeasureText("INF vs ZOMBIES", 40))/2, 20, 40, DARKGREEN);
+                    DrawText("PLAY", (screenWidth-MeasureText("INF vs ZOMBIES", 20))/2, 120, 20, DARKGREEN);
+                    DrawText("LEADERBOARD", (screenWidth-MeasureText("INF vs ZOMBIES", 20))/2, 180, 20, DARKGREEN);
+                    DrawText("ABOUT", (screenWidth-MeasureText("INF vs ZOMBIES", 20))/2, 240, 20, DARKGREEN);
+                    DrawText("CONFIGURATIONS", (screenWidth-MeasureText("INF vs ZOMBIES", 20))/2, 300, 20, DARKGREEN);
+                    DrawText("EXIT", (screenWidth-MeasureText("INF vs ZOMBIES", 20))/2, 360, 20, DARKGREEN);
+                } break;
+                case GAMEPLAY:
+                {
+                    // TODO: Draw GAMEPLAY screen here!
+                    DrawRectangle(0, 0, screenWidth, screenHeight, PURPLE);
+                    DrawText("GAMEPLAY SCREEN", 20, 20, 40, MAROON);
+                    DrawText("PRESS ENTER or TAP to JUMP to ENDING SCREEN", 130, 220, 20, MAROON);
+
+                } break;
+                case ENDING:
+                {
+                    // TODO: Draw ENDING screen here!
+                    DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
+                    DrawText("ENDING SCREEN", 20, 20, 40, DARKBLUE);
+                    DrawText("PRESS ENTER or TAP to RETURN to HOMEPAGE SCREEN", 120, 220, 20, DARKBLUE);
+
+                } break;
+                default: break;
+            }
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
     }
 
-    CloseWindow();
+    // De-Initialization
+    //--------------------------------------------------------------------------------------
+
+    // TODO: Unload all loaded data (textures, fonts, audio) here!
+
+    CloseWindow();        // Close window and OpenGL context
+    //--------------------------------------------------------------------------------------
 
     return 0;
-}
 
-int init (int contLetras, char *nomep) {
-    nomep = "\0";      // NOTE: One extra space required for line ending char '\0'
-    contLetras = 0;
-
-    return contLetras;
-}
-
-int update(int contLetras, char *nomep) {
-    // Set the window's cursor to the I-Beam
-
-    // Get char pressed (unicode character) on the queue
-    int key = GetCharPressed();
-
-    // Check if more characters have been pressed on the same frame
-    while (key > 0) {
-        // NOTE: Only allow keys in range [32..125]
-        if ((key >= 32) && (key <= 125) && (contLetras < MAX_INPUT_CHARS)) {
-            nomep[contLetras] = (char)key;
-            contLetras++;
-        }
-
-        key = GetCharPressed();  // Check next character in the queue
-    }
-
-    if (IsKeyPressed(KEY_BACKSPACE)) {
-        contLetras--;
-        if (contLetras < 0)
-            contLetras = 0;
-        nomep[contLetras] = '\0';
-    }
-
-    return contLetras;
-}
-
-void draw(int contLetras, char *nomep) {
-    Rectangle textBox = { SCREEN_WIDTH/2 - 100, 180, 225, 50 };
-
-    BeginDrawing();
-
-    ClearBackground(RAYWHITE);
-
-    DrawText("Digite o seu nome com 9 caracteres", 240, 140, 20, GRAY);
-
-    DrawRectangleRec(textBox, LIGHTGRAY);
-    DrawRectangleLines(textBox.x, textBox.y, textBox.width, textBox.height, RED);
-
-    DrawText(nomep, textBox.x + 5, textBox.y + 8, 40, MAROON);
-
-    DrawText(TextFormat("NUM DE CHARS: %i/%i", contLetras, MAX_INPUT_CHARS), 315, 250, 20, DARKGRAY);
-
-
-    if (contLetras < MAX_INPUT_CHARS) {
-        // Draw blinking underscore char
-        DrawText("_", textBox.x + 8 + MeasureText(nomep, 40), textBox.y + 12, 40, MAROON);
-    } else
-        DrawText("Pressione BACKSPACE para deletar chars...", 210, 300, 20, GRAY);
-
-    EndDrawing();
-}
-
-// Check if any key is pressed
-// NOTE: We limit keys check to keys between 32 (KEY_SPACE) and 126
-bool IsAnyKeyPressed() {
-    bool keyPressed = false;
-    int key = GetKeyPressed();
-
-    if ((key >= 32) && (key <= 126))
-        keyPressed = true;
-
-    return keyPressed;
 }
