@@ -9,7 +9,7 @@
     //START(asking name and gender)
         //->GAMEOPTIONS (deck of plants)?
             //GAMEPLAY
-typedef enum GameScreen {LOGO = 0, HOMEPAGE, GAMEPLAY, ENDING } GameScreen;
+typedef enum GameScreen {LOGO = 0, HOMEPAGE, GAMEPLAY, LEADERBOARD, ABOUT, CONFIGURATIONS, EXIT } GameScreen;
 #define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
 int main (void){
     //initialization
@@ -21,15 +21,27 @@ int main (void){
     GameScreen currentScreen = LOGO;
 
        // TODO: Initialize all required variables and load all required data here!
-    Rectangle homePageOptions[HOME_PAGE_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refer to the options of the game in the landpage(play, leaderboard, about, configurations and exit)
-        bool homePageOptionsHover[HOME_PAGE_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered    
-            //Filling the homePageOptions 
+
+//HOMEPAGE================================================================================================================================================
+//========================================================================================================================================================
+    Rectangle homePageOptionsRec[HOME_PAGE_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refer to the options of the game in the landpage(gameplay, leaderboard, about, configurations and exit)
+    bool homePageOptionsRecHover[HOME_PAGE_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered 
+    GameScreen homePageOptions[HOME_PAGE_OPTIONS_QUANTITY] ={0};//array to navigate over the options of the game
+        //Filling the homePageOptions
+            homePageOptions[0]= GAMEPLAY;
+            homePageOptions[1]= LEADERBOARD;
+            homePageOptions[2]= ABOUT;
+            homePageOptions[3]= CONFIGURATIONS;
+            homePageOptions[4]= EXIT;
+
+            //Filling the homePageOptionsRec 
             for (int i=0;i<HOME_PAGE_OPTIONS_QUANTITY;i++){
-                homePageOptions[i].height = 40;
-                homePageOptions[i].width = 240;
-                homePageOptions[i].x=(screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30;
-                homePageOptions[i].y = 110+60*i;
+                homePageOptionsRec[i].height = 40;
+                homePageOptionsRec[i].width = 240;
+                homePageOptionsRec[i].x=(screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30;
+                homePageOptionsRec[i].y = 110+60*i;
             }
+//========================================================================================================================================================
     
     int framesCounter = 0;          // Useful to count frames
     Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
@@ -62,10 +74,15 @@ int main (void){
                 //checks if an rectangle(option) is hovered, so that we can highlight that ractangle
                  for (int i = 0; i < HOME_PAGE_OPTIONS_QUANTITY; i++)
         {
-            if (CheckCollisionPointRec(mousePoint, homePageOptions[i])) homePageOptionsHover[i] = 1;
-            else homePageOptionsHover[i] = 0;
+            if (CheckCollisionPointRec(mousePoint, homePageOptionsRec[i])) {
+                homePageOptionsRecHover[i] = 1;
+                if(IsGestureDetected(GESTURE_TAP)){
+                    currentScreen = homePageOptions[i];
+                }
+            }
+            else homePageOptionsRecHover[i] = 0;
         }
-        
+
             } break;
             case GAMEPLAY:
             {
@@ -74,10 +91,30 @@ int main (void){
                 // Press enter to change to ENDING screen
                 if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
                 {
-                    currentScreen = ENDING;
+                    currentScreen = ABOUT;
                 }
             } break;
-            case ENDING:
+            case ABOUT:
+            {
+                // TODO: Update ENDING screen variables here!
+
+                // Press enter to return to HOMEPAGE screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = HOMEPAGE;
+                }
+            } break;
+             case CONFIGURATIONS:
+            {
+                // TODO: Update ENDING screen variables here!
+
+                // Press enter to return to HOMEPAGE screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = HOMEPAGE;
+                }
+            } break;
+             case EXIT:
             {
                 // TODO: Update ENDING screen variables here!
 
@@ -110,10 +147,10 @@ int main (void){
                     // TODO: Draw HOMEPAGE screen here!
                     DrawRectangle(0, 0, screenWidth, screenHeight, GREEN);
                     for(int i=0;i<HOME_PAGE_OPTIONS_QUANTITY;i++){
-                        DrawRectangleRec(homePageOptions[i], WHITE);
+                        DrawRectangleRec(homePageOptionsRec[i], WHITE);
                         //tracking hover over the options
-                        if(homePageOptionsHover[i]==true){
-                            DrawRectangleRec(homePageOptions[i], RED);
+                        if(homePageOptionsRecHover[i]==true){
+                            DrawRectangleRec(homePageOptionsRec[i], RED);
                         }
                     }
                     DrawText("INF vs ZOMBIES", (screenWidth-MeasureText("INF vs ZOMBIES", 40))/2, 20, 40, DARKGREEN);
@@ -131,7 +168,23 @@ int main (void){
                     DrawText("PRESS ENTER or TAP to JUMP to ENDING SCREEN", 130, 220, 20, MAROON);
 
                 } break;
-                case ENDING:
+                case ABOUT:
+                {
+                    // TODO: Draw ENDING screen here!
+                    DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
+                    DrawText("ENDING SCREEN", 20, 20, 40, DARKBLUE);
+                    DrawText("PRESS ENTER or TAP to RETURN to HOMEPAGE SCREEN", 120, 220, 20, DARKBLUE);
+
+                } break;
+                 case CONFIGURATIONS:
+                {
+                    // TODO: Draw ENDING screen here!
+                    DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
+                    DrawText("ENDING SCREEN", 20, 20, 40, DARKBLUE);
+                    DrawText("PRESS ENTER or TAP to RETURN to HOMEPAGE SCREEN", 120, 220, 20, DARKBLUE);
+
+                } break;
+                 case EXIT:
                 {
                     // TODO: Draw ENDING screen here!
                     DrawRectangle(0, 0, screenWidth, screenHeight, BLUE);
