@@ -1,7 +1,8 @@
 #include "raylib.h"
+#include <stdbool.h>
 //refers to the screens of the game
     //LOGO(made by pedro)
-    //HOMEPAGE(START,LEADERBOARD,CONFIGURATIONS,EXIT)
+    //HOMEPAGE(START,LEADERBOARD,CONFIGURATIONS,ABOUT, EXIT)
     //CONFIGURATIONS
     //LEADERBOARD
     //EXIT(isnt necessarily an screen, but let's consider it for the moment)
@@ -9,7 +10,7 @@
         //->GAMEOPTIONS (deck of plants)?
             //GAMEPLAY
 typedef enum GameScreen {LOGO = 0, HOMEPAGE, GAMEPLAY, ENDING } GameScreen;
-
+#define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
 int main (void){
     //initialization
     const int screenWidth = 800;
@@ -20,9 +21,18 @@ int main (void){
     GameScreen currentScreen = LOGO;
 
        // TODO: Initialize all required variables and load all required data here!
-
+    Rectangle homePageOptions[HOME_PAGE_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refer to the options of the game in the landpage(play, leaderboard, about, configurations and exit)
+        bool homePageOptionsHover[HOME_PAGE_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered    
+            //Filling the homePageOptions 
+            for (int i=0;i<HOME_PAGE_OPTIONS_QUANTITY;i++){
+                homePageOptions[i].height = 40;
+                homePageOptions[i].width = 240;
+                homePageOptions[i].x=(screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30;
+                homePageOptions[i].y = 110+60*i;
+            }
+    
     int framesCounter = 0;          // Useful to count frames
-
+    Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
     SetTargetFPS(60);               // Set desired framerate (frames-per-second)
     //--------------------------------------------------------------------------------------
 
@@ -31,6 +41,7 @@ int main (void){
     {
         // Update
         //----------------------------------------------------------------------------------
+        mousePoint = GetMousePosition();//tracking, effectively, the user's mouse
         switch (currentScreen)
         {
             case LOGO:
@@ -48,12 +59,13 @@ int main (void){
             case HOMEPAGE:
             {
                 // TODO: Update HOMEPAGE screen variables here!
-
-                // Press enter to change to GAMEPLAY screen
-                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
-                {
-                    currentScreen = GAMEPLAY;
-                }
+                //checks if an rectangle(option) is hovered, so that we can highlight that ractangle
+                 for (int i = 0; i < HOME_PAGE_OPTIONS_QUANTITY; i++)
+        {
+            if (CheckCollisionPointRec(mousePoint, homePageOptions[i])) homePageOptionsHover[i] = 1;
+            else homePageOptionsHover[i] = 0;
+        }
+        
             } break;
             case GAMEPLAY:
             {
@@ -97,11 +109,13 @@ int main (void){
                 {
                     // TODO: Draw HOMEPAGE screen here!
                     DrawRectangle(0, 0, screenWidth, screenHeight, GREEN);
-                    DrawRectangle((screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30, 110, 240, 40, WHITE);
-                    DrawRectangle((screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30, 170, 240, 40, WHITE);
-                    DrawRectangle((screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30, 230, 240, 40, WHITE);
-                    DrawRectangle((screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30, 290, 240, 40, WHITE);
-                    DrawRectangle((screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30, 350, 240, 40, WHITE);
+                    for(int i=0;i<HOME_PAGE_OPTIONS_QUANTITY;i++){
+                        DrawRectangleRec(homePageOptions[i], WHITE);
+                        //tracking hover over the options
+                        if(homePageOptionsHover[i]==true){
+                            DrawRectangleRec(homePageOptions[i], RED);
+                        }
+                    }
                     DrawText("INF vs ZOMBIES", (screenWidth-MeasureText("INF vs ZOMBIES", 40))/2, 20, 40, DARKGREEN);
                     DrawText("PLAY", (screenWidth-MeasureText("INF vs ZOMBIES", 20))/2, 120, 20, DARKGREEN);
                     DrawText("LEADERBOARD", (screenWidth-MeasureText("INF vs ZOMBIES", 20))/2, 180, 20, DARKGREEN);
