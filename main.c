@@ -44,11 +44,15 @@ typedef struct Plant
 #define VALUE_OF_EACH_SUN 25
 #define SIZE_OF_DECK 1
 
-int initialLawnXValue = (screenWidth-35*2)/numberLawnColumns;
-int initialLawnYValue = (screenHeight-(60+40))/numberLawnRows;
-int initialLawnWidthValue = (screenWidth-35*2)/numberLawnColumns;
-int initialLawnHeightValue = (screenHeight-(60+40))/numberLawnRows;
+const int initialLawnXValue = (screenWidth-35*2)/numberLawnColumns;
+const int initialLawnYValue = (screenHeight-(60+40))/numberLawnRows;
+const int initialLawnWidthValue = (screenWidth-35*2)/numberLawnColumns;
+const int initialLawnHeightValue = (screenHeight-(60+40))/numberLawnRows;
 
+const int xOfDeckRectangle = 10;
+const int yOfDeckRectangle = 10;
+const int widthOfEachElementOfDeck =initialLawnWidthValue/(SIZE_OF_DECK+1);
+const int heightOfEachElementOfDeck = 60;
 
 //Functions-------------------------------------
 //PLANTS FUNCTIONS-----
@@ -163,21 +167,40 @@ int initialLawnHeightValue = (screenHeight-(60+40))/numberLawnRows;
     }
 //----------------------------------
 //GAMING DECK----------------
-    //DrawGamingDeck:Plant [], int ->void
-    //given the deck of plants and the quantity of suns, draw the interface
-    void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSun){
-        int xOfDeckRectangle = 10;
-        int yOfDeckRectangle = 10;
-        int widthOfEachElementOfDeck =initialLawnWidthValue/(SIZE_OF_DECK+1);
-        int heightOfEachElementOfDeck = 60;
+    //DrawGamingDeck:Plant [], int, Vector2 ->void
+    //given the deck of plants and the quantity of suns, draw the interface, checking if one card is being hovered and highlightening it
+    void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSun, Vector2 mousePoint){
         //Drawing the sun counter
+        int xOfDeckRectangleCpy = xOfDeckRectangle;
         DrawRectangle(xOfDeckRectangle,yOfDeckRectangle,widthOfEachElementOfDeck,heightOfEachElementOfDeck,MAROON);
-        DrawRectangleLines(xOfDeckRectangle,yOfDeckRectangle,initialLawnWidthValue,heightOfEachElementOfDeck,BLACK);
-        DrawText(TextFormat("%d", quantityOfSun),xOfDeckRectangle,yOfDeckRectangle+15,20,YELLOW);
+        DrawRectangleLines(xOfDeckRectangle,yOfDeckRectangle,widthOfEachElementOfDeck,heightOfEachElementOfDeck,BLACK);
+        DrawText(TextFormat(" %d", quantityOfSun),xOfDeckRectangle,yOfDeckRectangle+15,20,YELLOW);
         //Drawing the deck of plants
         for (int i=0;i<SIZE_OF_DECK;i++){
-            xOfDeckRectangle+= widthOfEachElementOfDeck;
-            DrawRectangle(xOfDeckRectangle,yOfDeckRectangle,20,20,DeckOfPlants[i].color);
+            xOfDeckRectangleCpy+= widthOfEachElementOfDeck;
+            Rectangle boxOfCard ={
+                .x= xOfDeckRectangleCpy,
+                .y =yOfDeckRectangle,
+                .width= widthOfEachElementOfDeck,
+                .height= heightOfEachElementOfDeck
+            };
+            //Drawing the boxes within which the plants are displayed in the deck
+            DrawRectangleRec(boxOfCard,MAROON);
+            //if the box is being hovered,
+            if (CheckCollisionPointRec(mousePoint, boxOfCard)) {
+                //highlight it
+                // DrawRectangleLines(boxOfCard.x,boxOfCard.y,boxOfCard.width,boxOfCard.height,DARKGREEN);
+                DrawRectangleLinesEx(boxOfCard,2.5f, DARKGREEN);
+                // if(IsGestureDetected(GESTURE_TAP)){
+                //     previousScreen=currentScreen;
+                //     currentScreen = homePageOptions[i];
+                // }
+            }else{
+                //else, draw it normaly
+                DrawRectangleLines(xOfDeckRectangleCpy,yOfDeckRectangle,widthOfEachElementOfDeck,heightOfEachElementOfDeck,BLACK);
+            }
+            //Drawing the plants within the boxes
+            DrawRectangle(xOfDeckRectangleCpy+10,yOfDeckRectangle+20,20,20,DeckOfPlants[i].color);
         }
     }
 //--------------------------------
@@ -253,6 +276,8 @@ Plant DeckOfPlants [SIZE_OF_DECK]={0};
     DeckOfPlants[0].type = TYPE_SUNFLOWER;
     DeckOfPlants[0].cost = COST_SUNFLOWER;
     DeckOfPlants[0].color = BROWN; 
+    //array to track which cards are being hovered over
+// bool DeckPlantsRecHover[SIZE_OF_DECK]={0};
     //LAWN--------------
     //lawns of the game
  
@@ -386,22 +411,21 @@ Plant DeckOfPlants [SIZE_OF_DECK]={0};
                         else lawnRectanglesHover[i][j] = 0;
                     }
                 }
-                 double timeSpawnSunTracking =GetTime();
-                 //spawn of the suns
-                 if((timeSpawnSunTracking-startTime>spawnRateSun)&&indexOfNextSun<=MAX_SUN_IN_SCREEN){
+                double timeSpawnSunTracking =GetTime();
+                //spawn of the suns
+                if((timeSpawnSunTracking-startTime>spawnRateSun)&&indexOfNextSun<=MAX_SUN_IN_SCREEN){
                     AddSunToArray(sunArray, indexOfNextSun,lawnRectangles,groundOfTheSuns);
                     indexOfNextSun++;
                     startTime=GetTime();
-                 }
-                 if(collectSun(sunArray,&indexOfNextSun,mousePoint,groundOfTheSuns)){
+                }
+                if(collectSun(sunArray,&indexOfNextSun,mousePoint,groundOfTheSuns)){
                     addSunToStorage(&sunGamingStorage);
-                 }
-
+                }
+                
                 if(IsKeyPressed(KEY_ESCAPE)){
                     currentScreen = MENU;
                 }
-
-               
+                
             } break;
             case MENU:{
                     // TODO: Draw HOMEPAGE screen here!
@@ -547,7 +571,8 @@ Plant DeckOfPlants [SIZE_OF_DECK]={0};
                         }
                     }
                     DrawSuns(sunArray,indexOfNextSun);
-                    DrawGamingDeck(DeckOfPlants,sunGamingStorage);
+                    DrawGamingDeck(DeckOfPlants,sunGamingStorage,mousePoint);
+        
                 }break;
                 case MENU:{
                     for(int i=0;i<GAMING_MENU_OPTIONS_QUANTITY;i++){
