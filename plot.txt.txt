@@ -71,3 +71,38 @@ JOGO:
 
 ==============================================================================
 ==============================================================================
+sol
+const unsigned int tempoParaNascerNaturalmente = 10seg(em funcao dos frames=(framesPSeg*10/frameCount))
+struct sol{
+	Circle circle yellow
+	png?
+	sound?
+	value = 50;
+	
+}
+
+planta
+struct plant{
+	Rectangle rectangle (que vai ser a planta)
+	png?
+	som?
+	custo
+}
+ai eu vou ter as structs das plantas especificas
+	struct sunflower{
+		plant sunflower{
+			Rectangle rectangle (que vai ser a planta)
+			png?
+			som?
+			custo
+		}
+		int tempoGeracaoSol=em funcao dos frames
+		tempoDesdeUltimoSol (para conseguir tracar a producao de sol) (colocar numa funcao que verifica e gera o sol)(em fucnao dos frames)
+	}
+	//dado um tempo de geracao de sol e um giracao, verifica se esta na hora de gerar o sol(de acordo com regra pré-estabelecida) e entao gera o um Sol sol ao redor do girassol dado,
+	//senao, retorna um emptySun
+	
+	Funcao (sol)gerarSolSunflower(int tempoGeracaoSol, sunflower girassol)
+
+	//dado um tempodeGeracaodesol, verifica se ja se passaram o tempo necessario, se sim, retonra um sol caindo na tela em algum lugar aleatorio da grama, senao, um sol vazio
+	//Funcao (sol)gerarSolNaturalmente(int tempoGeracaoSol)
