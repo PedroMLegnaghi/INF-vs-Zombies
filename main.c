@@ -167,9 +167,9 @@ const int heightOfEachElementOfDeck = 60;
     }
 //----------------------------------
 //GAMING DECK----------------
-    //DrawGamingDeck:Plant [], int, Vector2 ->void
-    //given the deck of plants and the quantity of suns, draw the interface, checking if one card is being hovered and highlightening it
-    void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSun, Vector2 mousePoint){
+    //DrawGamingDeck:Plant [], int, Vector2, Rectangle ->void
+    //given the deck of plants, the quantity of suns adn the card selected, draw the interface, checking if one card is being hovered and highlightening it, and updating the card selected(if needed)
+    void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSun, Vector2 mousePoint, Plant *cardSelected){
         //Drawing the sun counter
         int xOfDeckRectangleCpy = xOfDeckRectangle;
         DrawRectangle(xOfDeckRectangle,yOfDeckRectangle,widthOfEachElementOfDeck,heightOfEachElementOfDeck,MAROON);
@@ -178,31 +178,97 @@ const int heightOfEachElementOfDeck = 60;
         //Drawing the deck of plants
         for (int i=0;i<SIZE_OF_DECK;i++){
             xOfDeckRectangleCpy+= widthOfEachElementOfDeck;
-            Rectangle boxOfCard ={
-                .x= xOfDeckRectangleCpy,
-                .y =yOfDeckRectangle,
-                .width= widthOfEachElementOfDeck,
-                .height= heightOfEachElementOfDeck
+            Plant plantBoxOfCard ={
+                .format={
+                    .x= xOfDeckRectangleCpy,
+                    .y =yOfDeckRectangle,
+                    .width= widthOfEachElementOfDeck,
+                    .height= heightOfEachElementOfDeck
+                },
+                .color=DeckOfPlants[i].color,
+                .cost=DeckOfPlants[i].cost,
+                .type=DeckOfPlants[i].type
+
             };
-            //Drawing the boxes within which the plants are displayed in the deck
-            DrawRectangleRec(boxOfCard,MAROON);
+            DrawRectangleLines(xOfDeckRectangleCpy,yOfDeckRectangle,widthOfEachElementOfDeck,heightOfEachElementOfDeck,BLACK);
             //if the box is being hovered,
-            if (CheckCollisionPointRec(mousePoint, boxOfCard)) {
+            if (CheckCollisionPointRec(mousePoint, plantBoxOfCard.format)) {
                 //highlight it
-                // DrawRectangleLines(boxOfCard.x,boxOfCard.y,boxOfCard.width,boxOfCard.height,DARKGREEN);
-                DrawRectangleLinesEx(boxOfCard,2.5f, DARKGREEN);
-                // if(IsGestureDetected(GESTURE_TAP)){
-                //     previousScreen=currentScreen;
-                //     currentScreen = homePageOptions[i];
-                // }
+                DrawRectangleRec(plantBoxOfCard.format,GRAY);
+                if(IsGestureDetected(GESTURE_TAP)||IsGestureDetected(KEY_ENTER)){
+                    *cardSelected=plantBoxOfCard;
+                }
             }else{
                 //else, draw it normaly
-                DrawRectangleLines(xOfDeckRectangleCpy,yOfDeckRectangle,widthOfEachElementOfDeck,heightOfEachElementOfDeck,BLACK);
+                DrawRectangleRec(plantBoxOfCard.format,MAROON);
             }
             //Drawing the plants within the boxes
             DrawRectangle(xOfDeckRectangleCpy+10,yOfDeckRectangle+20,20,20,DeckOfPlants[i].color);
         }
     }
+//DrawMoldureOfSelectedCard:Plant->void
+//given a plant that is selected in the deck of cards, dray a moldure for it. If there isn't plant selected, return void
+void DrawMoldureOfSelectedCard(Plant cardSelected){
+    //if the cardSelected is nulled, return void, because there's no card selected
+    if(cardSelected.format.x==0) return;
+    //else
+    DrawRectangleLinesEx(cardSelected.format,2.5f, DARKGREEN);
+}
+
+// RemoveSelectedCard: Rectangle * -> void
+// Checks if a selected card should be removed and removes it. A selected card is removed if 'W' or the right mouse button is pressed.
+void RemoveSelectedCard(Plant *cardSelected) {
+    if (IsKeyPressed(KEY_W) || IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
+        cardSelected->format.height = 0;
+        cardSelected->format.width = 0;
+        cardSelected->format.x = 0;  
+        cardSelected->format.y = 0;
+    }
+}
+
+//PutPlantToField:Plant[lawnRow*lawnColumns], Plant, int*, bool[lawnRows][lawnColumns],->void
+//Given the array of plants in *the field,the card selected , the *sunStorage, the occupationLawn
+//checks if plant can be put and properly put it
+void PutPlantToField
+(Plant plantArr [numberLawnRows][numberLawnColumns], 
+    Plant cardSelected, int *sunStorage,bool occupationOfLawn[numberLawnRows][numberLawnColumns],
+    Vector2 mousePoint,Rectangle lawnRectangles[numberLawnRows][numberLawnColumns])
+    {
+        //checks if there's a lawn being hovered
+        bool isHovered =0;
+        
+        //row,column
+        int r=0, c=0;
+        for(int i=0;i<numberLawnRows;i++){
+            for(int j=0;j<numberLawnColumns;j++){
+                if (CheckCollisionPointRec(mousePoint, lawnRectangles[i][j])) {
+                    isHovered =1;
+                    r=i;
+                    c=j;
+                }   
+            }
+        }
+        //  a plant is selected && check-colision with a block of lawn(for loop,checks if an element has lawnRecHover [i][j]=1,save that i and j) 
+        //&& eventClick tapping
+        if(isHovered&&cardSelected.format.x!=0&&IsGestureDetected(GESTURE_TAP)){
+            //          if the amount of suns is sufficient to put a plant in the field  &&
+            //          the position chosen is free to be used (checks if occupationLawn[i][j]!=1)
+            if(*sunStorage>=cardSelected.cost&&occupationOfLawn[r][c]!=1){
+            //my selected card, by default, has, already, color, type, cost,height and width. But i doesn't have a proper x and y to be displayed on the lawn
+            //              *add that plant to the array of plants
+            Plant plant = cardSelected;
+            plant.format.x=lawnRectangles[r][c].x;
+            plant.format.x=lawnRectangles[r][c].y;
+            plantArr[r][c]=plant;
+            //              *discount that amount of the sunStorage
+            *sunStorage-=cardSelected.cost;
+            //              *update the occupationLawn
+            occupationOfLawn[r][c]=1;
+        }
+    }
+
+
+}
 //--------------------------------
 //-------------/------------------------------------
 
@@ -276,11 +342,15 @@ Plant DeckOfPlants [SIZE_OF_DECK]={0};
     DeckOfPlants[0].type = TYPE_SUNFLOWER;
     DeckOfPlants[0].cost = COST_SUNFLOWER;
     DeckOfPlants[0].color = BROWN; 
-    //array to track which cards are being hovered over
-// bool DeckPlantsRecHover[SIZE_OF_DECK]={0};
+//used to track which card is selected. If card is all nulled, then there's no card selected
+Plant cardSelected = {0};
+//used to track which plants are deployed in the field(lawn)
+Plant plantArr[numberLawnColumns*numberLawnRows]={0};
+
     //LAWN--------------
     //lawns of the game
- 
+    //used to verify if a plant already exists in a spot
+    bool occupationOfLawn[numberLawnRows][numberLawnColumns]={0};
     bool lawnRectanglesHover[numberLawnRows][numberLawnColumns];
     Rectangle lawnRectangles[numberLawnRows][numberLawnColumns];
         for(int i=0;i<numberLawnRows;i++){
@@ -571,8 +641,9 @@ Plant DeckOfPlants [SIZE_OF_DECK]={0};
                         }
                     }
                     DrawSuns(sunArray,indexOfNextSun);
-                    DrawGamingDeck(DeckOfPlants,sunGamingStorage,mousePoint);
-        
+                    DrawGamingDeck(DeckOfPlants,sunGamingStorage,mousePoint, &cardSelected);
+                    DrawMoldureOfSelectedCard(cardSelected);
+                    RemoveSelectedCard(&cardSelected);
                 }break;
                 case MENU:{
                     for(int i=0;i<GAMING_MENU_OPTIONS_QUANTITY;i++){
