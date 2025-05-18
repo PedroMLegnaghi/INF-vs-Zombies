@@ -5,6 +5,34 @@
 
 typedef enum GameScreen {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURATIONS, EXIT //HOMEPAGE OPTIONS
                          ,USER_DATA, DECK_SELECTION, GAMEPLAY,MENU, RESUME} GameScreen;//GAMEPLAY OPTIONS
+
+//enumeration to reference the cost of each plant.
+//model: COST_(costOfPlant)
+typedef enum CostOfPlant{
+    COST_SUNFLOWER = 50,
+    
+}CostOfPlant;
+CostOfPlant costOfPlant;
+//enumeration to reference the typeOfPlants available
+//model: TYPE_(typeOfPlant)
+typedef enum TypeOfPlant{
+    TYPE_SUNFLOWER =0,
+}TypeOfPlant;
+TypeOfPlant typeOfPlant;
+
+//struct of plants, used majorly to load the image of each plant and track it in the game (each functionality will be added separately)
+typedef struct Plant
+{
+    Rectangle format;
+    TypeOfPlant type;
+    CostOfPlant cost;
+    Color color;
+    //sound?
+    //png?
+    
+}Plant;
+
+
 #define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
 #define GAMING_MENU_OPTIONS_QUANTITY 3 //resume, configurations and exit
 #define MAX_SUN_IN_SCREEN 100 //maximum quantity of suns in screen
@@ -14,9 +42,44 @@ typedef enum GameScreen {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURA
 #define numberLawnColumns 9
 #define numberLawnRows 5
 #define VALUE_OF_EACH_SUN 25
-   
+#define SIZE_OF_DECK 1
+
+int initialLawnXValue = (screenWidth-35*2)/numberLawnColumns;
+int initialLawnYValue = (screenHeight-(60+40))/numberLawnRows;
+int initialLawnWidthValue = (screenWidth-35*2)/numberLawnColumns;
+int initialLawnHeightValue = (screenHeight-(60+40))/numberLawnRows;
+
 
 //Functions-------------------------------------
+//PLANTS FUNCTIONS-----
+    //DrawPlants:Plant[numberLawnColumns*numberLawnRows]->void
+    //draw all plants until indexOfNextPlant within the array of Plant passed
+    void DrawPlants(Plant plantArr[numberLawnColumns*numberLawnRows], int indexOfNextPlant){
+        for(int i=0;i<indexOfNextPlant;i++){
+            DrawRectangleRec(plantArr[i].format,plantArr[i].color );
+        }
+    }
+
+    //I have to create a function for each
+    //plant I have on my game, like a constructor
+
+    //CreateSunflower:Plant[SIZE_OF_DECK], int->Void
+    //given an array of Plant, it's x wanted value, it's y wanted value and the index of the next plant, 
+    //add a sunflower to it's end
+    void CreateSunflower(Plant plantArr[numberLawnColumns*numberLawnRows], int *indexOfNextPlant, int xValue, int yValue) {
+    if (*indexOfNextPlant >= numberLawnColumns*numberLawnRows) return; 
+    plantArr[*indexOfNextPlant].format.height= initialLawnHeightValue-20;
+    plantArr[*indexOfNextPlant].format.width= initialLawnWidthValue-20;
+    plantArr[*indexOfNextPlant].format.x= xValue;
+    plantArr[*indexOfNextPlant].format.y= yValue;
+    plantArr[*indexOfNextPlant].type = TYPE_SUNFLOWER;
+    plantArr[*indexOfNextPlant].cost = COST_SUNFLOWER;
+    plantArr[*indexOfNextPlant].color = BROWN; 
+
+    (*indexOfNextPlant)++; 
+}
+
+//--------------------------------------------
 //SUN FUNCTIONS---
     //AddSunToArray:Rectangle[], int, Rectangle [] [], float->img(void)
     //Given an array of suns, the index of the next sun , the array of lawns of the game and the groundOfTheSuns array, add that sun to the array with x and y position of a random lawn of the game 
@@ -102,10 +165,20 @@ typedef enum GameScreen {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURA
 //GAMING DECK----------------
     //DrawGamingDeck:Plant [], int ->void
     //given the deck of plants and the quantity of suns, draw the interface
-    void DrawGamingDeck(unsigned int quantityOfSun){
-        DrawRectangle(10,10,40,40,MAROON);
-        DrawRectangleLines(10,10,40,40,BLACK);
-        DrawText(TextFormat("%d", quantityOfSun),20,20,20,YELLOW);
+    void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSun){
+        int xOfDeckRectangle = 10;
+        int yOfDeckRectangle = 10;
+        int widthOfEachElementOfDeck =initialLawnWidthValue/(SIZE_OF_DECK+1);
+        int heightOfEachElementOfDeck = 60;
+        //Drawing the sun counter
+        DrawRectangle(xOfDeckRectangle,yOfDeckRectangle,widthOfEachElementOfDeck,heightOfEachElementOfDeck,MAROON);
+        DrawRectangleLines(xOfDeckRectangle,yOfDeckRectangle,initialLawnWidthValue,heightOfEachElementOfDeck,BLACK);
+        DrawText(TextFormat("%d", quantityOfSun),xOfDeckRectangle,yOfDeckRectangle+15,20,YELLOW);
+        //Drawing the deck of plants
+        for (int i=0;i<SIZE_OF_DECK;i++){
+            xOfDeckRectangle+= widthOfEachElementOfDeck;
+            DrawRectangle(xOfDeckRectangle,yOfDeckRectangle,20,20,DeckOfPlants[i].color);
+        }
     }
 //--------------------------------
 //-------------/------------------------------------
@@ -171,15 +244,20 @@ char playerName[MAX_SIZE_OF_NAME];
     for (int i=0;i<MAX_SIZE_OF_NAME;i++)
         playerName[i]='\0';
     unsigned int sizeOfName = 0;//variable used to track the size of the name of the user
+//DECK-----
+Plant DeckOfPlants [SIZE_OF_DECK]={0};
+   DeckOfPlants[0].format.height= initialLawnHeightValue-20;
+    DeckOfPlants[0].format.width= initialLawnWidthValue-20;
+    DeckOfPlants[0].format.x= 0;
+    DeckOfPlants[0].format.y= 0;
+    DeckOfPlants[0].type = TYPE_SUNFLOWER;
+    DeckOfPlants[0].cost = COST_SUNFLOWER;
+    DeckOfPlants[0].color = BROWN; 
     //LAWN--------------
     //lawns of the game
  
     bool lawnRectanglesHover[numberLawnRows][numberLawnColumns];
     Rectangle lawnRectangles[numberLawnRows][numberLawnColumns];
-    int initialLawnXValue = (screenWidth-35*2)/numberLawnColumns;
-	int initialLawnYValue = (screenHeight-(60+40))/numberLawnRows;
-	int initialLawnWidthValue = initialLawnXValue;
-	int initialLawnHeightValue = initialLawnYValue;
         for(int i=0;i<numberLawnRows;i++){
             for(int j=0;j<numberLawnColumns;j++){
                 lawnRectangles[i][j].x = 30+initialLawnXValue*j;
@@ -310,7 +388,7 @@ char playerName[MAX_SIZE_OF_NAME];
                 }
                  double timeSpawnSunTracking =GetTime();
                  //spawn of the suns
-                 if(timeSpawnSunTracking-startTime>spawnRateSun){
+                 if((timeSpawnSunTracking-startTime>spawnRateSun)&&indexOfNextSun<=MAX_SUN_IN_SCREEN){
                     AddSunToArray(sunArray, indexOfNextSun,lawnRectangles,groundOfTheSuns);
                     indexOfNextSun++;
                     startTime=GetTime();
@@ -469,7 +547,7 @@ char playerName[MAX_SIZE_OF_NAME];
                         }
                     }
                     DrawSuns(sunArray,indexOfNextSun);
-                    DrawGamingDeck(sunGamingStorage);
+                    DrawGamingDeck(DeckOfPlants,sunGamingStorage);
                 }break;
                 case MENU:{
                     for(int i=0;i<GAMING_MENU_OPTIONS_QUANTITY;i++){
