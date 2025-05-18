@@ -10,8 +10,9 @@
         //LEADERBOARD
         //EXIT(isnt necessarily an screen, but let's consider it for the moment)
 typedef enum GameScreen {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURATIONS, EXIT //HOMEPAGE OPTIONS
-                         ,USER_DATA, DECK_SELECTION, GAMEPLAY} GameScreen;//GAMEPLAY OPTIONS
+                         ,USER_DATA, DECK_SELECTION, GAMEPLAY,MENU, RESUME} GameScreen;//GAMEPLAY OPTIONS
 #define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
+#define GAMING_MENU_OPTIONS_QUANTITY 3 //resume, configurations and exit
 int main (void){
     //initialization
     // TODO: Initialize all required variables and load all required data here!
@@ -42,6 +43,22 @@ GameScreen homePageOptions[HOME_PAGE_OPTIONS_QUANTITY] ={0};//array to navigate 
         homePageOptionsRec[i].y = 110+60*i;
     }
 //---------
+//--Gaming Menu
+Rectangle gamingMenuOptionsRec[GAMING_MENU_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refer to the options of the game in the landpage(PLAY, leaderboard, about, configurations and exit)
+bool gamingMenuOptionsRecHover[GAMING_MENU_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered 
+GameScreen gamingMenuOptions[GAMING_MENU_OPTIONS_QUANTITY] ={0};//array to navigate over the options of the game
+    //Filling the homePageOptions
+    gamingMenuOptions[0]= RESUME;
+    gamingMenuOptions[1]= CONFIGURATIONS;
+    gamingMenuOptions[2]= EXIT;
+
+    //Filling the gamingMenuOptionsRec 
+    for (int i=0;i<GAMING_MENU_OPTIONS_QUANTITY;i++){
+        gamingMenuOptionsRec[i].height = 40;
+        gamingMenuOptionsRec[i].width = 240;
+        gamingMenuOptionsRec[i].x=(screenWidth-MeasureText("INF vs ZOMBIES", 20))/2-30;
+        gamingMenuOptionsRec[i].y = 110+60*i;
+    }
 //--exiting application
     SetExitKey(KEY_NULL); // Disable KEY_ESCAPE to close window, X-button still works
     bool exitWindow = false;    // Flag to set window to exit
@@ -175,6 +192,7 @@ char playerName[MAX_SIZE_OF_NAME];
             case GAMEPLAY:
             {
                 // TODO: Update GAMEPLAY screen variables here!
+                previousScreen=currentScreen;
         for(int i=0;i<numberLawnRows;i++){
             for(int j=0;j<numberLawnColums;j++){
                if (CheckCollisionPointRec(mousePoint, lawnRectangles[i][j])) {
@@ -183,9 +201,29 @@ char playerName[MAX_SIZE_OF_NAME];
                 else lawnRectanglesHover[i][j] = 0;
            }
         }
+        if(IsKeyPressed(KEY_ESCAPE)){
+            currentScreen = MENU;
+        }
 
                
             } break;
+            case MENU:{
+                    // TODO: Draw HOMEPAGE screen here!
+                for (int i = 0; i < GAMING_MENU_OPTIONS_QUANTITY; i++)
+                {
+                    if (CheckCollisionPointRec(mousePoint, gamingMenuOptionsRec[i])) {
+                        gamingMenuOptionsRecHover[i] = 1;
+                        if(IsGestureDetected(GESTURE_TAP)){
+                            previousScreen=currentScreen;
+                            currentScreen = gamingMenuOptions[i];
+                        }
+                    }
+                    else gamingMenuOptionsRecHover[i] = 0;
+                }
+            }break;
+            case RESUME:{
+                currentScreen = GAMEPLAY;
+            }
             case ABOUT:
             {
                 // TODO: Update ENDING screen variables here!
@@ -312,6 +350,20 @@ char playerName[MAX_SIZE_OF_NAME];
                             }
                         }
                     }
+                }break;
+                case MENU:{
+                    for(int i=0;i<GAMING_MENU_OPTIONS_QUANTITY;i++){
+                        DrawRectangleRec(gamingMenuOptionsRec[i], WHITE);
+                         DrawRectangleLines(gamingMenuOptionsRec[i].x, gamingMenuOptionsRec[i].y, gamingMenuOptionsRec[i].width, gamingMenuOptionsRec[i].height, BLACK);
+                         //tracking hover over the options
+                         if(gamingMenuOptionsRecHover[i]==true){
+                             DrawRectangleRec(gamingMenuOptionsRec[i], RED);
+                            }
+                        }
+                        DrawText("INF vs ZOMBIES", (screenWidth-MeasureText("INF vs ZOMBIES", 40))/2, 20, 40, DARKGREEN);
+                        DrawText("RESUME", (screenWidth-MeasureText("INF vs ZOMBIES", 20))/2, 120, 20, DARKGREEN);
+                        DrawText("CONFIGURATIONS", (screenWidth-MeasureText("INF vs ZOMBIES", 20))/2, 180, 20, DARKGREEN);
+                        DrawText("EXIT", (screenWidth-MeasureText("INF vs ZOMBIES", 20))/2, 240, 20, DARKGREEN);
                 }break;
                 case ABOUT:
                 {
