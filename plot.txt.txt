@@ -1,7 +1,7 @@
 ESTRUTURACAO DAS PASTAS:
 /INFVsZombies
 │
-├── root(raiz, nao é uma pasta) -> fica os arquivos ".c"
+├── root(raiz, nao é uma pasta) -> fica os arquivos ".c" 
 ├── include/        → Headers .h (separados)
 ├── resources/      → Imagens, áudios, fontes
 ├── output/         → game.exe e objetos .o
@@ -39,6 +39,35 @@ JOGO:
 		@zombie: estilo(png?), vida, velocidade?(espacosdoarray/s(frame?), som?
 	*quando ele chega na planta e comeca a atacar, determinar quanto dano por frame?)
 	*pá para tirar as plantas?(atualiza array de plantas, colocando empty)
+
+	Rectangle gramado[9*5]={0}
+	posxInicial = (800-35*2(margin left-right))/9;
+	posyInicial = 40+(450-(20+40)(margin left-right))/5;
+	width = posxInicial;
+	height = posyInicial;
+	for(int...) { 
+		gramado[i].x= posxInicial+posxInicial*i;
+		gramado[i].y=...
+		...
+		...
+	}
+	for(int i)
+	{
+		//INTERCALAR CORES
+		if(i&1){
+		draw(gramado[i],LIGHTGREEN)
+		}else{
+			draw(gramado[i],DARKGREEN)
+		}
+		if(isHoveredBy){
+		drawLine(gramadoi, BLACK)
+		}
+
+	}
+	9colunas
+	const int screenWidth = (800-35*2(margin left-right))/9;
+	5linhas
+    const int screenHeight = (450-20*2(margin left-right))/5;
 
 ==============================================================================
 ==============================================================================

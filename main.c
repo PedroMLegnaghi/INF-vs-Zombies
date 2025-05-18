@@ -51,14 +51,37 @@ GameScreen homePageOptions[HOME_PAGE_OPTIONS_QUANTITY] ={0};//array to navigate 
     SetTargetFPS(60);               // Set desired framerate (frames-per-second)
 
 //--PLAY variables
-//146=sizeof name of Dom Pedro I
 const unsigned int MAX_SIZE_OF_NAME = 14+1;
 char playerName[MAX_SIZE_OF_NAME];
     for (int i=0;i<MAX_SIZE_OF_NAME;i++)
         playerName[i]='\0';
-    // playerName[0]='\0';
     unsigned int sizeOfName = 0;//variable used to track the size of the name of the user
-
+    //LAWN--------------
+    //lawns of the game
+    const unsigned int numberLawnColums =9;
+    const unsigned int numberLawnRows =5;
+    bool lawnRectanglesHover[numberLawnRows][numberLawnColums];
+    Rectangle lawnRectangles[numberLawnRows][numberLawnColums];
+    int initialLawnXValue = (screenWidth-35*2)/numberLawnColums;
+	int initialLawnYValue = (screenHeight-(60+40))/numberLawnRows;
+	int initialLawnWidthValue = initialLawnXValue;
+	int initialLawnHeightValue = initialLawnYValue;
+    // for(int i=0;i<1;i++){
+    //         for(int j=0;j<numberLawnColums;j++){
+    //             lawnRectangles[i][j].x = initialLawnXValue+initialLawnXValue*j;
+    //             lawnRectangles[i][j].y = initialLawnYValue+40;
+    //             lawnRectangles[i][j].width = initialLawnWidthValue;
+    //             lawnRectangles[i][j].height = initialLawnHeightValue;
+    //         }
+    //     }
+        for(int i=0;i<numberLawnRows;i++){
+            for(int j=0;j<numberLawnColums;j++){
+                lawnRectangles[i][j].x = 30+initialLawnXValue*j;
+                lawnRectangles[i][j].y = 80+initialLawnYValue*i;
+                lawnRectangles[i][j].width = initialLawnWidthValue;
+                lawnRectangles[i][j].height = initialLawnHeightValue;
+            }
+        }
 //---------
     //--------------------------------------------------------------------------------------
 
@@ -142,9 +165,24 @@ char playerName[MAX_SIZE_OF_NAME];
                 }
 
                 if (IsKeyPressed(KEY_ENTER) && sizeOfName > 0) {
-                    currentScreen = DECK_SELECTION;  // Ou qualquer próxima tela desejada
+                    currentScreen = GAMEPLAY;  // Ou qualquer próxima tela desejada
                 }
 
+
+               
+            } break;
+            
+            case GAMEPLAY:
+            {
+                // TODO: Update GAMEPLAY screen variables here!
+        for(int i=0;i<numberLawnRows;i++){
+            for(int j=0;j<numberLawnColums;j++){
+               if (CheckCollisionPointRec(mousePoint, lawnRectangles[i][j])) {
+                    lawnRectanglesHover[i][j] = 1;
+                }
+                else lawnRectanglesHover[i][j] = 0;
+           }
+        }
 
                
             } break;
@@ -242,13 +280,39 @@ char playerName[MAX_SIZE_OF_NAME];
                 } break;
                  case DECK_SELECTION:
                 {
-                    ClearBackground(RAYWHITE);
-                    // TODO: Draw ENDING screen here!
-                    DrawRectangle(0, 0, screenWidth, screenHeight, WHITE);
-                    DrawText(TextFormat("Nice to meet you, %s :)", playerName), 20, 20, 40, DARKBLUE);
-                    DrawText("Select you deck", 120, 220, 20, DARKBLUE);
+                    // ClearBackground(RAYWHITE);
+                    // // TODO: Draw ENDING screen here!
+                    // DrawRectangle(0, 0, screenWidth, screenHeight, WHITE);
+                    // DrawText(TextFormat("Nice to meet you, %s :)", playerName), 20, 20, 40, DARKBLUE);
+                    // DrawText("Select you deck", 120, 220, 20, DARKBLUE);
+                    currentScreen = GAMEPLAY;
 
                 } break;
+                case GAMEPLAY:
+                {
+                    for(int i=0;i<numberLawnRows;i++){
+                        for(int j=0;j<numberLawnColums;j++){
+                            //if "i" is odd, if "j" is odd, darkgreen, else, lightgreen
+                            if(i&1){
+                                if(j&1){
+                                    DrawRectangleRec( lawnRectangles[i][j], DARKGREEN);
+                                }else{
+                                    DrawRectangleRec( lawnRectangles[i][j], GREEN);
+                                }
+                            }else{
+                                 if(j&1){
+                                     DrawRectangleRec( lawnRectangles[i][j], GREEN);
+                                    }else{
+                                    DrawRectangleRec( lawnRectangles[i][j], DARKGREEN);
+                                }
+                            }
+                            //tracking hover over the options
+                            if(lawnRectanglesHover[i][j]==true){
+                                DrawRectangleLines( lawnRectangles[i][j].x,  lawnRectangles[i][j].y,  lawnRectangles[i][j].width,  lawnRectangles[i][j].height, BLACK);
+                            }
+                        }
+                    }
+                }break;
                 case ABOUT:
                 {
                     ClearBackground(RAYWHITE);
