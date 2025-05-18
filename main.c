@@ -13,80 +13,101 @@ typedef enum GameScreen {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURA
 #define targetFPS 60
 #define numberLawnColumns 9
 #define numberLawnRows 5
+#define VALUE_OF_EACH_SUN 25
    
 
 //Functions-------------------------------------
-//AddSunToArray:Rectangle[], int, Rectangle [] [], float->img(void)
-//Given an array of suns, the index of the next sun , the array of lawns of the game and the groundOfTheSuns array, add that sun to the array with x and y position of a random lawn of the game 
-void AddSunToArray(Rectangle array_of_suns[MAX_SUN_IN_SCREEN],  int indexOfNextSun, Rectangle lawn_array[numberLawnRows][numberLawnColumns],float groundOfTheSuns[MAX_SUN_IN_SCREEN]) {
-    if (indexOfNextSun >= MAX_SUN_IN_SCREEN) return;
-    //chooses a number beetwen 0 and numberLawnRows
-    int row = rand() % (numberLawnRows);
-    //chooses a number beetwen 0 and numberLawnColumns
-    int colum = rand() % (numberLawnColumns);
-    //we set this "y" position as the final "y" position of the sun, so it starts at 0 and goes until it hit it's "y" position (it's ground)
-    groundOfTheSuns[indexOfNextSun] =  lawn_array[row][colum].y;
-    array_of_suns[indexOfNextSun].x = lawn_array[row][colum].x;
-    //starts at "y"=0 and goes until it hits its ground (groundArray)
-    array_of_suns[indexOfNextSun].y =  0;
-    array_of_suns[indexOfNextSun].width = 20;
-    array_of_suns[indexOfNextSun].height = 20;
-    
-}
+//SUN FUNCTIONS---
+    //AddSunToArray:Rectangle[], int, Rectangle [] [], float->img(void)
+    //Given an array of suns, the index of the next sun , the array of lawns of the game and the groundOfTheSuns array, add that sun to the array with x and y position of a random lawn of the game 
+    void AddSunToArray(Rectangle array_of_suns[MAX_SUN_IN_SCREEN],  int indexOfNextSun, Rectangle lawn_array[numberLawnRows][numberLawnColumns],float groundOfTheSuns[MAX_SUN_IN_SCREEN]) {
+        if (indexOfNextSun >= MAX_SUN_IN_SCREEN) return;
+        //chooses a number beetwen 0 and numberLawnRows
+        int row = rand() % (numberLawnRows);
+        //chooses a number beetwen 0 and numberLawnColumns
+        int colum = rand() % (numberLawnColumns);
+        //we set this "y" position as the final "y" position of the sun, so it starts at 0 and goes until it hit it's "y" position (it's ground)
+        groundOfTheSuns[indexOfNextSun] =  lawn_array[row][colum].y;
+        array_of_suns[indexOfNextSun].x = lawn_array[row][colum].x;
+        //starts at "y"=0 and goes until it hits its ground (groundArray)
+        array_of_suns[indexOfNextSun].y =  0;
+        array_of_suns[indexOfNextSun].width = 20;
+        array_of_suns[indexOfNextSun].height = 20;
+        
+    }
 
-//updateSunsPosition:Rectangle[] int Rectangle []->void
-//given the array of the suns of the game ,groundOfTheSuns and the index of the next sun, update their position, until they hit their ground
-void updateSunsPosition(Rectangle array_of_suns[MAX_SUN_IN_SCREEN], int indexOfSun,float groundOfTheSuns[MAX_SUN_IN_SCREEN]){
-    for(int i=0;i<indexOfSun;i++){
-        //if the sun hasn't hit it's ground, (we use "lesser than" here to avoid rounding problems)
-        if((array_of_suns[i].y<groundOfTheSuns[i]))
-        //update its position
-        array_of_suns[i].y+=0.5;
-         if (array_of_suns[i].y > groundOfTheSuns[i]) {
-            array_of_suns[i].y = groundOfTheSuns[i]; // evita ultrapassar o chão
+    //updateSunsPosition:Rectangle[] int Rectangle []->void
+    //given the array of the suns of the game ,groundOfTheSuns and the index of the next sun, update their position, until they hit their ground
+    void updateSunsPosition(Rectangle array_of_suns[MAX_SUN_IN_SCREEN], int indexOfSun,float groundOfTheSuns[MAX_SUN_IN_SCREEN]){
+        for(int i=0;i<indexOfSun;i++){
+            //if the sun hasn't hit it's ground, (we use "lesser than" here to avoid rounding problems)
+            if((array_of_suns[i].y<groundOfTheSuns[i]))
+            //update its position
+            array_of_suns[i].y+=0.5;
+            if (array_of_suns[i].y > groundOfTheSuns[i]) {
+                array_of_suns[i].y = groundOfTheSuns[i]; // evita ultrapassar o chão
+            }
         }
+    };
+
+    //RemoveSunToArray:Rectangle[], int, float []->img(void)
+    //Given an array of suns ,groundOfTheSuns and the index of the sun, remove the last sun of the arrayofsuns and remove its ground and update the array
+    void RemoveSunOfArray(Rectangle array_of_suns[MAX_SUN_IN_SCREEN], int *indexOfNextSun, int index, float groundOfTheSuns[MAX_SUN_IN_SCREEN]) {
+        if (index < 0 || index >= *indexOfNextSun) return;
+
+        for (int i = index; i < (*indexOfNextSun) - 1; i++) {
+            array_of_suns[i] = array_of_suns[i + 1];
+            groundOfTheSuns[i] = groundOfTheSuns[i + 1];
+        }
+        (*indexOfNextSun)--;
+
+        // Invalida o último (agora vazio)
+        array_of_suns[*indexOfNextSun].x = -1;
+        array_of_suns[*indexOfNextSun].y = -1;
+        groundOfTheSuns[*indexOfNextSun] = 0;
     }
-};
 
-//RemoveSunToArray:Rectangle[], int, float []->img(void)
-//Given an array of suns ,groundOfTheSuns and the index of the sun, remove the last sun of the arrayofsuns and remove its ground and update the array
-void RemoveSunOfArray(Rectangle array_of_suns[MAX_SUN_IN_SCREEN], int *indexOfNextSun, int index, float groundOfTheSuns[MAX_SUN_IN_SCREEN]) {
-    if (index < 0 || index >= *indexOfNextSun) return;
-
-    for (int i = index; i < (*indexOfNextSun) - 1; i++) {
-        array_of_suns[i] = array_of_suns[i + 1];
-        groundOfTheSuns[i] = groundOfTheSuns[i + 1];
+    //collectSun:Rectangle [], Vector2, int, float []->int
+    //Given an array of suns, the mousePointer,the quantityofSun of the player, the index of the next sun and the array of the grounds of the suns, returns wheter one sun was collected(1) or not(0) and collects it
+    int collectSun(Rectangle array_of_suns[MAX_SUN_IN_SCREEN],int *indexOfNextSun, Vector2 mousePoint, float groundOfTheSuns[MAX_SUN_IN_SCREEN])
+    {
+        for (int i = 0; i < *indexOfNextSun; i++) {
+            if (CheckCollisionPointRec(mousePoint, array_of_suns[i])) {
+                if (IsGestureDetected(GESTURE_TAP) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    RemoveSunOfArray(array_of_suns, indexOfNextSun, i, groundOfTheSuns);
+                    return 1;//Sun was collected
+                    break; // removes only one sun per click
+                }
+            }
+        }
+        return 0;//sun was not collected
     }
-    (*indexOfNextSun)--;
+    //addSunToStorage:unsigned int -> void
+    //given the gamingSunStorage, add the value of one sun to the storage
+    void addSunToStorage(unsigned int *gamingSunStorage){
+        *gamingSunStorage+=VALUE_OF_EACH_SUN;
+    }
 
-    // Invalida o último (agora vazio)
-    array_of_suns[*indexOfNextSun].x = -1;
-    array_of_suns[*indexOfNextSun].y = -1;
-    groundOfTheSuns[*indexOfNextSun] = 0;
-}
-
-//collectSun:Rectangle [], Vector2, int, float []->void
-//Given an array of suns, the mousePointer, the index of the next sun and the array of the grounds of the suns, returns wheter one sun was collected or not
-void collectSun(Rectangle array_of_suns[MAX_SUN_IN_SCREEN], int *indexOfNextSun, Vector2 mousePoint, float groundOfTheSuns[MAX_SUN_IN_SCREEN]){
-    for (int i = 0; i < *indexOfNextSun; i++) {
-        if (CheckCollisionPointRec(mousePoint, array_of_suns[i])) {
-            if (IsGestureDetected(GESTURE_TAP) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                RemoveSunOfArray(array_of_suns, indexOfNextSun, i, groundOfTheSuns);
-                break; // remove apenas um por clique
+    //DrawSuns:Rectangle[], int->img(void)
+    //Given the array of suns of the game and the index of the sun, draw the suns
+    void DrawSuns(Rectangle array_of_suns[MAX_SUN_IN_SCREEN], int indexOfNextSun){
+        for(int i = 0; i < indexOfNextSun; i++){
+            if (array_of_suns[i].x != -1 && array_of_suns[i].y != -1) {
+                DrawRectangle(array_of_suns[i].x, array_of_suns[i].y,
+                            array_of_suns[i].width, array_of_suns[i].height, YELLOW);
             }
         }
     }
-}
-//DrawSuns:Rectangle[], int->img(void)
-//Given the array of suns of the game and the index of the sun, draw the suns
-void DrawSuns(Rectangle array_of_suns[MAX_SUN_IN_SCREEN], int indexOfNextSun){
-    for(int i = 0; i < indexOfNextSun; i++){
-        if (array_of_suns[i].x != -1 && array_of_suns[i].y != -1) {
-            DrawRectangle(array_of_suns[i].x, array_of_suns[i].y,
-                          array_of_suns[i].width, array_of_suns[i].height, YELLOW);
-        }
+//----------------------------------
+//GAMING DECK----------------
+    //DrawGamingDeck:Plant [], int ->void
+    //given the deck of plants and the quantity of suns, draw the interface
+    void DrawGamingDeck(unsigned int quantityOfSun){
+        DrawRectangle(10,10,40,40,MAROON);
+        DrawRectangleLines(10,10,40,40,BLACK);
+        DrawText(TextFormat("%d", quantityOfSun),20,20,20,YELLOW);
     }
-}
+//--------------------------------
 //-------------/------------------------------------
 
 
@@ -171,12 +192,14 @@ char playerName[MAX_SIZE_OF_NAME];
     //SUN
     //array to track the suns, if the x and y coordinates are "-1", then we consider it an empty sun
     Rectangle sunArray[MAX_SUN_IN_SCREEN]={0};
+    //array to track the quantity of sun that the player has
+    unsigned int sunGamingStorage=0;
     //array to track when a sun hits the ground
     float groundOfTheSuns[MAX_SUN_IN_SCREEN]={0};
     //indexToTrack the end of the array
     int indexOfNextSun = 0;
     //time of spawn of suns = 15s
-    double spawnRateSun = 15.0;   
+    double spawnRateSun = 5.0;   
     //initializing the size of all suns
     for (int i=0;i<MAX_SUN_IN_SCREEN;i++){
         sunArray[i].height = 20;
@@ -292,7 +315,9 @@ char playerName[MAX_SIZE_OF_NAME];
                     indexOfNextSun++;
                     startTime=GetTime();
                  }
-                 collectSun(sunArray,&indexOfNextSun,mousePoint,groundOfTheSuns);
+                 if(collectSun(sunArray,&indexOfNextSun,mousePoint,groundOfTheSuns)){
+                    addSunToStorage(&sunGamingStorage);
+                 }
 
                 if(IsKeyPressed(KEY_ESCAPE)){
                     currentScreen = MENU;
@@ -444,7 +469,7 @@ char playerName[MAX_SIZE_OF_NAME];
                         }
                     }
                     DrawSuns(sunArray,indexOfNextSun);
-
+                    DrawGamingDeck(sunGamingStorage);
                 }break;
                 case MENU:{
                     for(int i=0;i<GAMING_MENU_OPTIONS_QUANTITY;i++){
