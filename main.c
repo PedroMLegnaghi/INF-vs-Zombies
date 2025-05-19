@@ -58,30 +58,35 @@ const int heightOfEachElementOfDeck = 60;
 //PLANTS FUNCTIONS-----
     //DrawPlants:Plant[numberLawnColumns*numberLawnRows]->void
     //draw all plants until indexOfNextPlant within the array of Plant passed
-    void DrawPlants(Plant plantArr[numberLawnColumns*numberLawnRows], int indexOfNextPlant){
-        for(int i=0;i<indexOfNextPlant;i++){
-            DrawRectangleRec(plantArr[i].format,plantArr[i].color );
+    void DrawPlants(Plant plantArr[numberLawnRows][numberLawnColumns]){
+        for(int i=0;i<numberLawnRows;i++){
+            for(int j=0;j<numberLawnColumns;j++){
+                //if the plant [i][j] isn't empty (empty = coordinate x==0)
+                if(plantArr[i][j].format.x!=0){
+                    DrawRectangleRec(plantArr[i][j].format,plantArr[i][j].color );
+                }
+            }
         }
     }
 
     //I have to create a function for each
     //plant I have on my game, like a constructor
 
-    //CreateSunflower:Plant[SIZE_OF_DECK], int->Void
-    //given an array of Plant, it's x wanted value, it's y wanted value and the index of the next plant, 
-    //add a sunflower to it's end
-    void CreateSunflower(Plant plantArr[numberLawnColumns*numberLawnRows], int *indexOfNextPlant, int xValue, int yValue) {
-    if (*indexOfNextPlant >= numberLawnColumns*numberLawnRows) return; 
-    plantArr[*indexOfNextPlant].format.height= initialLawnHeightValue-20;
-    plantArr[*indexOfNextPlant].format.width= initialLawnWidthValue-20;
-    plantArr[*indexOfNextPlant].format.x= xValue;
-    plantArr[*indexOfNextPlant].format.y= yValue;
-    plantArr[*indexOfNextPlant].type = TYPE_SUNFLOWER;
-    plantArr[*indexOfNextPlant].cost = COST_SUNFLOWER;
-    plantArr[*indexOfNextPlant].color = BROWN; 
+//     //CreateSunflower:Plant[SIZE_OF_DECK], int->Void
+//     //given an array of Plant, it's x wanted value, it's y wanted value and the index of the next plant, 
+//     //add a sunflower to it's end
+//     void CreateSunflower(Plant plantArr[numberLawnRows][numberLawnColumns], int *indexOfNextPlant, int xValue, int yValue) {
+//     if (*indexOfNextPlant >= numberLawnColumns*numberLawnRows) return; 
+//     plantArr[*indexOfNextPlant].format.height= initialLawnHeightValue-20;
+//     plantArr[*indexOfNextPlant].format.width= initialLawnWidthValue-20;
+//     plantArr[*indexOfNextPlant].format.x= xValue;
+//     plantArr[*indexOfNextPlant].format.y= yValue;
+//     plantArr[*indexOfNextPlant].type = TYPE_SUNFLOWER;
+//     plantArr[*indexOfNextPlant].cost = COST_SUNFLOWER;
+//     plantArr[*indexOfNextPlant].color = BROWN; 
 
-    (*indexOfNextPlant)++; 
-}
+//     (*indexOfNextPlant)++; 
+// }
 
 //--------------------------------------------
 //SUN FUNCTIONS---
@@ -97,7 +102,7 @@ const int heightOfEachElementOfDeck = 60;
         groundOfTheSuns[indexOfNextSun] =  lawn_array[row][colum].y;
         array_of_suns[indexOfNextSun].x = lawn_array[row][colum].x;
         //starts at "y"=0 and goes until it hits its ground (groundArray)
-        array_of_suns[indexOfNextSun].y =  0;
+        array_of_suns[indexOfNextSun].y =  -20;
         array_of_suns[indexOfNextSun].width = 20;
         array_of_suns[indexOfNextSun].height = 20;
         
@@ -195,7 +200,7 @@ const int heightOfEachElementOfDeck = 60;
             if (CheckCollisionPointRec(mousePoint, plantBoxOfCard.format)) {
                 //highlight it
                 DrawRectangleRec(plantBoxOfCard.format,GRAY);
-                if(IsGestureDetected(GESTURE_TAP)||IsGestureDetected(KEY_ENTER)){
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)||IsGestureDetected(KEY_ENTER)){
                     *cardSelected=plantBoxOfCard;
                 }
             }else{
@@ -231,7 +236,7 @@ void RemoveSelectedCard(Plant *cardSelected) {
 //checks if plant can be put and properly put it
 void PutPlantToField
 (Plant plantArr [numberLawnRows][numberLawnColumns], 
-    Plant cardSelected, int *sunStorage,bool occupationOfLawn[numberLawnRows][numberLawnColumns],
+    Plant *cardSelected, unsigned int *sunStorage,bool occupationOfLawn[numberLawnRows][numberLawnColumns],
     Vector2 mousePoint,Rectangle lawnRectangles[numberLawnRows][numberLawnColumns])
     {
         //checks if there's a lawn being hovered
@@ -250,20 +255,26 @@ void PutPlantToField
         }
         //  a plant is selected && check-colision with a block of lawn(for loop,checks if an element has lawnRecHover [i][j]=1,save that i and j) 
         //&& eventClick tapping
-        if(isHovered&&cardSelected.format.x!=0&&IsGestureDetected(GESTURE_TAP)){
+        if(isHovered&&cardSelected->format.x!=0&&IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
             //          if the amount of suns is sufficient to put a plant in the field  &&
             //          the position chosen is free to be used (checks if occupationLawn[i][j]!=1)
-            if(*sunStorage>=cardSelected.cost&&occupationOfLawn[r][c]!=1){
+            if(*sunStorage>=cardSelected->cost&&occupationOfLawn[r][c]!=1){
             //my selected card, by default, has, already, color, type, cost,height and width. But i doesn't have a proper x and y to be displayed on the lawn
             //              *add that plant to the array of plants
-            Plant plant = cardSelected;
+            Plant plant = *cardSelected;
             plant.format.x=lawnRectangles[r][c].x;
-            plant.format.x=lawnRectangles[r][c].y;
+            plant.format.y=lawnRectangles[r][c].y;
             plantArr[r][c]=plant;
             //              *discount that amount of the sunStorage
-            *sunStorage-=cardSelected.cost;
+            *sunStorage-=cardSelected->cost;
             //              *update the occupationLawn
             occupationOfLawn[r][c]=1;
+            //              *reset the selectedCard
+            cardSelected->format.x = 0;
+            cardSelected->format.y = 0;
+            cardSelected->format.width = 0;
+            cardSelected->format.height = 0;
+
         }
     }
 
@@ -335,6 +346,7 @@ char playerName[MAX_SIZE_OF_NAME];
     unsigned int sizeOfName = 0;//variable used to track the size of the name of the user
 //DECK-----
 Plant DeckOfPlants [SIZE_OF_DECK]={0};
+//DO A FUNCTION INITDECK!
    DeckOfPlants[0].format.height= initialLawnHeightValue-20;
     DeckOfPlants[0].format.width= initialLawnWidthValue-20;
     DeckOfPlants[0].format.x= 0;
@@ -345,7 +357,7 @@ Plant DeckOfPlants [SIZE_OF_DECK]={0};
 //used to track which card is selected. If card is all nulled, then there's no card selected
 Plant cardSelected = {0};
 //used to track which plants are deployed in the field(lawn)
-Plant plantArr[numberLawnColumns*numberLawnRows]={0};
+Plant plantArr[numberLawnRows][numberLawnColumns]={0};
 
     //LAWN--------------
     //lawns of the game
@@ -483,7 +495,7 @@ Plant plantArr[numberLawnColumns*numberLawnRows]={0};
                 }
                 double timeSpawnSunTracking =GetTime();
                 //spawn of the suns
-                if((timeSpawnSunTracking-startTime>spawnRateSun)&&indexOfNextSun<=MAX_SUN_IN_SCREEN){
+                if((timeSpawnSunTracking-startTime>spawnRateSun)&&indexOfNextSun<MAX_SUN_IN_SCREEN){
                     AddSunToArray(sunArray, indexOfNextSun,lawnRectangles,groundOfTheSuns);
                     indexOfNextSun++;
                     startTime=GetTime();
@@ -491,6 +503,7 @@ Plant plantArr[numberLawnColumns*numberLawnRows]={0};
                 if(collectSun(sunArray,&indexOfNextSun,mousePoint,groundOfTheSuns)){
                     addSunToStorage(&sunGamingStorage);
                 }
+                PutPlantToField(plantArr,&cardSelected,&sunGamingStorage,occupationOfLawn,mousePoint,lawnRectangles);
                 
                 if(IsKeyPressed(KEY_ESCAPE)){
                     currentScreen = MENU;
@@ -513,7 +526,7 @@ Plant plantArr[numberLawnColumns*numberLawnRows]={0};
             }break;
             case RESUME:{
                 currentScreen = GAMEPLAY;
-            }
+            }break;
             case ABOUT:
             {
                 // TODO: Update ENDING screen variables here!
@@ -628,9 +641,9 @@ Plant plantArr[numberLawnColumns*numberLawnRows]={0};
                                     DrawRectangleRec( lawnRectangles[i][j], GREEN);
                                 }
                             }else{
-                                 if(j&1){
-                                     DrawRectangleRec( lawnRectangles[i][j], GREEN);
-                                    }else{
+                                if(j&1){
+                                    DrawRectangleRec( lawnRectangles[i][j], GREEN);
+                                }else{
                                     DrawRectangleRec( lawnRectangles[i][j], DARKGREEN);
                                 }
                             }
@@ -643,6 +656,7 @@ Plant plantArr[numberLawnColumns*numberLawnRows]={0};
                     DrawSuns(sunArray,indexOfNextSun);
                     DrawGamingDeck(DeckOfPlants,sunGamingStorage,mousePoint, &cardSelected);
                     DrawMoldureOfSelectedCard(cardSelected);
+                    DrawPlants(plantArr);
                     RemoveSelectedCard(&cardSelected);
                 }break;
                 case MENU:{
