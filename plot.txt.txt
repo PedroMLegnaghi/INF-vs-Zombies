@@ -109,5 +109,69 @@ ai eu vou ter as structs das plantas especificas
 			custo
 		}
 	}
-	
-	Funcao (sol)gerarSolSunflower(int tempoGeracaoSol, sunflower girassol)
+
+
+
+=================TO BE DONE
+*1
+	ADICIONAR PROPRIEDADE DE TEMPO EM CADA PLANTA (para usar em seus tiros,habilidades etc)
+		FAZER ENUM DE TEMPO DE CADA PLANTA
+*2
+	Funcao (void)gerarSolSunflower(int tempoGeracaoSol, Plant plantArr[], Rectangle arr_of_suns)
+	//for int i ate o lenght da plantArr
+	//se a planta for um sunflower, 
+		//se seu tempo >= geração de sol para sunflower(*2.1->Define tempoGeracaoSolSunflower
+								*2.2->Define tempoGeracaoSolNatural)
+			//adicionar um sun ao redor da sunflower no arr_of_suns
+			//zerar o tempo da planta
+	//o mecanismo de coleta ja tem no (collecSun, pois eu estou adicionando o sol no array)
+
+*3	
+Fazer a planta "peashooter"
+	Nao precisa alterar nada, pois o que se refere ao tiro, 
+	*3.1sera feito um array para armazenar os tiros dados(PeaShot)->Definir que, quando elemento for nulo, significa vazio
+	*3.2 Fazer o struct peaShot ->int damage, Rectangle format, int img?, int sound?, int color, int velocity, int timeOfCreation,
+								 int rowOfShot(used to optimize the verification of colision with zombies)
+	*3.2.1 Fazer um define para cada tipo de peaShot, nesse caso, PeaShot NormalGreenPea
+	*3.3 Fazer funcoes acerca da peashooter	
+		*3.3.1->shootPea(Plant plantAryy[], peaShotsArr[])
+			Dado um array de plantas e as peas shot
+			-Se a planta for uma peashooter
+				-Se seu tempo >= timeOfCreation de peaShot
+					->peaShotArr+=NormalGreenPea(=um define, como feito em *3.2.1) 
+
+		*3.3.2->DrawPeaShots(peaShotsArr[],int peaShotsArrTotalSize(o que foi atribuido em peaShotsArr[aqui]))
+			-Desenhar todas as Peas até o tamanho do array
+		*3.3.3->UpdatePeaShotsPosition(peaShotsArr[], int peaShotsArrTotalSize(o que foi atribuido em peaShotsArr[aqui]) )
+			-Update todas as peas até o tamanho do array
+		*3.3.4->Int verifyIfZombieSameRowPeashot(zombie, peaShot)
+			-se (a coordenada) nao for maior que (o numero de linhas de grama -1) (mas pode ser igual)
+			-se a coordenada y do zombie estiver entre (a coordenada y da grama no index [peaShot.rowOfShot]) e (a coordenada y da grama no index[peaShot.rowOfShot+1])
+			-return 1(true)
+			-else return 0(false)
+			-OBS:eu posso fazer isso pois meu plantsArr coincide com o LawnArray no quesito de locais, entao quando inicializo o peaShot, consigo
+				 track from which row it was shot
+		*3.3.5->Int verifyPeaColision(peaShotsArr[],int peaShotsArrTotalSize(o que foi atribuido em peaShotsArr[aqui]), Rectangle zombies[zombie])
+ 			-Verifica se houve colisao, retorna 1(true) ou 0(false)
+			-Em um for de 0 ate o totalSize do arrPeaShots, 
+				em um for de 0 ate totalSize do arrZombies
+				-Se estiverem peaShot e zombie na mesma row de lawn (verifyIfZombieSameRowPeashot(zombies[j],peaShotsArr[i]))
+					->return(checkColision com o PeaShotsArr[i].format e o zombie.fomart)
+		*3.3.6->RemovePeaFromArr(peaShotArr[], int indexDaPeaQueBateu)
+			-Remove a pea do array(Utilizar em conjunto com "verifyPeaColision" para ver se ela bateu em algo(zombie))
+		*3.3.7->UptadePeashotsGameplay(void)
+			UpdatePeaShotsPosition()
+			shootPea()
+			DrawPeaShots()
+			if(verifyPeaColision){
+				RemovePeaFromArr
+			}
+
+
+4*
+Ver de fazer o meu Vector2 mousePoint uma variavel global que vai atualizando 
+
+
+
+
+

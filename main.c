@@ -53,6 +53,7 @@ const int xOfDeckRectangle = 10;
 const int yOfDeckRectangle = 10;
 const int widthOfEachElementOfDeck =initialLawnWidthValue/(SIZE_OF_DECK+1);
 const int heightOfEachElementOfDeck = 60;
+Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
 
 //Functions-------------------------------------
 //PLANTS FUNCTIONS-----
@@ -123,7 +124,7 @@ const int heightOfEachElementOfDeck = 60;
 
     //collectSun:Rectangle [], Vector2, int, float []->int
     //Given an array of suns, the mousePointer,the quantityofSun of the player, the index of the next sun and the array of the grounds of the suns, returns wheter one sun was collected(1) or not(0) and collects it
-    int collectSun(Rectangle array_of_suns[MAX_SUN_IN_SCREEN],int *indexOfNextSun, Vector2 mousePoint, float groundOfTheSuns[MAX_SUN_IN_SCREEN])
+    int collectSun(Rectangle array_of_suns[MAX_SUN_IN_SCREEN],int *indexOfNextSun, float groundOfTheSuns[MAX_SUN_IN_SCREEN])
     {
         for (int i = 0; i < *indexOfNextSun; i++) {
             if (CheckCollisionPointRec(mousePoint, array_of_suns[i])) {
@@ -156,7 +157,7 @@ const int heightOfEachElementOfDeck = 60;
 //GAMING DECK----------------
     //DrawGamingDeck:Plant [], int, Vector2, Rectangle ->void
     //given the deck of plants, the quantity of suns adn the card selected, draw the interface, checking if one card is being hovered and highlightening it, and updating the card selected(if needed)
-    void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSun, Vector2 mousePoint, Plant *cardSelected){
+    void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSun, Plant *cardSelected){
         //Drawing the sun counter
         int xOfDeckRectangleCpy = xOfDeckRectangle;
         DrawRectangle(xOfDeckRectangle,yOfDeckRectangle,widthOfEachElementOfDeck,heightOfEachElementOfDeck,MAROON);
@@ -218,8 +219,7 @@ void RemoveSelectedCard(Plant *cardSelected) {
 //checks if plant can be put and properly put it
 void PutPlantToField
 (Plant plantArr [numberLawnRows][numberLawnColumns], 
-    Plant *cardSelected, unsigned int *sunStorage,bool occupationOfLawn[numberLawnRows][numberLawnColumns],
-    Vector2 mousePoint,Rectangle lawnRectangles[numberLawnRows][numberLawnColumns])
+    Plant *cardSelected, unsigned int *sunStorage,bool occupationOfLawn[numberLawnRows][numberLawnColumns],Rectangle lawnRectangles[numberLawnRows][numberLawnColumns])
     {
         //checks if there's a lawn being hovered
         bool isHovered =0;
@@ -317,7 +317,6 @@ GameScreen gamingMenuOptions[GAMING_MENU_OPTIONS_QUANTITY] ={0};//array to navig
     //---------
     double startTime = GetTime();  //saves the actualTime
     int framesCounter = 0;          // Useful to count frames
-    Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
     SetTargetFPS(targetFPS);               // Set desired framerate (frames-per-second)
 
 //--PLAY variables
@@ -482,10 +481,10 @@ Plant plantArr[numberLawnRows][numberLawnColumns]={0};
                     indexOfNextSun++;
                     startTime=GetTime();
                 }
-                if(collectSun(sunArray,&indexOfNextSun,mousePoint,groundOfTheSuns)){
+                if(collectSun(sunArray,&indexOfNextSun,groundOfTheSuns)){
                     addSunToStorage(&sunGamingStorage);
                 }
-                PutPlantToField(plantArr,&cardSelected,&sunGamingStorage,occupationOfLawn,mousePoint,lawnRectangles);
+                PutPlantToField(plantArr,&cardSelected,&sunGamingStorage,occupationOfLawn,lawnRectangles);
                 
                 if(IsKeyPressed(KEY_ESCAPE)){
                     currentScreen = MENU;
@@ -636,7 +635,7 @@ Plant plantArr[numberLawnRows][numberLawnColumns]={0};
                         }
                     }
                     DrawSuns(sunArray,indexOfNextSun);
-                    DrawGamingDeck(DeckOfPlants,sunGamingStorage,mousePoint, &cardSelected);
+                    DrawGamingDeck(DeckOfPlants,sunGamingStorage, &cardSelected);
                     DrawMoldureOfSelectedCard(cardSelected);
                     DrawPlants(plantArr);
                     RemoveSelectedCard(&cardSelected);
