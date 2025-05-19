@@ -69,24 +69,6 @@ const int heightOfEachElementOfDeck = 60;
         }
     }
 
-    //I have to create a function for each
-    //plant I have on my game, like a constructor
-
-//     //CreateSunflower:Plant[SIZE_OF_DECK], int->Void
-//     //given an array of Plant, it's x wanted value, it's y wanted value and the index of the next plant, 
-//     //add a sunflower to it's end
-//     void CreateSunflower(Plant plantArr[numberLawnRows][numberLawnColumns], int *indexOfNextPlant, int xValue, int yValue) {
-//     if (*indexOfNextPlant >= numberLawnColumns*numberLawnRows) return; 
-//     plantArr[*indexOfNextPlant].format.height= initialLawnHeightValue-20;
-//     plantArr[*indexOfNextPlant].format.width= initialLawnWidthValue-20;
-//     plantArr[*indexOfNextPlant].format.x= xValue;
-//     plantArr[*indexOfNextPlant].format.y= yValue;
-//     plantArr[*indexOfNextPlant].type = TYPE_SUNFLOWER;
-//     plantArr[*indexOfNextPlant].cost = COST_SUNFLOWER;
-//     plantArr[*indexOfNextPlant].color = BROWN; 
-
-//     (*indexOfNextPlant)++; 
-// }
 
 //--------------------------------------------
 //SUN FUNCTIONS---
