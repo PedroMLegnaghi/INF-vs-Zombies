@@ -113,9 +113,7 @@ ai eu vou ter as structs das plantas especificas
 
 
 =================TO BE DONE
-*1
-	ADICIONAR PROPRIEDADE DE TEMPO EM CADA PLANTA (para usar em seus tiros,habilidades etc)
-		FAZER ENUM DE TEMPO DE CADA PLANTA
+
 *2
 	Funcao (void)gerarSolSunflower(int tempoGeracaoSol, Plant plantArr[], Rectangle arr_of_suns)
 	//for int i ate o lenght da plantArr
@@ -167,9 +165,6 @@ Fazer a planta "peashooter"
 				RemovePeaFromArr
 			}
 
-
-4*
-Ver de fazer o meu Vector2 mousePoint uma variavel global que vai atualizando 
 
 
 

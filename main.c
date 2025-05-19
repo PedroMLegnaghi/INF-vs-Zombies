@@ -3,29 +3,36 @@
 #include <stdlib.h>
 #include <time.h>
 
-typedef enum GameScreen {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURATIONS, EXIT //HOMEPAGE OPTIONS
-                         ,USER_DATA, DECK_SELECTION, GAMEPLAY,MENU, RESUME} GameScreen;//GAMEPLAY OPTIONS
+typedef enum GAME_SCREEN {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURATIONS, EXIT //HOMEPAGE OPTIONS
+                         ,USER_DATA, DECK_SELECTION, GAMEPLAY,MENU, RESUME} GAME_SCREEN;//GAMEPLAY OPTIONS
 
 //enumeration to reference the cost of each plant.
-//model: COST_(costOfPlant)
-typedef enum CostOfPlant{
+//model: COST_(plant)
+typedef enum COST_OF_PLANT{
     COST_SUNFLOWER = 50,
     
-}CostOfPlant;
-CostOfPlant costOfPlant;
-//enumeration to reference the typeOfPlants available
-//model: TYPE_(typeOfPlant)
-typedef enum TypeOfPlant{
+}COST_OF_PLANT;
+
+//enumeration to reference the time(in seconds) of the action of each plant.
+//model: ACTION_TIME_(plant)
+typedef enum action_time{
+    ACTION_TIME_SUNFLOWER = 5,
+    
+}ACTION_TIME_PLANT;
+
+//enumeration to reference the TYPE_OF_PLANTs available
+//model: TYPE_(Plant)
+typedef enum TYPE_OF_PLANT{
     TYPE_SUNFLOWER =0,
-}TypeOfPlant;
-TypeOfPlant typeOfPlant;
+}TYPE_OF_PLANT;
 
 //struct of plants, used majorly to load the image of each plant and track it in the game (each functionality will be added separately)
 typedef struct Plant
 {
     Rectangle format;
-    TypeOfPlant type;
-    CostOfPlant cost;
+    TYPE_OF_PLANT type;
+    COST_OF_PLANT cost;
+    ACTION_TIME_PLANT time;
     Color color;
     //sound?
     //png?
@@ -272,14 +279,14 @@ int main (void){
 //--screen
    srand(time(NULL));
     InitWindow(screenWidth, screenHeight,"raylib [core] example - basic screen manager");
-    GameScreen currentScreen = LOGO;
-    GameScreen previousScreen = HOMEPAGE;
+    GAME_SCREEN currentScreen = LOGO;
+    GAME_SCREEN previousScreen = HOMEPAGE;
 //--------
 
 //--HomePage
 Rectangle homePageOptionsRec[HOME_PAGE_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refer to the options of the game in the landpage(PLAY, leaderboard, about, configurations and exit)
 bool homePageOptionsRecHover[HOME_PAGE_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered 
-GameScreen homePageOptions[HOME_PAGE_OPTIONS_QUANTITY] ={0};//array to navigate over the options of the game
+GAME_SCREEN homePageOptions[HOME_PAGE_OPTIONS_QUANTITY] ={0};//array to navigate over the options of the game
     //Filling the homePageOptions
     homePageOptions[0]= PLAY;
     homePageOptions[1]= LEADERBOARD;
@@ -298,7 +305,7 @@ GameScreen homePageOptions[HOME_PAGE_OPTIONS_QUANTITY] ={0};//array to navigate 
 //--Gaming Menu
 Rectangle gamingMenuOptionsRec[GAMING_MENU_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refer to the options of the game in the landpage(PLAY, leaderboard, about, configurations and exit)
 bool gamingMenuOptionsRecHover[GAMING_MENU_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered 
-GameScreen gamingMenuOptions[GAMING_MENU_OPTIONS_QUANTITY] ={0};//array to navigate over the options of the game
+GAME_SCREEN gamingMenuOptions[GAMING_MENU_OPTIONS_QUANTITY] ={0};//array to navigate over the options of the game
     //Filling the homePageOptions
     gamingMenuOptions[0]= RESUME;
     gamingMenuOptions[1]= CONFIGURATIONS;
@@ -335,6 +342,7 @@ Plant DeckOfPlants [SIZE_OF_DECK]={0};
     DeckOfPlants[0].type = TYPE_SUNFLOWER;
     DeckOfPlants[0].cost = COST_SUNFLOWER;
     DeckOfPlants[0].color = BROWN; 
+    DeckOfPlants[0].time=ACTION_TIME_SUNFLOWER;
 //used to track which card is selected. If card is all nulled, then there's no card selected
 Plant cardSelected = {0};
 //used to track which plants are deployed in the field(lawn)
