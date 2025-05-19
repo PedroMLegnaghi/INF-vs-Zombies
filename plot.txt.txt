@@ -114,15 +114,7 @@ ai eu vou ter as structs das plantas especificas
 
 =================TO BE DONE
 
-*2
-	Funcao (void)gerarSolSunflower(int tempoGeracaoSol, Plant plantArr[], Rectangle arr_of_suns)
-	//for int i ate o lenght da plantArr
-	//se a planta for um sunflower, 
-		//se seu tempo >= geração de sol para sunflower(*2.1->Define tempoGeracaoSolSunflower
-								*2.2->Define tempoGeracaoSolNatural)
-			//adicionar um sun ao redor da sunflower no arr_of_suns
-			//zerar o tempo da planta
-	//o mecanismo de coleta ja tem no (collecSun, pois eu estou adicionando o sol no array)
+
 
 *3	
 Fazer a planta "peashooter"
@@ -165,7 +157,8 @@ Fazer a planta "peashooter"
 				RemovePeaFromArr
 			}
 
-
+4*Padronizar o tamanho das plantas e mudar tudo nas funcoes, para que todas fiquem genericas.
+(possivelmente tenho que esperar até eu aprender as coisas de texturas)
 
 
 

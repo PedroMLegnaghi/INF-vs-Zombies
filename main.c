@@ -34,9 +34,10 @@ typedef struct Plant
     TYPE_OF_PLANT type;
     COST_OF_PLANT cost;
     ACTION_TIME_PLANT actionTime;
+    double creationTime;
     double existanceTime;
-    //referenceTime:Auxilar variable to enable time tracking and habilities targeting of each plant
-    //      :-> referenceTime goes from 0 to actionTime. When referenceTime == actionTime, Hability is target and referenceTime =0;
+    //referenceTime:Auxilar variable to enable time tracking and habilities triggered of each plant
+    //      :-> referenceTime goes from 0 to actionTime. When referenceTime == actionTime, Hability is triggered and referenceTime =0;
     double referenceTime;
     Color color;
     //sound?
@@ -68,46 +69,16 @@ const int heightOfEachElementOfDeck = 60;
 Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
 
 //Functions-------------------------------------
-//PLANTS FUNCTIONS-----
-    //DrawPlants:Plant[numberLawnColumns*numberLawnRows]->void
-    //draw all plants until indexOfNextPlant within the array of Plant passed
-    void DrawPlants(Plant plantArr[numberLawnRows][numberLawnColumns]){
-        for(int i=0;i<numberLawnRows;i++){
-            for(int j=0;j<numberLawnColumns;j++){
-                //if the plant [i][j] isn't empty (empty = coordinate x==0)
-                if(plantArr[i][j].format.x!=0){
-                    DrawRectangleRec(plantArr[i][j].format,plantArr[i][j].color );
-                }
-            }
-        }
-    }
-    //GenerateSunSunflower: Plant Rectangle->void
-    //given the array of plants and the array of suns, add to the array of suns a sun near 
-    //the sunflower that generated it
-    // GenerateSunSunflower(Plant plantArr[numberLawnRows][numberLawnColumns], Rectangle arr_of_suns){
-    //     for(int i=0;i<numberLawnRows;i++){
-    //         for(int j=0;j<numberLawnColumns;j++){
-    //             //if the plant is a sunflower, 
-    //             if (plantArr[i][j].type==TYPE_SUNFLOWER){
-    //                 //if it has already hit it's time to generate a sun
-    //                 if(plantArr[i][j].actionTime<=plantArr[i][j].referenceTime){
 
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
-
-//--------------------------------------------
 //SUN FUNCTIONS---
-    //AddSunToArray:Rectangle[], int, Rectangle->void
-    //Given an array of suns, the index of the next sun and a Rectangle, add that sun to the array of suns 
-    void AddSunToArray(Rectangle array_of_suns[MAX_SUN_IN_SCREEN],  int *indexOfNextSun, int x, int y, int width, int height) {
+    //AddSunToArray:Rectangle[], int,Rectangle [], Rectangle->void
+    //Given an array of suns, the index of the next sun, the array of lawns, the array of grounds of suns and the proprieties of Rectangle, add that sun to the array of suns 
+    void AddSunToArray(Rectangle array_of_suns[MAX_SUN_IN_SCREEN],  int *indexOfNextSun,Rectangle lawn_array[numberLawnRows][numberLawnColumns],int rowOfGround,int columnOfGround,float groundOfTheSuns[MAX_SUN_IN_SCREEN], int x, int y, int width, int height) {
         array_of_suns[*indexOfNextSun].x = x;
         array_of_suns[*indexOfNextSun].y =  y;
         array_of_suns[*indexOfNextSun].width = width;
         array_of_suns[*indexOfNextSun].height = height;
+        groundOfTheSuns[*indexOfNextSun] =  lawn_array[rowOfGround][columnOfGround].y;
         *indexOfNextSun+=1;
         
     }
@@ -118,12 +89,12 @@ Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
         //chooses a number beetwen 0 and numberLawnRows
         int row = rand() % (numberLawnRows);
         //chooses a number beetwen 0 and numberLawnColumns
-        int colum = rand() % (numberLawnColumns);
+        int column = rand() % (numberLawnColumns);
         //we set this "y" position as the final "y" position of the sun, so it starts at 0 and goes until it hit it's "y" position (it's ground)
-        groundOfTheSuns[*indexOfNextSun] =  lawn_array[row][colum].y;
+        // groundOfTheSuns[*indexOfNextSun] =  lawn_array[row][column].y;
 
         //starts at "y"=-20 and goes until it hits its ground (groundArray)
-        AddSunToArray(array_of_suns,indexOfNextSun,lawn_array[row][colum].x,-20,20,20);
+        AddSunToArray(array_of_suns,indexOfNextSun,lawn_array,row,column,groundOfTheSuns,lawn_array[row][column].x,-20,20,20);
         
         
     }
@@ -190,6 +161,63 @@ Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
             }
         }
     }
+
+//--------------------------------------------
+//PLANTS FUNCTIONS-----
+    //UpdateExistanceTime:Plant *->void
+    //given a Plant array, update the existance time of each plant
+   void UpdateExistanceTime(Plant plantArr[numberLawnRows][numberLawnColumns]){
+        for(int i=0;i<numberLawnRows;i++){
+            for(int j=0;j<numberLawnColumns;j++){
+               plantArr[i][j].existanceTime=GetTime()-plantArr[i][j].creationTime;
+            }
+        }
+    }
+    //UpdateReferenceTime: Plant ->void
+    //given a Plant, reference time for that especific plant is set as existanceTime
+    void UpdateReferenceTime(Plant *plant){
+        plant->referenceTime=plant->existanceTime;
+            
+    }
+    //DrawPlants:Plant[numberLawnColumns*numberLawnRows]->void
+    //draw all plants until indexOfNextPlant within the array of Plant passed
+    void DrawPlants(Plant plantArr[numberLawnRows][numberLawnColumns]){
+        for(int i=0;i<numberLawnRows;i++){
+            for(int j=0;j<numberLawnColumns;j++){
+                //if the plant [i][j] isn't empty (empty = coordinate x==0)
+                if(plantArr[i][j].format.x!=0){
+                    DrawRectangleRec(plantArr[i][j].format,plantArr[i][j].color );
+                }
+            }
+        }
+    }
+    // GenerateSunSunflower: Plant* Rectangle int->void
+    // given the array of plants and the array of suns, add to the array of suns a sun near 
+    // the sunflower that generated it
+   void GenerateSunSunflower(Plant plantArr[numberLawnRows][numberLawnColumns],Rectangle lawn_array[numberLawnRows][numberLawnColumns],float groundOfTheSuns[MAX_SUN_IN_SCREEN], Rectangle arr_of_suns[MAX_SUN_IN_SCREEN], int *indexOfNextSun){
+    for(int i=0; i<numberLawnRows; i++){
+        for(int j=0; j<numberLawnColumns; j++){
+            // if the plant exists and is a sunflower
+            if (plantArr[i][j].format.x != 0 && plantArr[i][j].type == TYPE_SUNFLOWER){
+                // if it's time to generate a sun
+                if (plantArr[i][j].actionTime <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime)){
+                    // update reference time properly
+                    UpdateReferenceTime(&plantArr[i][j]);
+
+                    // check sun limit
+                    if (*indexOfNextSun >= MAX_SUN_IN_SCREEN) return;
+
+                    // position sun near the sunflower
+                    float x = plantArr[i][j].format.x + 22;
+                    float y = plantArr[i][j].format.y - 5;
+                    AddSunToArray(arr_of_suns, indexOfNextSun,lawn_array,i,j,groundOfTheSuns, (int)x, (int)y, 20, 20);
+
+                }
+            }
+        }
+    }
+}
+
 //----------------------------------
 //GAMING DECK----------------
     //DrawGamingDeck:Plant [], int, Vector2, Rectangle ->void
@@ -215,7 +243,8 @@ Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
                 .type=DeckOfPlants[i].type,
                 .existanceTime=0,
                 .referenceTime=0,
-                .actionTime = DeckOfPlants[i].actionTime
+                .actionTime = DeckOfPlants[i].actionTime,
+                .creationTime = 0
 
             };
             DrawRectangleLines(xOfDeckRectangleCpy,yOfDeckRectangle,widthOfEachElementOfDeck,heightOfEachElementOfDeck,BLACK);
@@ -286,6 +315,7 @@ void PutPlantToField
             Plant plant = *cardSelected;
             plant.format.x=lawnRectangles[r][c].x;
             plant.format.y=lawnRectangles[r][c].y;
+            plant.creationTime=GetTime();
             plantArr[r][c]=plant;
             //              *discount that amount of the sunStorage
             *sunStorage-=cardSelected->cost;
@@ -378,6 +408,7 @@ Plant DeckOfPlants [SIZE_OF_DECK]={0};
     DeckOfPlants[0].actionTime=ACTION_TIME_SUNFLOWER;
     DeckOfPlants[0].existanceTime=0;
     DeckOfPlants[0].referenceTime=0;
+    DeckOfPlants[0].existanceTime=0;
 //used to track which card is selected. If card is all nulled, then there's no card selected
 Plant cardSelected = {0};
 //used to track which plants are deployed in the field(lawn)
@@ -508,6 +539,7 @@ Plant plantArr[numberLawnRows][numberLawnColumns]={0};
             {
                 // TODO: Update GAMEPLAY screen variables here!
                 previousScreen=currentScreen;
+                UpdateExistanceTime(plantArr);
                 updateSunsPosition(sunArray,indexOfNextSun,groundOfTheSuns);
                 for(int i=0;i<numberLawnRows;i++){
                     for(int j=0;j<numberLawnColumns;j++){
@@ -527,7 +559,7 @@ Plant plantArr[numberLawnRows][numberLawnColumns]={0};
                     addSunToStorage(&sunGamingStorage);
                 }
                 PutPlantToField(plantArr,&cardSelected,&sunGamingStorage,occupationOfLawn,lawnRectangles);
-                
+                GenerateSunSunflower(plantArr,lawnRectangles,groundOfTheSuns,sunArray,&indexOfNextSun);
                 if(IsKeyPressed(KEY_ESCAPE)){
                     currentScreen = MENU;
                 }
@@ -676,10 +708,10 @@ Plant plantArr[numberLawnRows][numberLawnColumns]={0};
                             }
                         }
                     }
-                    DrawSuns(sunArray,indexOfNextSun);
                     DrawGamingDeck(DeckOfPlants,sunGamingStorage, &cardSelected);
                     DrawMoldureOfSelectedCard(cardSelected);
                     DrawPlants(plantArr);
+                    DrawSuns(sunArray,indexOfNextSun);
                     RemoveSelectedCard(&cardSelected);
                 }break;
                 case MENU:{
