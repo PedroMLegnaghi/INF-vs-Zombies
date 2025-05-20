@@ -2,14 +2,42 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
-
+#include <string.h> // necessary for mmemov
 typedef enum GAME_SCREEN {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURATIONS, EXIT //HOMEPAGE OPTIONS
                          ,USER_DATA, DECK_SELECTION, GAMEPLAY,MENU, RESUME} GAME_SCREEN;//GAMEPLAY OPTIONS
+
+typedef struct{
+    //png/sprite?
+    //sound?
+    Color color;
+    //given in pixels/frame
+    int velocity;
+    Rectangle format;
+    int health;
+    //row where zombie was placed
+    int rowOfZombie;
+    //used to track wheter the zombie is attacking
+    bool isAttacking;
+}Zombie;
+typedef struct peaShot
+{
+    unsigned int damage;
+    Rectangle format;
+    // img?
+    // sound?
+    Color color;
+    //velocity:in pixels/frame
+    float velocity;
+    //usedto optimize the verification of colision with zombies
+    int rowOfShot;
+
+}PeaShot;
 
 //enumeration to reference the cost of each plant.
 //model: COST_(plant)
 typedef enum COST_OF_PLANT{
     COST_SUNFLOWER = 50,
+    COST_PEASHOOTER = 100,
     
 }COST_OF_PLANT;
 
@@ -18,6 +46,7 @@ typedef enum COST_OF_PLANT{
 typedef enum action_time{
     //time to generate sun = 5seg
     ACTION_TIME_SUNFLOWER = 5,
+    ACTION_TIME_PEASHOOTER =3,
     
 }ACTION_TIME_PLANT;
 
@@ -25,6 +54,7 @@ typedef enum action_time{
 //model: TYPE_(Plant)
 typedef enum TYPE_OF_PLANT{
     TYPE_SUNFLOWER =0,
+    TYPE_GREEN_PEASHOOTER,
 }TYPE_OF_PLANT;
 
 //struct of plants, used majorly to load the image of each plant and track it in the game (each functionality will be added separately)
@@ -55,8 +85,8 @@ typedef struct Plant
 #define numberLawnColumns 9
 #define numberLawnRows 5
 #define VALUE_OF_EACH_SUN 25
-#define SIZE_OF_DECK 1
-
+#define SIZE_OF_DECK 2
+#define SIZE_OF_ZOMBIES_ARR 100
 const int initialLawnXValue = (screenWidth-35*2)/numberLawnColumns;
 const int initialLawnYValue = (screenHeight-(60+40))/numberLawnRows;
 const int initialLawnWidthValue = (screenWidth-35*2)/numberLawnColumns;
@@ -68,13 +98,49 @@ const int widthOfEachElementOfDeck =initialLawnWidthValue/(SIZE_OF_DECK+1);
 const int heightOfEachElementOfDeck = 60;
 Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
 
+const int SIZE_OF_PEASHOT_ARR = 300;
+
+const PeaShot NULL_PEA={0};
+const PeaShot NORMAL_GREEN_PEASHOT={
+    .damage=20,
+    .format={
+        .height=5,
+        .width=5,
+        .x=0,
+        .y=0
+    },
+    .color=WHITE,
+    .velocity=1,
+    .rowOfShot=0
+};
+const Zombie NORMAL_ZOMBIE={
+    .color=GRAY,
+    .velocity = 0.5,
+    .format={
+        //make zombie appear from outside of the window
+        .x=screenWidth+30,
+        .y=0,
+        .width=30,
+        .height=initialLawnYValue+10
+    },
+    .isAttacking=0
+};
+const Zombie NULL_ZOMBIE={
+    .color=0,
+    .format={0},
+    .health=0,
+    .rowOfZombie=0,
+    .velocity=0,
+    .isAttacking=0
+};
+
 //Functions-------------------------------------
 
 //SUN FUNCTIONS---
-    //AddSunToArray:Rectangle[], int,Rectangle [], Rectangle->void
-    //Given an array of suns, the index of the next sun, the array of lawns, the array of grounds of suns and the proprieties of Rectangle, add that sun to the array of suns 
-    void AddSunToArray(Rectangle array_of_suns[MAX_SUN_IN_SCREEN],  int *indexOfNextSun,Rectangle lawn_array[numberLawnRows][numberLawnColumns],int rowOfGround,int columnOfGround,float groundOfTheSuns[MAX_SUN_IN_SCREEN], int x, int y, int width, int height) {
-        array_of_suns[*indexOfNextSun].x = x;
+//AddSunToArray:Rectangle[], int,Rectangle [], Rectangle->void
+//Given an array of suns, the index of the next sun, the array of lawns, the array of grounds of suns and the proprieties of Rectangle, add that sun to the array of suns 
+void AddSunToArray(Rectangle array_of_suns[MAX_SUN_IN_SCREEN],  int *indexOfNextSun,Rectangle lawn_array[numberLawnRows][numberLawnColumns],int rowOfGround,int columnOfGround,float groundOfTheSuns[MAX_SUN_IN_SCREEN], int x, int y, int width, int height) {
+    array_of_suns[*indexOfNextSun].x = x;
         array_of_suns[*indexOfNextSun].y =  y;
         array_of_suns[*indexOfNextSun].width = width;
         array_of_suns[*indexOfNextSun].height = height;
@@ -214,6 +280,217 @@ Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
 
                 }
             }
+        }
+    }
+}
+//PEASHOOTER----------------------------------------
+
+//addPeaToArr: Given the array of peas, the x and y coordinates of that pea, add a pea at the end of the array
+void addPeaToArr(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR],PeaShot pea, int *indexOfNextPea){
+    if (*indexOfNextPea < 0 || *indexOfNextPea > SIZE_OF_PEASHOT_ARR) return;
+    peaShotsArr[*indexOfNextPea] = pea;
+    (*indexOfNextPea)+=1;
+}
+//shootPea: Given the array of plants and the array of peas, first checks if its time to shoot a pea. If so, shoot with the proprieties combining with the peashooter and add 
+//          that pea to the array of peas
+void shootPea(Plant plantArr[numberLawnRows][numberLawnColumns],PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int *indexOfNextPea){
+    for(int i=0; i<numberLawnRows; i++){
+        for(int j=0; j<numberLawnColumns; j++){
+            // if the plant is a green peashooter, its shot is green with its rules
+            if (plantArr[i][j].format.x != 0 && plantArr[i][j].type == TYPE_GREEN_PEASHOOTER){
+                // if it's time to shoot a pea
+                if (plantArr[i][j].actionTime <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime)){
+                    // update reference time properly
+                    UpdateReferenceTime(&plantArr[i][j]);
+                    // position pea near the green peashooter
+                    float x = plantArr[i][j].format.x + 5;
+                    float y = plantArr[i][j].format.y - 5;
+                    PeaShot pea = NORMAL_GREEN_PEASHOT;
+                    pea.format.x=x;
+                    pea.format.y=y;
+                    pea.rowOfShot=i;
+                    addPeaToArr(peaShotsArr,pea,indexOfNextPea);
+                }
+            }
+        }
+    }
+}
+
+//DrawPeShots: Draw all Peas of array of peas until the last element
+void DrawPeaShots (PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR],int indexOfNextPea){
+    for(int i=0;i<indexOfNextPea;i++){
+        DrawRectangleRec(peaShotsArr[i].format, peaShotsArr[i].color);
+    }
+}
+
+//UpdatePeaShotPosition: Update, according to its velocity, the position of a pea
+void UpdatePeaShotPosition(PeaShot *pea,int indexOfNextPea){
+    //if indexOfNextPea is an invalid index or it overpass the limit of peas, return void;
+    if(indexOfNextPea<0||indexOfNextPea>SIZE_OF_PEASHOT_ARR) return;
+        pea->format.x+=pea->velocity;
+    
+}
+
+//RemovePeaFromArr: Remove a certain pea from the array
+void RemovePeaFromArr(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int indexOfPeaToBeRemoved, int *indexOfNextPea) {
+    if (indexOfPeaToBeRemoved < 0 || indexOfPeaToBeRemoved >= *indexOfNextPea) return; // invalid index
+
+    // calculate how many items must be moved
+    int numToMove = *indexOfNextPea - indexOfPeaToBeRemoved - 1;
+
+    if (numToMove > 0) {
+        memmove(
+            &peaShotsArr[indexOfPeaToBeRemoved],          // dest
+            &peaShotsArr[indexOfPeaToBeRemoved + 1],      // origin
+            numToMove * sizeof(PeaShot)                   // quantity of bytes
+        );
+    }
+
+    (*indexOfNextPea)--; // decrement the index of next pea
+}
+
+//ZOMBIES----
+//DrawZombie: Draw a given zombie
+void DrawZombie(Zombie zombie){
+    DrawRectangleRec(zombie.format, zombie.color);
+}
+//DrawZombieArr: Given the array of zombies and the indexOfNextZombies, draw them in the scren
+void DrawZombieArr(Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR], int indexOfNextZombie){
+    for(int i=0;i<indexOfNextZombie;i++){
+        DrawZombie(zombiesArr[i]);
+    }
+}
+//AddZombiesToZombiesArr: Add a given zombie to the array of zombies
+void AddZombieToZombiesArr(Zombie zombie, Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR], int *indexOfNextZombie){
+    //checking if the zombies in the screen haven't passed the max of zombies
+    if((*indexOfNextZombie)>SIZE_OF_ZOMBIES_ARR) return;
+    //checking if the zombie isn't nulled
+    if(zombie.format.x<NULL_ZOMBIE.format.x||
+       zombie.format.y<NULL_ZOMBIE.format.y||
+       zombie.health<NULL_ZOMBIE.health||zombie.velocity<NULL_ZOMBIE.velocity||
+       zombie.rowOfZombie<NULL_ZOMBIE.rowOfZombie) return ;
+    
+    //adding the zombie created to the array
+    zombiesArr[*indexOfNextZombie]=zombie;
+    //updating the count of zombies
+    (*indexOfNextZombie)+=1;
+}
+//AddZombiesToZomviesArrRandomly: Add a random zombie at a random position to the array
+void AddZombieToZombiesArrRandomly( Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR], int *indexOfNextZombie,Rectangle lawn_array[numberLawnRows][numberLawnColumns]){
+    Zombie zombie = NORMAL_ZOMBIE;
+    //generating zombie's row randomly
+    int row = rand() % (numberLawnRows);
+    zombie.rowOfZombie=row;
+    //as the y coordinate of the lawns of each row are equal for the row,
+    //we can use whichever column index we want.
+    zombie.format.y=
+    (lawn_array[row][0].y+
+    //calculate the excess of the zombie height in comparison with the lawnHeith
+    (zombie.format.height-initialLawnHeightValue)+
+    //centralize the zombie
+    (initialLawnHeightValue/2));
+    //NOTICE: WE DO NOT CHANGE THE X COORDINATE, WE'RE ONLY INTERESTED
+    //INT THE Y COORDINATE TO CHOSE THE ROW.
+    AddZombieToZombiesArr(zombie, zombiesArr,indexOfNextZombie);
+}
+//UpdateZombiePosition: Given a zombie, update the position of that zombie according to its velocity
+void UpdateZombiePosition(Zombie *zombie){
+    //as zombie x coordinate starts at the right of the screen
+    //we'll decrease its position by its velocity
+    zombie->format.x-=zombie->velocity;
+}
+//UpdateZombiesArrPosition: Given the array of zombies and the index of the next zombie,
+// CHECKS THE ZOMBIE STATUS(STOP/MOVING) (CHECKCOLISION FUNCTION)update the positio of each zombie
+// void UpdateZombiesArrPosition(Zombie zombieArr[SIZE_OF_ZOMBIES_ARR], int indexOfNextZombie){
+//     for(int i=0;i<indexOfNextZombie;i++){
+//     UpdateZombiePosition(&zombieArr[i]);
+// }
+// }
+// RemoveZombie: Given the array of zombies, the indexOfNextZombie and the index of the zombie to be removed
+//removes the zombie at that certain index and update the indexOfNextZombie
+void RemoveZombie(Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR],int *indexOfNextZombie,int indexOfZombieToBeRemoved){
+    if (indexOfZombieToBeRemoved < 0 ||indexOfZombieToBeRemoved >= *indexOfNextZombie) return; // invalid index
+
+    // calculate how many items must be moved
+    int numToMove = *indexOfNextZombie -indexOfZombieToBeRemoved - 1;
+
+    if (numToMove > 0) {
+        memmove(
+            &zombiesArr[indexOfZombieToBeRemoved],          // dest
+            &zombiesArr[indexOfZombieToBeRemoved + 1],      // origin
+            numToMove * sizeof(PeaShot)                   // quantity of bytes
+        );
+    }
+
+    (*indexOfNextZombie)--; // decrement the index of next zombie
+}
+//UpdateZombieHealth:Given the zombie and the damage, update the zombie health
+void UpdateZombieHealth(Zombie *zombie, int damage){
+    zombie->health-=damage;
+}
+//PLANT/ZOMBIES/PEAS COLISIONS
+
+//verifyPeaColisionWithZombie: given a Zombie and a pea, checks if they collided
+bool verifyPeaShotColisionWithZombie(PeaShot pea, Zombie zombie){
+    //if they are in the same row
+ if(zombie.rowOfZombie==pea.rowOfShot){
+        // if 
+        //x coord of the pea is beetwen the:
+        //x coord of the zombie && x coord of the zombie + its width 
+        //&&
+        //y coord of the pea is beetweern the:
+        //y coord of the zombie && y coord of the zomvie + its height
+        //they colided, return true
+        if(((pea.format.x>=zombie.format.x) && (pea.format.x<=(zombie.format.x+zombie.format.width)))
+            &&
+            ((pea.format.y>=zombie.format.y) && (pea.format.y<=(zombie.format.y+zombie.format.height)))
+        ){
+            return true;
+        }
+    }
+    //else return false
+    return false;
+}
+
+
+//----------
+//UpdateZombiesAndProjectiles: Update all projectiles thrown and also manages the 
+//hits of each projectile in each zombie, as well as deals proprely with the zombies health
+void updateZombiesAndProjectiles(Plant plantArr[numberLawnRows][numberLawnColumns],
+                                 PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR],
+                                 Zombie zombieArr[SIZE_OF_ZOMBIES_ARR],
+                                 int *indexOfNextPea,
+                                 int *indexOfNextZombie)
+{
+    // SHOOT NEW PEAS
+    shootPea(plantArr, peaShotsArr, indexOfNextPea);
+
+    // 1. UPDATE PEA POSITIONS
+    for (int j = 0; j < *indexOfNextPea; j++) {
+        UpdatePeaShotPosition(&peaShotsArr[j], *indexOfNextPea);
+    }
+
+    // 2. CHECK COLLISIONS AND UPDATE ZOMBIE HEALTH
+    for (int i = 0; i < *indexOfNextZombie; i++) {
+        if (zombieArr[i].health <= 0) {
+            RemoveZombie(zombieArr, indexOfNextZombie, i);
+            i--; //Watch out: if a zombie was removed, i need to decrease the index
+            continue;
+        }
+
+        for (int j = 0; j < *indexOfNextPea; j++) {
+            if (verifyPeaShotColisionWithZombie(peaShotsArr[j], zombieArr[i])) {
+                UpdateZombieHealth(&zombieArr[i], peaShotsArr[j].damage);
+            }
+            //if the position of the pea passes the width of the screen, remove it from the array
+            if(peaShotsArr->format.x>screenWidth){
+                RemovePeaFromArr(peaShotsArr,j,indexOfNextPea);
+                j--;
+            }
+        }
+
+        if (!zombieArr[i].isAttacking) {
+            UpdateZombiePosition(&zombieArr[i]);
         }
     }
 }
@@ -409,6 +686,18 @@ Plant DeckOfPlants [SIZE_OF_DECK]={0};
     DeckOfPlants[0].existanceTime=0;
     DeckOfPlants[0].referenceTime=0;
     DeckOfPlants[0].existanceTime=0;
+    //----
+     DeckOfPlants[1].format.height= initialLawnHeightValue-20;
+    DeckOfPlants[1].format.width= initialLawnWidthValue-20;
+    DeckOfPlants[1].format.x= 0;
+    DeckOfPlants[1].format.y= 0;
+    DeckOfPlants[1].type = TYPE_GREEN_PEASHOOTER;
+    DeckOfPlants[1].cost = COST_PEASHOOTER;
+    DeckOfPlants[1].color = BLUE; 
+    DeckOfPlants[1].actionTime=ACTION_TIME_PEASHOOTER;
+    DeckOfPlants[1].existanceTime=0;
+    DeckOfPlants[1].referenceTime=0;
+    DeckOfPlants[1].existanceTime=0;
 //used to track which card is selected. If card is all nulled, then there's no card selected
 Plant cardSelected = {0};
 //used to track which plants are deployed in the field(lawn)
@@ -446,8 +735,15 @@ Plant plantArr[numberLawnRows][numberLawnColumns]={0};
         sunArray[i].width = 20;
     }
 //---------
-    //--------------------------------------------------------------------------------------
 
+//PEASHOOTER AND PEASHOT
+PeaShot peaShotsArr [SIZE_OF_PEASHOT_ARR];
+int indexOfNextPea = 0;
+
+    //--------------------------------------------------------------------------------------
+//ZOMBIE
+Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]={0};
+int indexOfNextZombie=0;
     // Main game loop
     while (!exitWindow)    // Detect window close button or ESC key
     {
@@ -539,6 +835,7 @@ Plant plantArr[numberLawnRows][numberLawnColumns]={0};
             {
                 // TODO: Update GAMEPLAY screen variables here!
                 previousScreen=currentScreen;
+                updateZombiesAndProjectiles(plantArr,peaShotsArr,zombieArr,&indexOfNextPea,&indexOfNextZombie);
                 UpdateExistanceTime(plantArr);
                 updateSunsPosition(sunArray,indexOfNextSun,groundOfTheSuns);
                 for(int i=0;i<numberLawnRows;i++){
@@ -553,6 +850,7 @@ Plant plantArr[numberLawnRows][numberLawnColumns]={0};
                 //spawn of the suns
                 if((timeSpawnSunTracking-startTime>spawnRateSun)&&indexOfNextSun<MAX_SUN_IN_SCREEN){
                     AddRandomlySunToArr(sunArray, &indexOfNextSun,lawnRectangles,groundOfTheSuns);
+                    AddZombieToZombiesArrRandomly(zombieArr,&indexOfNextZombie,lawnRectangles);
                     startTime=GetTime();
                 }
                 if(collectSun(sunArray,&indexOfNextSun,groundOfTheSuns)){
@@ -711,6 +1009,8 @@ Plant plantArr[numberLawnRows][numberLawnColumns]={0};
                     DrawGamingDeck(DeckOfPlants,sunGamingStorage, &cardSelected);
                     DrawMoldureOfSelectedCard(cardSelected);
                     DrawPlants(plantArr);
+                    DrawPeaShots(peaShotsArr,indexOfNextPea);
+                    DrawZombieArr(zombieArr,indexOfNextZombie);
                     DrawSuns(sunArray,indexOfNextSun);
                     RemoveSelectedCard(&cardSelected);
                 }break;

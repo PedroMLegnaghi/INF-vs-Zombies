@@ -111,42 +111,27 @@ ai eu vou ter as structs das plantas especificas
 	}
 
 
-
-=================TO BE DONE
-
-
-
 *3	
 Fazer a planta "peashooter"
 	Nao precisa alterar nada, pois o que se refere ao tiro, 
 	*3.1sera feito um array para armazenar os tiros dados(PeaShot)->Definir que, quando elemento for nulo, significa vazio
-	*3.2 Fazer o struct peaShot ->int damage, Rectangle format, int img?, int sound?, int color, int velocity, int timeOfCreation,
+	*3.2 Fazer o struct peaShot ->int damage, Rectangle format, int img?, int sound?, int color, int velocity(pixels/frame),
 								 int rowOfShot(used to optimize the verification of colision with zombies)
 	*3.2.1 Fazer um define para cada tipo de peaShot, nesse caso, PeaShot NormalGreenPea
 	*3.3 Fazer funcoes acerca da peashooter	
 		*3.3.1->shootPea(Plant plantAryy[], peaShotsArr[])
 			Dado um array de plantas e as peas shot
 			-Se a planta for uma peashooter
-				-Se seu tempo >= timeOfCreation de peaShot
-					->peaShotArr+=NormalGreenPea(=um define, como feito em *3.2.1) 
+				-(plant.existanceTime-plant.referenceTime) >= plant.actionTime
+					->pea = (define normalGreenPea)
+						->ATUALIZAR O ROWOFSHOT(PARA SER IGUAL ao row da planta(index i do for))
+					//e entao, finalmente, adicionar no array
+					->peaShotArr+=pea
 
 		*3.3.2->DrawPeaShots(peaShotsArr[],int peaShotsArrTotalSize(o que foi atribuido em peaShotsArr[aqui]))
 			-Desenhar todas as Peas até o tamanho do array
 		*3.3.3->UpdatePeaShotsPosition(peaShotsArr[], int peaShotsArrTotalSize(o que foi atribuido em peaShotsArr[aqui]) )
-			-Update todas as peas até o tamanho do array
-		*3.3.4->Int verifyIfZombieSameRowPeashot(zombie, peaShot)
-			-se (a coordenada) nao for maior que (o numero de linhas de grama -1) (mas pode ser igual)
-			-se a coordenada y do zombie estiver entre (a coordenada y da grama no index [peaShot.rowOfShot]) e (a coordenada y da grama no index[peaShot.rowOfShot+1])
-			-return 1(true)
-			-else return 0(false)
-			-OBS:eu posso fazer isso pois meu plantsArr coincide com o LawnArray no quesito de locais, entao quando inicializo o peaShot, consigo
-				 track from which row it was shot
-		*3.3.5->Int verifyPeaColision(peaShotsArr[],int peaShotsArrTotalSize(o que foi atribuido em peaShotsArr[aqui]), Rectangle zombies[zombie])
- 			-Verifica se houve colisao, retorna 1(true) ou 0(false)
-			-Em um for de 0 ate o totalSize do arrPeaShots, 
-				em um for de 0 ate totalSize do arrZombies
-				-Se estiverem peaShot e zombie na mesma row de lawn (verifyIfZombieSameRowPeashot(zombies[j],peaShotsArr[i]))
-					->return(checkColision com o PeaShotsArr[i].format e o zombie.fomart)
+			-Update todas as peas até o tamanho do array, adicionar pos x +=peaShot[i].velocity
 		*3.3.6->RemovePeaFromArr(peaShotArr[], int indexDaPeaQueBateu)
 			-Remove a pea do array(Utilizar em conjunto com "verifyPeaColision" para ver se ela bateu em algo(zombie))
 		*3.3.7->UptadePeashotsGameplay(void)
@@ -157,9 +142,65 @@ Fazer a planta "peashooter"
 				RemovePeaFromArr
 			}
 
-4*Padronizar o tamanho das plantas e mudar tudo nas funcoes, para que todas fiquem genericas.
+	*1.2.1DrawZombie(zombie)->desenha o zombie
+	*1.2.2DrawZombies(zombiesArr)->for each zombie, draw zombie
+	*1.2.3Zombie CreateZombie(void)->
+		Escolhe uma linha e uma coluna de lawn aleatoriamente, pega as coord
+		(x,y) delas e centraliza o zombie e adiciona o zombie no array
+1*ZOMBIES
+ZombiesArr[número alto]
+*1.1 definir a estrutura zombie
+Struct Zombies{
+Png?
+Sound?
+Color color
+Int Velocity
+Rectange format
+Int health
+Int RowOfZombie
+}
+	*1.2.4Void updateZombiePosition(Zombie zombieArr)->adiciona zombie.velocity à coord X do zombie
+*1.2 funcoes
+	*1.2.6RemoveZombie(usar com if healthZombie==0)(Zombie zombieArr[], int indexASerRemovido)->
+ZombieArr[indexASerRemovido]={0}
+=================TO BE DONE
+
+
+
+
+4*Padronizar o tamanho das plantas e mudar tudo nas funcoes, para que todaz fiquem genericas.
 (possivelmente tenho que esperar até eu aprender as coisas de texturas)
 
+*3.3.5->Int verifyPeaColision(peaShotsArr[],int peaShotsArrTotalSize(o que foi atribuido em peaShotsArr[aqui]), Rectangle zombies[zombie])
+*3.3.4->Int verifyIfZombieSameRowPeashot(zombie, peaShot)
+**********FAZER DEPOIS DE DEFINIR A STRUCT DO ZOMBIE! 
 
+	
+	*1.2.5Void updateZombieHealth(zombie *zombie, int peaShotDamage)->
+If check colision peaShot e Zombie, fazer Zombie.health-=peaShotDamage
 
+	**void updatePeas(){
+		shootPea
+		//updatePositionShotsPosition
+		UpdatePeaShotsGameplay
+		if(verifyColisionPeaShotZombie>=0){
+			RemovePeaFromArr[indexOfPeaToBeRemoved]
+		}
+
+	}
+	*1.2.5 void updateZombies(){
+		//if zombie isnt attackign, update its position
+		 if(zombieArr[i].isAttacking!=1)    {
+    UpdateZombiePosition(&zombieArr[i]);
+    }
+		if(verifyColision){
+		updateZombieHealth()
+		}
+		if(zombie[i].health<=0){
+			RemoveZombie(i)
+		}
+	}
+	*1.2.7 ZombieAttackPlant
+		->if check colision zombie.format&&plant.format, plant.health-=zombie.damag
+		->Fazer a planta piscar (sofreu hit) (tocar barulho de comer do zombie)
 
