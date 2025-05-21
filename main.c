@@ -11,13 +11,15 @@ typedef struct{
     //sound?
     Color color;
     //given in pixels/frame
-    int velocity;
+    float velocity;
     Rectangle format;
-    int health;
+    float health;
     //row where zombie was placed
     int rowOfZombie;
     //used to track wheter the zombie is attacking
     bool isAttacking;
+    //damage is given in damage/frames
+    float damage;
 }Zombie;
 typedef struct peaShot
 {
@@ -34,7 +36,7 @@ typedef struct peaShot
 }PeaShot;
 
 //enumeration to reference the cost of each plant.
-//model: COST_(plant)
+//model: COST_(type_of_plant)
 typedef enum COST_OF_PLANT{
     COST_SUNFLOWER = 50,
     COST_PEASHOOTER = 100,
@@ -42,7 +44,7 @@ typedef enum COST_OF_PLANT{
 }COST_OF_PLANT;
 
 //enumeration to reference the time(in seconds) of the action of each plant.
-//model: ACTION_TIME_(plant)
+//model: ACTION_TIME_(type_of_plant)
 typedef enum action_time{
     //time to generate sun = 5seg
     ACTION_TIME_SUNFLOWER = 5,
@@ -57,6 +59,14 @@ typedef enum TYPE_OF_PLANT{
     TYPE_GREEN_PEASHOOTER,
 }TYPE_OF_PLANT;
 
+//enumaration to reference the HEALTH_OF_PLANT
+//model: HEALTH_OF_(type_of_plant)
+
+typedef enum {
+    HEALTH_OF_SUNFLOWER = 100,
+    HEALTH_OF_GREEN_PEASHOOTER = 100,
+}HEALTH_OF_PLANT;
+
 //struct of plants, used majorly to load the image of each plant and track it in the game (each functionality will be added separately)
 typedef struct Plant
 {
@@ -64,17 +74,20 @@ typedef struct Plant
     TYPE_OF_PLANT type;
     COST_OF_PLANT cost;
     ACTION_TIME_PLANT actionTime;
+    //uses enum of health
+    float health;
     double creationTime;
     double existanceTime;
     //referenceTime:Auxilar variable to enable time tracking and habilities triggered of each plant
     //      :-> referenceTime goes from 0 to actionTime. When referenceTime == actionTime, Hability is triggered and referenceTime =0;
     double referenceTime;
     Color color;
+    int rowOfPlant;
     //sound?
     //png?
     
 }Plant;
-
+const Plant NULL_PLANT ={0};
 
 #define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
 #define GAMING_MENU_OPTIONS_QUANTITY 3 //resume, configurations and exit
@@ -115,15 +128,19 @@ const PeaShot NORMAL_GREEN_PEASHOT={
 };
 const Zombie NORMAL_ZOMBIE={
     .color=GRAY,
-    .velocity = 0.5,
+    .velocity = 3,
+    .health =100,
+    .rowOfZombie=-1,
     .format={
         //make zombie appear from outside of the window
         .x=screenWidth+30,
         .y=0,
-        .width=30,
-        .height=initialLawnYValue+10
+        .width=20,
+        .height=initialLawnYValue
     },
-    .isAttacking=0
+    .isAttacking=0,
+    //damage=20/second
+    .damage =0.33
 };
 const Zombie NULL_ZOMBIE={
     .color=0,
@@ -131,7 +148,8 @@ const Zombie NULL_ZOMBIE={
     .health=0,
     .rowOfZombie=0,
     .velocity=0,
-    .isAttacking=0
+    .isAttacking=0,
+    .damage=0
 };
 
 //Functions-------------------------------------
@@ -230,6 +248,17 @@ void AddSunToArray(Rectangle array_of_suns[MAX_SUN_IN_SCREEN],  int *indexOfNext
 
 //--------------------------------------------
 //PLANTS FUNCTIONS-----
+    //UpdateHealthOfPlant: Given a plant, updates it's health accordingly with a given damage
+    void UpdateHealthOfPlant(Plant *plant, float damage){
+        //verify if damage is a valid damage
+        if(damage<0) return;
+        plant->health-=damage;
+    }
+    //RemovePlantFromArr: Remove a certain plant from the array
+  void RemovePlantFromArr(Plant plantArr[numberLawnRows][numberLawnColumns],int rowOfPlantToBeRemoved, int columnOfPlantToBeRemoved ){
+        plantArr[rowOfPlantToBeRemoved][columnOfPlantToBeRemoved]=NULL_PLANT;
+        
+    }
     //UpdateExistanceTime:Plant *->void
     //given a Plant array, update the existance time of each plant
    void UpdateExistanceTime(Plant plantArr[numberLawnRows][numberLawnColumns]){
@@ -304,7 +333,7 @@ void shootPea(Plant plantArr[numberLawnRows][numberLawnColumns],PeaShot peaShots
                     UpdateReferenceTime(&plantArr[i][j]);
                     // position pea near the green peashooter
                     float x = plantArr[i][j].format.x + 5;
-                    float y = plantArr[i][j].format.y - 5;
+                    float y = plantArr[i][j].format.y + (initialLawnHeightValue/2);
                     PeaShot pea = NORMAL_GREEN_PEASHOT;
                     pea.format.x=x;
                     pea.format.y=y;
@@ -324,9 +353,7 @@ void DrawPeaShots (PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR],int indexOfNextPea){
 }
 
 //UpdatePeaShotPosition: Update, according to its velocity, the position of a pea
-void UpdatePeaShotPosition(PeaShot *pea,int indexOfNextPea){
-    //if indexOfNextPea is an invalid index or it overpass the limit of peas, return void;
-    if(indexOfNextPea<0||indexOfNextPea>SIZE_OF_PEASHOT_ARR) return;
+void UpdatePeaShotPosition(PeaShot *pea){
         pea->format.x+=pea->velocity;
     
 }
@@ -383,12 +410,7 @@ void AddZombieToZombiesArrRandomly( Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR], int 
     zombie.rowOfZombie=row;
     //as the y coordinate of the lawns of each row are equal for the row,
     //we can use whichever column index we want.
-    zombie.format.y=
-    (lawn_array[row][0].y+
-    //calculate the excess of the zombie height in comparison with the lawnHeith
-    (zombie.format.height-initialLawnHeightValue)+
-    //centralize the zombie
-    (initialLawnHeightValue/2));
+    zombie.format.y = lawn_array[row][0].y ;
     //NOTICE: WE DO NOT CHANGE THE X COORDINATE, WE'RE ONLY INTERESTED
     //INT THE Y COORDINATE TO CHOSE THE ROW.
     AddZombieToZombiesArr(zombie, zombiesArr,indexOfNextZombie);
@@ -418,7 +440,7 @@ void RemoveZombie(Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR],int *indexOfNextZombie,
         memmove(
             &zombiesArr[indexOfZombieToBeRemoved],          // dest
             &zombiesArr[indexOfZombieToBeRemoved + 1],      // origin
-            numToMove * sizeof(PeaShot)                   // quantity of bytes
+            numToMove * sizeof(Zombie)                   // quantity of bytes
         );
     }
 
@@ -452,7 +474,23 @@ bool verifyPeaShotColisionWithZombie(PeaShot pea, Zombie zombie){
     return false;
 }
 
-
+//verifyPlantColisionWithZombie:given a Zombie and a plant, checks if they collided
+bool verifyPlantColisionWithZombie(Plant plant, Zombie zombie){
+    //if they are in the same row
+ if(zombie.rowOfZombie==plant.rowOfPlant){
+        // if 
+        //x coord of the zombie is beetwen the:
+        //x coord of the plant && x coord of the plant + its width 
+        //&&
+        
+        //they colided, return true
+        if(((zombie.format.x>=plant.format.x) && (zombie.format.x<=(plant.format.width+plant.format.x)))){
+            return true;
+        }
+    }
+    //else return false
+    return false;
+}
 //----------
 //UpdateZombiesAndProjectiles: Update all projectiles thrown and also manages the 
 //hits of each projectile in each zombie, as well as deals proprely with the zombies health
@@ -467,32 +505,59 @@ void updateZombiesAndProjectiles(Plant plantArr[numberLawnRows][numberLawnColumn
 
     // 1. UPDATE PEA POSITIONS
     for (int j = 0; j < *indexOfNextPea; j++) {
-        UpdatePeaShotPosition(&peaShotsArr[j], *indexOfNextPea);
+        UpdatePeaShotPosition(&peaShotsArr[j]);
     }
-
-    // 2. CHECK COLLISIONS AND UPDATE ZOMBIE HEALTH
-    for (int i = 0; i < *indexOfNextZombie; i++) {
-        if (zombieArr[i].health <= 0) {
+    // PRIMEIRO: Remova todos os zumbis mortos ou fora da tela
+// for (int i = 0; i < *indexOfNextZombie; i++) {
+// }
+    // 2. CHECK COLLISIONS WITH PEA AND UPDATE ZOMBIE HEALTH
+for (int i = 0; i < *indexOfNextZombie; i++) {
+        if (zombieArr[i].health <= 0 || zombieArr[i].format.x < -10) {
             RemoveZombie(zombieArr, indexOfNextZombie, i);
-            i--; //Watch out: if a zombie was removed, i need to decrease the index
+            i--; // Atualiza o índice corretamente
             continue;
         }
-
         for (int j = 0; j < *indexOfNextPea; j++) {
             if (verifyPeaShotColisionWithZombie(peaShotsArr[j], zombieArr[i])) {
                 UpdateZombieHealth(&zombieArr[i], peaShotsArr[j].damage);
+                RemovePeaFromArr(peaShotsArr,j,indexOfNextPea);
+                j--;
             }
             //if the position of the pea passes the width of the screen, remove it from the array
-            if(peaShotsArr->format.x>screenWidth){
+            if(peaShotsArr[j].format.x>screenWidth){
                 RemovePeaFromArr(peaShotsArr,j,indexOfNextPea);
                 j--;
             }
         }
-
-        if (!zombieArr[i].isAttacking) {
+        //2.3 CHECK ZOMBIE COLISION WITH PLANT AND UPDATE VARIABLES
+        
+        zombieArr[i].isAttacking=0;
+        for(int r=0;r<numberLawnRows;r++){
+            for(int c=0;c<numberLawnColumns;c++){
+                //if the plant died, remove it from the screen
+                if(plantArr[r][c].health<=0){
+                    RemovePlantFromArr(plantArr,r,c);
+                }
+                //if a colision zombie/plant is happening
+                if(verifyPlantColisionWithZombie(plantArr[r][c], zombieArr[i])){
+                    //update isAttacking propriety
+                    //DONT UPDATE THE POSITION OF THE ZOMBIE IF HE'S ATTACKING
+                    //Update healthOfPlant according to the damage that the zombie gives per frame
+                    UpdateHealthOfPlant(&plantArr[r][c],zombieArr[i].damage);
+                    zombieArr[i].isAttacking=1;
+                    break;
+                }
+                if(zombieArr[i].isAttacking) break;
+            }
+        }
+        //2.1 VERIFY IF ZOMBIE HAS GONE OUT OF THE SCREEN
+     
+        //update the zombie's position if he's not attakcing
+        if(!zombieArr[i].isAttacking){
             UpdateZombiePosition(&zombieArr[i]);
         }
     }
+    
 }
 
 //----------------------------------
@@ -521,7 +586,8 @@ void updateZombiesAndProjectiles(Plant plantArr[numberLawnRows][numberLawnColumn
                 .existanceTime=0,
                 .referenceTime=0,
                 .actionTime = DeckOfPlants[i].actionTime,
-                .creationTime = 0
+                .creationTime = 0,
+                .health=DeckOfPlants[i].health
 
             };
             DrawRectangleLines(xOfDeckRectangleCpy,yOfDeckRectangle,widthOfEachElementOfDeck,heightOfEachElementOfDeck,BLACK);
@@ -593,6 +659,7 @@ void PutPlantToField
             plant.format.x=lawnRectangles[r][c].x;
             plant.format.y=lawnRectangles[r][c].y;
             plant.creationTime=GetTime();
+            plant.rowOfPlant = r;
             plantArr[r][c]=plant;
             //              *discount that amount of the sunStorage
             *sunStorage-=cardSelected->cost;
@@ -686,6 +753,7 @@ Plant DeckOfPlants [SIZE_OF_DECK]={0};
     DeckOfPlants[0].existanceTime=0;
     DeckOfPlants[0].referenceTime=0;
     DeckOfPlants[0].existanceTime=0;
+    DeckOfPlants[0].health=HEALTH_OF_SUNFLOWER;
     //----
      DeckOfPlants[1].format.height= initialLawnHeightValue-20;
     DeckOfPlants[1].format.width= initialLawnWidthValue-20;
@@ -698,6 +766,7 @@ Plant DeckOfPlants [SIZE_OF_DECK]={0};
     DeckOfPlants[1].existanceTime=0;
     DeckOfPlants[1].referenceTime=0;
     DeckOfPlants[1].existanceTime=0;
+    DeckOfPlants[1].health=HEALTH_OF_GREEN_PEASHOOTER;
 //used to track which card is selected. If card is all nulled, then there's no card selected
 Plant cardSelected = {0};
 //used to track which plants are deployed in the field(lawn)
@@ -722,13 +791,13 @@ Plant plantArr[numberLawnRows][numberLawnColumns]={0};
     //array to track the suns, if the x and y coordinates are "-1", then we consider it an empty sun
     Rectangle sunArray[MAX_SUN_IN_SCREEN]={0};
     //array to track the quantity of sun that the player has
-    unsigned int sunGamingStorage=0;
+    unsigned int sunGamingStorage=500;
     //array to track when a sun hits the ground
     float groundOfTheSuns[MAX_SUN_IN_SCREEN]={0};
     //indexToTrack the end of the array
     int indexOfNextSun = 0;
     //time of spawn of suns = 15s
-    double spawnRateSun = 5.0;   
+    double spawnRateSun = 1.0;   
     //initializing the size of all suns
     for (int i=0;i<MAX_SUN_IN_SCREEN;i++){
         sunArray[i].height = 20;

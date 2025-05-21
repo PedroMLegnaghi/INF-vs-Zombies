@@ -69,6 +69,49 @@ JOGO:
 	5linhas
     const int screenHeight = (450-20*2(margin left-right))/5;
 
+=================TO BE DONE
+3*definir tempo de spawn dos zombies e fazer seu spawn separado (ele esta tendo seu spawn junto com o spawn dos girassois, que usa sunGenerationTime)
+
+4.1*Padronizar o tamanho das plantas e mudar tudo nas funcoes, para que todas fiquem genericas.
+(possivelmente tenho que esperar até eu aprender as coisas de texturas)
+4.2*arrumar desing jogo
+4.3*fazer cenario jogo
+
+5*otimizar as funcoes e os krlho, arrumar os comentarios, deixar o jogo redondinho
+
+6*colocar som nos bglho
+
+7*dividir em arquivos separados o jogo
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ==============================================================================
 ==============================================================================
 sol
@@ -163,19 +206,8 @@ Int RowOfZombie
 *1.2 funcoes
 	*1.2.6RemoveZombie(usar com if healthZombie==0)(Zombie zombieArr[], int indexASerRemovido)->
 ZombieArr[indexASerRemovido]={0}
-=================TO BE DONE
-
-
-
-
-4*Padronizar o tamanho das plantas e mudar tudo nas funcoes, para que todaz fiquem genericas.
-(possivelmente tenho que esperar até eu aprender as coisas de texturas)
-
 *3.3.5->Int verifyPeaColision(peaShotsArr[],int peaShotsArrTotalSize(o que foi atribuido em peaShotsArr[aqui]), Rectangle zombies[zombie])
 *3.3.4->Int verifyIfZombieSameRowPeashot(zombie, peaShot)
-**********FAZER DEPOIS DE DEFINIR A STRUCT DO ZOMBIE! 
-
-	
 	*1.2.5Void updateZombieHealth(zombie *zombie, int peaShotDamage)->
 If check colision peaShot e Zombie, fazer Zombie.health-=peaShotDamage
 
@@ -203,4 +235,8 @@ If check colision peaShot e Zombie, fazer Zombie.health-=peaShotDamage
 	*1.2.7 ZombieAttackPlant
 		->if check colision zombie.format&&plant.format, plant.health-=zombie.damag
 		->Fazer a planta piscar (sofreu hit) (tocar barulho de comer do zombie)
+
+
+
+	
 
