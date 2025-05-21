@@ -70,7 +70,6 @@ JOGO:
     const int screenHeight = (450-20*2(margin left-right))/5;
 
 =================TO BE DONE
-3*definir tempo de spawn dos zombies e fazer seu spawn separado (ele esta tendo seu spawn junto com o spawn dos girassois, que usa sunGenerationTime)
 
 4.1*Padronizar o tamanho das plantas e mudar tudo nas funcoes, para que todas fiquem genericas.
 (possivelmente tenho que esperar até eu aprender as coisas de texturas)
@@ -82,8 +81,9 @@ JOGO:
 6*colocar som nos bglho
 
 7*dividir em arquivos separados o jogo
-
-
+8**88888888***OS MEUS ZOMBIES ESTAO SENDO GERADOS EM SEGUNDOS ESPECIFICOS
+E NAO EM HORDAS, EU ESTOU USANDO "TIMEFORNATURALZOMBIESPAWN", PRECISO MUDAR ISSO
+FIM:COLOCAR COMO O SOR QUER RESTO
 
 
 

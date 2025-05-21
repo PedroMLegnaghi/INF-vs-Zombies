@@ -3,11 +3,39 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h> // necessary for mmemov
-typedef enum GAME_SCREEN {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURATIONS, EXIT //HOMEPAGE OPTIONS
-                         ,USER_DATA, DECK_SELECTION, GAMEPLAY,MENU, RESUME} GAME_SCREEN;//GAMEPLAY OPTIONS
+#define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
+#define GAMING_MENU_OPTIONS_QUANTITY 3 //resume, configurations and exit
+#define MAX_SUN_IN_SCREEN 100 //maximum quantity of suns in screen
+#define screenWidth 800
+#define screenHeight 580
+#define targetFPS 60
+#define numberLawnColumns 9
+#define numberLawnRows 5
+#define VALUE_OF_EACH_SUN 25
+#define SIZE_OF_DECK 2
+#define SIZE_OF_ZOMBIES_ARR 100
 
-typedef struct{
-    //png/sprite?
+const int DISTANCE_RIGHT_EDGE = (0.025)*screenWidth;
+const int DISTANCE_LEFT_EDGE = DISTANCE_RIGHT_EDGE;
+const int DISTANCE_INFERIOR_EDGE = DISTANCE_RIGHT_EDGE;
+const int DISTANCE_SUPERIOR_EDGE = DISTANCE_RIGHT_EDGE*2;
+const int initialLawnWidthValue = (screenWidth-DISTANCE_RIGHT_EDGE-DISTANCE_LEFT_EDGE)/numberLawnColumns-12;
+const int initialLawnHeightValue = (screenHeight-DISTANCE_INFERIOR_EDGE-DISTANCE_SUPERIOR_EDGE)/numberLawnRows-8;
+const int initialLawnXValue = initialLawnWidthValue;
+const int initialLawnYValue = initialLawnHeightValue;
+
+const int xOfDeckRectangle = 10;
+const int yOfDeckRectangle = 10;
+const int widthOfEachElementOfDeck =initialLawnWidthValue/(SIZE_OF_DECK+1);
+const int heightOfEachElementOfDeck = 60;
+Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
+
+const int SIZE_OF_PEASHOT_ARR = 300;
+typedef enum GAME_SCREEN {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURATIONS, EXIT //HOMEPAGE OPTIONS
+    ,USER_DATA, DECK_SELECTION, GAMEPLAY,MENU, RESUME} GAME_SCREEN;//GAMEPLAY OPTIONS
+    
+    typedef struct{
+        //png/sprite?
     //sound?
     Color color;
     //given in pixels/frame
@@ -88,30 +116,36 @@ typedef struct Plant
     
 }Plant;
 const Plant NULL_PLANT ={0};
+const Plant PLANT_SUNFLOWER={
+    .format.height= initialLawnHeightValue-20,
+    .format.width= initialLawnWidthValue-20,
+    .format.x= 0,
+    .format.y= 0,
+    .type = TYPE_SUNFLOWER,
+    .cost = COST_SUNFLOWER,
+    .color = BROWN, 
+    .actionTime=ACTION_TIME_SUNFLOWER,
+    .existanceTime=0,
+    .referenceTime=0,
+    .existanceTime=0,
+    .health=HEALTH_OF_SUNFLOWER
+    //----
+};
+const Plant PLANT_GREEN_PEASHOOTER={
+    .format.height= initialLawnHeightValue-20,
+    .format.width= initialLawnWidthValue-20,
+    .format.x= 0,
+    .format.y= 0,
+    .type = TYPE_GREEN_PEASHOOTER,
+    .cost = COST_PEASHOOTER,
+    .color = BLUE, 
+    .actionTime=ACTION_TIME_PEASHOOTER,
+    .existanceTime=0,
+    .referenceTime=0,
+    .existanceTime=0,
+    .health=HEALTH_OF_GREEN_PEASHOOTER
+};
 
-#define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
-#define GAMING_MENU_OPTIONS_QUANTITY 3 //resume, configurations and exit
-#define MAX_SUN_IN_SCREEN 100 //maximum quantity of suns in screen
-#define screenWidth 800
-#define screenHeight 450
-#define targetFPS 60
-#define numberLawnColumns 9
-#define numberLawnRows 5
-#define VALUE_OF_EACH_SUN 25
-#define SIZE_OF_DECK 2
-#define SIZE_OF_ZOMBIES_ARR 100
-const int initialLawnXValue = (screenWidth-35*2)/numberLawnColumns;
-const int initialLawnYValue = (screenHeight-(60+40))/numberLawnRows;
-const int initialLawnWidthValue = (screenWidth-35*2)/numberLawnColumns;
-const int initialLawnHeightValue = (screenHeight-(60+40))/numberLawnRows;
-
-const int xOfDeckRectangle = 10;
-const int yOfDeckRectangle = 10;
-const int widthOfEachElementOfDeck =initialLawnWidthValue/(SIZE_OF_DECK+1);
-const int heightOfEachElementOfDeck = 60;
-Vector2 mousePoint = { 0.0f, 0.0f }; //useful to track the user's mouse
-
-const int SIZE_OF_PEASHOT_ARR = 300;
 
 const PeaShot NULL_PEA={0};
 const PeaShot NORMAL_GREEN_PEASHOT={
@@ -255,9 +289,10 @@ void AddSunToArray(Rectangle array_of_suns[MAX_SUN_IN_SCREEN],  int *indexOfNext
         plant->health-=damage;
     }
     //RemovePlantFromArr: Remove a certain plant from the array
-  void RemovePlantFromArr(Plant plantArr[numberLawnRows][numberLawnColumns],int rowOfPlantToBeRemoved, int columnOfPlantToBeRemoved ){
-        plantArr[rowOfPlantToBeRemoved][columnOfPlantToBeRemoved]=NULL_PLANT;
         
+  void RemovePlantFromArr(Plant plantArr[numberLawnRows][numberLawnColumns],bool occupationOfLawn[numberLawnRows][numberLawnColumns],int rowOfPlantToBeRemoved, int columnOfPlantToBeRemoved ){
+        plantArr[rowOfPlantToBeRemoved][columnOfPlantToBeRemoved]=NULL_PLANT;
+        occupationOfLawn[rowOfPlantToBeRemoved][columnOfPlantToBeRemoved]=0;
     }
     //UpdateExistanceTime:Plant *->void
     //given a Plant array, update the existance time of each plant
@@ -497,6 +532,7 @@ bool verifyPlantColisionWithZombie(Plant plant, Zombie zombie){
 void updateZombiesAndProjectiles(Plant plantArr[numberLawnRows][numberLawnColumns],
                                  PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR],
                                  Zombie zombieArr[SIZE_OF_ZOMBIES_ARR],
+                                 bool occupationOfLawn[numberLawnRows][numberLawnColumns],
                                  int *indexOfNextPea,
                                  int *indexOfNextZombie)
 {
@@ -536,7 +572,7 @@ for (int i = 0; i < *indexOfNextZombie; i++) {
             for(int c=0;c<numberLawnColumns;c++){
                 //if the plant died, remove it from the screen
                 if(plantArr[r][c].health<=0){
-                    RemovePlantFromArr(plantArr,r,c);
+                    RemovePlantFromArr(plantArr,occupationOfLawn,r,c);
                 }
                 //if a colision zombie/plant is happening
                 if(verifyPlantColisionWithZombie(plantArr[r][c], zombieArr[i])){
@@ -729,7 +765,8 @@ GAME_SCREEN gamingMenuOptions[GAMING_MENU_OPTIONS_QUANTITY] ={0};//array to navi
     SetExitKey(KEY_NULL); // Disable KEY_ESCAPE to close window, X-button still works
     bool exitWindow = false;    // Flag to set window to exit
     //---------
-    double startTime = GetTime();  //saves the actualTime
+    double startTimeForNaturalSunSpawn = GetTime();
+    double startTimeForZombieSpawn = GetTime();  //saves the actualTime
     int framesCounter = 0;          // Useful to count frames
     SetTargetFPS(targetFPS);               // Set desired framerate (frames-per-second)
 
@@ -742,31 +779,9 @@ char playerName[MAX_SIZE_OF_NAME];
 //DECK-----
 Plant DeckOfPlants [SIZE_OF_DECK]={0};
 //DO A FUNCTION INITDECK!
-   DeckOfPlants[0].format.height= initialLawnHeightValue-20;
-    DeckOfPlants[0].format.width= initialLawnWidthValue-20;
-    DeckOfPlants[0].format.x= 0;
-    DeckOfPlants[0].format.y= 0;
-    DeckOfPlants[0].type = TYPE_SUNFLOWER;
-    DeckOfPlants[0].cost = COST_SUNFLOWER;
-    DeckOfPlants[0].color = BROWN; 
-    DeckOfPlants[0].actionTime=ACTION_TIME_SUNFLOWER;
-    DeckOfPlants[0].existanceTime=0;
-    DeckOfPlants[0].referenceTime=0;
-    DeckOfPlants[0].existanceTime=0;
-    DeckOfPlants[0].health=HEALTH_OF_SUNFLOWER;
-    //----
-     DeckOfPlants[1].format.height= initialLawnHeightValue-20;
-    DeckOfPlants[1].format.width= initialLawnWidthValue-20;
-    DeckOfPlants[1].format.x= 0;
-    DeckOfPlants[1].format.y= 0;
-    DeckOfPlants[1].type = TYPE_GREEN_PEASHOOTER;
-    DeckOfPlants[1].cost = COST_PEASHOOTER;
-    DeckOfPlants[1].color = BLUE; 
-    DeckOfPlants[1].actionTime=ACTION_TIME_PEASHOOTER;
-    DeckOfPlants[1].existanceTime=0;
-    DeckOfPlants[1].referenceTime=0;
-    DeckOfPlants[1].existanceTime=0;
-    DeckOfPlants[1].health=HEALTH_OF_GREEN_PEASHOOTER;
+DeckOfPlants[0] = PLANT_SUNFLOWER;
+DeckOfPlants[1] = PLANT_GREEN_PEASHOOTER;
+   
 //used to track which card is selected. If card is all nulled, then there's no card selected
 Plant cardSelected = {0};
 //used to track which plants are deployed in the field(lawn)
@@ -791,13 +806,13 @@ Plant plantArr[numberLawnRows][numberLawnColumns]={0};
     //array to track the suns, if the x and y coordinates are "-1", then we consider it an empty sun
     Rectangle sunArray[MAX_SUN_IN_SCREEN]={0};
     //array to track the quantity of sun that the player has
-    unsigned int sunGamingStorage=500;
+    unsigned int sunGamingStorage=100000;
     //array to track when a sun hits the ground
     float groundOfTheSuns[MAX_SUN_IN_SCREEN]={0};
     //indexToTrack the end of the array
     int indexOfNextSun = 0;
     //time of spawn of suns = 15s
-    double spawnRateSun = 1.0;   
+    double spawnRateSun = 4.0;   
     //initializing the size of all suns
     for (int i=0;i<MAX_SUN_IN_SCREEN;i++){
         sunArray[i].height = 20;
@@ -813,6 +828,7 @@ int indexOfNextPea = 0;
 //ZOMBIE
 Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]={0};
 int indexOfNextZombie=0;
+double spawnRateZombie = 4.0;
     // Main game loop
     while (!exitWindow)    // Detect window close button or ESC key
     {
@@ -904,7 +920,7 @@ int indexOfNextZombie=0;
             {
                 // TODO: Update GAMEPLAY screen variables here!
                 previousScreen=currentScreen;
-                updateZombiesAndProjectiles(plantArr,peaShotsArr,zombieArr,&indexOfNextPea,&indexOfNextZombie);
+                updateZombiesAndProjectiles(plantArr,peaShotsArr,zombieArr,occupationOfLawn,&indexOfNextPea,&indexOfNextZombie);
                 UpdateExistanceTime(plantArr);
                 updateSunsPosition(sunArray,indexOfNextSun,groundOfTheSuns);
                 for(int i=0;i<numberLawnRows;i++){
@@ -916,11 +932,15 @@ int indexOfNextZombie=0;
                     }
                 }
                 double timeSpawnSunTracking =GetTime();
+                double timeSpawnZombieTracking =GetTime();
                 //spawn of the suns
-                if((timeSpawnSunTracking-startTime>spawnRateSun)&&indexOfNextSun<MAX_SUN_IN_SCREEN){
+                if((timeSpawnSunTracking-startTimeForNaturalSunSpawn>spawnRateSun)&&indexOfNextSun<MAX_SUN_IN_SCREEN){
                     AddRandomlySunToArr(sunArray, &indexOfNextSun,lawnRectangles,groundOfTheSuns);
+                    startTimeForNaturalSunSpawn=GetTime();
+                }
+                if((timeSpawnZombieTracking-startTimeForZombieSpawn>spawnRateZombie)&&indexOfNextZombie<SIZE_OF_ZOMBIES_ARR){
                     AddZombieToZombiesArrRandomly(zombieArr,&indexOfNextZombie,lawnRectangles);
-                    startTime=GetTime();
+                    startTimeForZombieSpawn=GetTime();
                 }
                 if(collectSun(sunArray,&indexOfNextSun,groundOfTheSuns)){
                     addSunToStorage(&sunGamingStorage);
