@@ -884,6 +884,15 @@ Vector2 origin = {0,0};
     //sun
         Texture2D TEXTURE_SUN_IMG = LoadTexture("./resources/sprites/sun.png");
 
+    //lawn
+        //dirt
+            Texture2D TEXTURE_DIRT_IMG = LoadTexture("./resources/sprites/dirt.png");
+                Rectangle TEXTURE_DIRT_IMG_SOURCE_REC = {.height=TEXTURE_DIRT_IMG.height,.width=TEXTURE_DIRT_IMG.width,.x=0,.y=0};
+
+        //grass
+            Texture2D TEXTURE_GRASS_IMG = LoadTexture("./resources/sprites/grass.png");
+                Rectangle TEXTURE_GRASS_IMG_SOURCE_REC = {.height=TEXTURE_GRASS_IMG.height,.width=TEXTURE_GRASS_IMG.width,.x=0,.y=0};
+
 
 //----------------------------------
 
@@ -1351,18 +1360,20 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                     //Lawn drawing
                     for(int i=0;i<NUMBER_ROWS_LAWN;i++){
                         for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
-                            //if "i" is odd, if "j" is odd, darkgreen, else, lightgreen
+                            //if "i" is odd, if "j" is odd, dirt, else, grass
                             if(i&1){
                                 if(j&1){
-                                    DrawRectangleRec( lawnRectangles[i][j], DARKGREEN);
+                                    DrawTexturePro(TEXTURE_DIRT_IMG,TEXTURE_DIRT_IMG_SOURCE_REC,lawnRectangles[i][j],origin,0.0f,WHITE);
+                                    // DrawRectangleRec( lawnRectangles[i][j], dirt);
                                 }else{
-                                    DrawRectangleRec( lawnRectangles[i][j], GREEN);
+                                    // DrawRectangleRec( lawnRectangles[i][j], grass);
+                                    DrawTexturePro(TEXTURE_GRASS_IMG,TEXTURE_GRASS_IMG_SOURCE_REC,lawnRectangles[i][j],origin,0.0f,WHITE);
                                 }
                             }else{
                                 if(j&1){
-                                    DrawRectangleRec( lawnRectangles[i][j], GREEN);
+                                    DrawTexturePro(TEXTURE_GRASS_IMG,TEXTURE_GRASS_IMG_SOURCE_REC,lawnRectangles[i][j],origin,0.0f,WHITE);
                                 }else{
-                                    DrawRectangleRec( lawnRectangles[i][j], DARKGREEN);
+                                    DrawTexturePro(TEXTURE_DIRT_IMG,TEXTURE_DIRT_IMG_SOURCE_REC,lawnRectangles[i][j],origin,0.0f,WHITE);
                                 }
                             }
                             //tracking hover over the options
@@ -1460,6 +1471,8 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     UnloadTexture(TEXTURE_BACKGROUND_IMG);
     UnloadTexture(TEXTURE_GAMING_BACKGROUND_IMG);
     UnloadTexture(TEXTURE_SUN_IMG);
+    UnloadTexture(TEXTURE_GRASS_IMG);
+    UnloadTexture(TEXTURE_DIRT_IMG);
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
