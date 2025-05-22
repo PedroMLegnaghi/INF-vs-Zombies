@@ -12,23 +12,19 @@
 #define MAX_SIZE_OF_NAME 15
 #define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
 #define GAMING_MENU_OPTIONS_QUANTITY 3 //resume, configurations and exit
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 580
+#define SCREEN_WIDTH 920
+#define SCREEN_HEIGHT 800 
 #define TARGET_FPS 60
 #define NUMBER_COLUMN_LAWN 9
 #define NUMBER_ROWS_LAWN 5
 #define VALUE_OF_EACH_SUN 25
 
-//Btn display
-#define BTN_WIDTH 280
-#define BTN_HEIGHT 120
-int BTN_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
 
 //Sizes of arrays
 #define SIZE_OF_SUN_ARR 100 //maximum quantity of suns in screen
 #define SIZE_OF_DECK 2 
 #define SIZE_OF_ZOMBIES_ARR 100 //maximum quantity of zombies in screen
-#define SIZE_OF_PEASHOT_ARR 300 //maximum quantity of peashots in screen
+#define SIZE_OF_PEASHOT_ARR 1000 //maximum quantity of peashots in screen
 
 //Constants of lawn display
 const int DISTANCE_LAWN_RIGHT_EDGE = (0.025)*SCREEN_WIDTH;
@@ -449,28 +445,30 @@ void shootPea(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],PeaShot peaSh
             // if the plant is a green peashooter and is not a empty (nulled) plant
             if (plantArr[i][j].type == TYPE_GREEN_PEASHOOTER&&plantArr[i][j].format.x != NULL_PLANT.format.x)
             {
-                // if it's time to shoot a pea
-                if (plantArr[i][j].actionTime <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime))
-                {
-                    // update reference time properly, to enable the tracking of the next time to shot a pea for that plant
-                    UpdateReferenceTime(&plantArr[i][j]);
-
-                    // shot the pea (accordingly to it's type, in that case, normal_green_peashooteer) at a position near the green peashooter
-                    float x = plantArr[i][j].format.x + 5;
-                    float y = plantArr[i][j].format.y + (LAWN_HEIGHT_VALUE/2);
-                    PeaShot pea = NORMAL_GREEN_PEASHOT;
-                    pea.format.x=x;
-                    pea.format.y=y;
-                    pea.rowOfShot=i;
-
-                    //add that pea to the arr
-                    addPeaToArr(peaShotsArr,pea,indexOfNextPea);
+                if(*indexOfNextPea<SIZE_OF_PEASHOT_ARR){
+                    // if it's time to shoot a pea
+                        if (plantArr[i][j].actionTime <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime))
+                        {
+                            // update reference time properly, to enable the tracking of the next time to shot a pea for that plant
+                            UpdateReferenceTime(&plantArr[i][j]);
+                            
+                            // shot the pea (accordingly to it's type, in that case, normal_green_peashooteer) at a position near the green peashooter
+                            float x = plantArr[i][j].format.x + 5;
+                            float y = plantArr[i][j].format.y + (LAWN_HEIGHT_VALUE/2);
+                            PeaShot pea = NORMAL_GREEN_PEASHOT;
+                            pea.format.x=x;
+                            pea.format.y=y;
+                            pea.rowOfShot=i;
+                            
+                            //add that pea to the arr
+                            addPeaToArr(peaShotsArr,pea,indexOfNextPea);
+                        }
+                    }
                 }
             }
         }
     }
-}
-
+    
 //DrawPeShots: Draw all Peas of array of peas until the last element
 void DrawPeaShots (PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR],int indexOfNextPea){
     for(int i=0;i<indexOfNextPea;i++)
@@ -653,7 +651,7 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
         }
 
         //verifies if zombie has gone out of the screen, return true
-            if (zombieArr[i].format.x < -10){
+            if (zombieArr[i].format.x <= 0){
                 return 1;
             } 
 
@@ -871,7 +869,13 @@ int main (void){
 
 //----------------------------------
 
+//margin from title from homepage and menu
+const int marginFromTitle=180;
 
+//Btn display
+int BTN_WIDTH =SCREEN_WIDTH/3.5;
+int BTN_HEIGHT =(SCREEN_WIDTH-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY-35;
+int BTN_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
 
 //--HomePage
 
@@ -885,8 +889,6 @@ int main (void){
         homePageOptions[3]= CONFIGURATIONS;
         homePageOptions[4]= EXIT;
 
-//margin from title
-const int marginFromTitle=110
         //Filling the homePageOptionsRec 
         for (int i=0;i<HOME_PAGE_OPTIONS_QUANTITY;i++){
             homePageOptionsRec[i].height = BTN_HEIGHT;
@@ -913,7 +915,7 @@ const int marginFromTitle=110
             gamingMenuOptionsRec[i].height = BTN_HEIGHT;
             gamingMenuOptionsRec[i].width = BTN_WIDTH;
 
-gamingMenuOptionsRec[i].x=BTN_X-CENTERED;
+gamingMenuOptionsRec[i].x=BTN_CENTERED_X;
 
 gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMING_MENU_OPTIONS_QUANTITY)*i;
         }
@@ -988,7 +990,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     //array to track the suns, if the x and y coordinates are "-1", then we consider it an empty sun
     Rectangle sunArray[SIZE_OF_SUN_ARR]={0};
     //array to track the quantity of sun that the player has
-    unsigned int sunGamingStorage=0;
+    unsigned int sunGamingStorage=800;
     //array to track when a sun hits the ground
     float groundOfTheSuns[SIZE_OF_SUN_ARR]={0};
     //indexToTrack the end of the array
