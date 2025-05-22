@@ -11,6 +11,7 @@
   "files.associations": {
     "*.ejs": "html",
     "random": "c",
-    "*.m": "c"
+    "*.m": "c",
+    "variant": "c"
   }
 }
