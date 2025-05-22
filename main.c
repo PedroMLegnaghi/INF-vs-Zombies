@@ -12,8 +12,8 @@
 #define MAX_SIZE_OF_NAME 15
 #define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
 #define GAMING_MENU_OPTIONS_QUANTITY 3 //resume, configurations and exit
-#define SCREEN_WIDTH 920
-#define SCREEN_HEIGHT 800 
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 580
 #define TARGET_FPS 60
 #define NUMBER_COLUMN_LAWN 9
 #define NUMBER_ROWS_LAWN 5
@@ -45,7 +45,13 @@ const int DECK_ELEMENT_HEIGHT_VALUE = 70;
 //User's Mouse
 Vector2 mousePoint = { 0.0f, 0.0f }; 
 
-
+//ScreenRectangle(used to display textures)
+const Rectangle SCREEN_RECTANGLE={
+    .height=SCREEN_HEIGHT,
+    .width=SCREEN_WIDTH,
+    .x=0,
+    .y=0
+};
 
 // ================================================================================================================================================
 // ================================================================================================================================================
@@ -858,23 +864,23 @@ int main (void){
 
 
 //--textures
+Vector2 origin = {0,0};
 
+Texture2D TEXTURE_BACKGROUND_IMG = LoadTexture("./resources/sprites/menu-background.png");
+    Rectangle TEXTURE_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_BACKGROUND_IMG.height,.width=TEXTURE_BACKGROUND_IMG.width,.x=0,.y=0};
 
+Texture2D TEXTURE_GAMING_BACKGROUND_IMG = LoadTexture("./resources/sprites/background.png");
+    Rectangle TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_GAMING_BACKGROUND_IMG.height,.width=TEXTURE_GAMING_BACKGROUND_IMG.width,.x=0,.y=0};
 
 //----------------------------------
 
-//--images
-
-
-
-//----------------------------------
 
 //margin from title from homepage and menu
-const int marginFromTitle=180;
+const int marginFromTitle=150;
 
 //Btn display
 int BTN_WIDTH =SCREEN_WIDTH/3.5;
-int BTN_HEIGHT =(SCREEN_WIDTH-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY-35;
+int BTN_HEIGHT =(SCREEN_WIDTH-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY-60;
 int BTN_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
 
 //--HomePage
@@ -894,7 +900,7 @@ int BTN_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
             homePageOptionsRec[i].height = BTN_HEIGHT;
             homePageOptionsRec[i].width = BTN_WIDTH;
             homePageOptionsRec[i].x=BTN_CENTERED_X;
-            homePageOptionsRec[i].y = marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY)*i;
+            homePageOptionsRec[i].y = marginFromTitle+(((SCREEN_HEIGHT-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY))*i+5*i;
         }
 
 //---------
@@ -1270,7 +1276,8 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                     // TODO: Draw HOMEPAGE screen here!
 
                     //Background
-                    DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GREEN);
+                    DrawTexturePro(TEXTURE_BACKGROUND_IMG,TEXTURE_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
+                    // DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GREEN);
 
                     //homePageOptions
                     for(int i=0;i<HOME_PAGE_OPTIONS_QUANTITY;i++){
@@ -1281,12 +1288,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                             DrawRectangleRec(homePageOptionsRec[i], RED);
                         }
                     }
-                    DrawText("INF vs ZOMBIES", (SCREEN_WIDTH-MeasureText("INF vs ZOMBIES",40))/2, 20, 40, DARKGREEN);
-                    DrawText("PLAY", BTN_CENTERED_X, 120, 20, DARKGREEN);
-                    DrawText("LEADERBOARD", BTN_CENTERED_X, 180, 20, DARKGREEN);
-                    DrawText("ABOUT", BTN_CENTERED_X, 240, 20, DARKGREEN);
-                    DrawText("CONFIGURATIONS", BTN_CENTERED_X, 300, 20, DARKGREEN);
-                    DrawText("EXIT", BTN_CENTERED_X, 360, 20, DARKGREEN);
+                 
 
                 } break;
                 case USER_DATA:
@@ -1336,7 +1338,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 case GAMEPLAY:
                 {
                     //TODO:Draw GAMEPLAY screen here!
-
+                    DrawTexturePro(TEXTURE_GAMING_BACKGROUND_IMG,TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
                     //Lawn drawing
                     for(int i=0;i<NUMBER_ROWS_LAWN;i++){
                         for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
@@ -1393,6 +1395,8 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
                 case MENU:{
                     
+                    //Background 
+                    DrawTexturePro(TEXTURE_BACKGROUND_IMG,TEXTURE_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
                     //Drawing Menu options
                     for(int i=0;i<GAMING_MENU_OPTIONS_QUANTITY;i++){
                         DrawRectangleRec(gamingMenuOptionsRec[i], WHITE);
@@ -1402,10 +1406,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                              DrawRectangleRec(gamingMenuOptionsRec[i], RED);
                             }
                         }
-                        DrawText("INF vs ZOMBIES",  (SCREEN_WIDTH-MeasureText("INF vs ZOMBIES",40))/2, 20, 40, DARKGREEN);
-                        DrawText("RESUME", BTN_CENTERED_X, 120, 20, DARKGREEN);
-                        DrawText("CONFIGURATIONS", BTN_CENTERED_X, 180, 20, DARKGREEN);
-                        DrawText("EXIT", BTN_CENTERED_X, 240, 20, DARKGREEN);
+                     
 
 
                 }break;
@@ -1447,7 +1448,8 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     // De-Initialization
     //--------------------------------------------------------------------------------------
     // TODO: Unload all loaded data (textures, fonts, audio) here!
-
+    UnloadTexture(TEXTURE_BACKGROUND_IMG);
+    UnloadTexture(TEXTURE_GAMING_BACKGROUND_IMG);
 
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
