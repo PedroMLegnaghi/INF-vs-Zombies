@@ -18,7 +18,8 @@
 #define NUMBER_COLUMN_LAWN 9
 #define NUMBER_ROWS_LAWN 5
 #define VALUE_OF_EACH_SUN 25
-
+#define SUN_HEIGHT 30
+#define SUN_WIDTH 30
 
 //Sizes of arrays
 #define SIZE_OF_SUN_ARR 100 //maximum quantity of suns in screen
@@ -264,11 +265,11 @@ const Zombie NULL_ZOMBIE={
 
 //AddSunToArray:
 //Given an array of suns, the index of the next sun, the array of lawns, the array of grounds of suns and the proprieties of Rectangle, add that sun to the array of suns 
-void AddSunToArray(Rectangle array_of_suns[SIZE_OF_SUN_ARR],  int *indexOfNextSun,Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],int rowOfGround,int columnOfGround,float groundOfTheSuns[SIZE_OF_SUN_ARR], int x, int y, int width, int height) {
+void AddSunToArray(Rectangle array_of_suns[SIZE_OF_SUN_ARR],  int *indexOfNextSun,Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],int rowOfGround,int columnOfGround,float groundOfTheSuns[SIZE_OF_SUN_ARR], int x, int y) {
     array_of_suns[*indexOfNextSun].x = x;
         array_of_suns[*indexOfNextSun].y =  y;
-        array_of_suns[*indexOfNextSun].width = width;
-        array_of_suns[*indexOfNextSun].height = height;
+        array_of_suns[*indexOfNextSun].width = SUN_WIDTH;
+        array_of_suns[*indexOfNextSun].height = SUN_HEIGHT;
         groundOfTheSuns[*indexOfNextSun] =  lawn_array[rowOfGround][columnOfGround].y;
 
         *indexOfNextSun+=1;
@@ -283,7 +284,7 @@ void AddRandomlySunToArr(Rectangle array_of_suns[SIZE_OF_SUN_ARR],  int *indexOf
     //chooses a number beetwen 0 and NUMBER_COLUMN_LAWN
     int column = rand() % (NUMBER_COLUMN_LAWN);
 
-    AddSunToArray(array_of_suns,indexOfNextSun,lawn_array,row,column,groundOfTheSuns,lawn_array[row][column].x,-20,20,20);
+    AddSunToArray(array_of_suns,indexOfNextSun,lawn_array,row,column,groundOfTheSuns,lawn_array[row][column].x,-20);
 }
 
 //updateSunsPosition:
@@ -343,11 +344,19 @@ void addSunToStorage(unsigned int *gamingSunStorage){
 
 //DrawSuns:
 //Given the array of suns of the game and the index of the sun, draw the suns
-void DrawSuns(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int indexOfNextSun){
+void DrawSuns(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int indexOfNextSun, Texture2D sunTexture){
+    Vector2 origin ={0,0};
+    Rectangle sunTextureSourceRectangle = {
+        .height=sunTexture.height,
+        .width = sunTexture.width,
+        .x=0,
+        .y=0
+    };
     for(int i = 0; i < indexOfNextSun; i++){
         if (array_of_suns[i].x != -1 && array_of_suns[i].y != -1) { //if the sun is not an invalid sun
-            DrawRectangle(array_of_suns[i].x, array_of_suns[i].y,
-                        array_of_suns[i].width, array_of_suns[i].height, YELLOW);//draw it
+            // DrawRectangle(array_of_suns[i].x, array_of_suns[i].y,
+            //             array_of_suns[i].width, array_of_suns[i].height, YELLOW);//draw it
+            DrawTexturePro(sunTexture,sunTextureSourceRectangle,array_of_suns[i],origin,0.0f,WHITE);
         }
     }
 }
@@ -424,7 +433,7 @@ void GenerateSunSunflower(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],R
                     float y = plantArr[i][j].format.y - 5;
 
                     //add that sun to the array of suns
-                    AddSunToArray(arr_of_suns, indexOfNextSun,lawn_array,i,j,groundOfTheSuns, (int)x, (int)y, 20, 20);
+                    AddSunToArray(arr_of_suns, indexOfNextSun,lawn_array,i,j,groundOfTheSuns, (int)x, (int)y);
 
                 }
             }
@@ -865,12 +874,16 @@ int main (void){
 
 //--textures
 Vector2 origin = {0,0};
+    //background
+        Texture2D TEXTURE_BACKGROUND_IMG = LoadTexture("./resources/sprites/menu-background.png");
+            Rectangle TEXTURE_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_BACKGROUND_IMG.height,.width=TEXTURE_BACKGROUND_IMG.width,.x=0,.y=0};
 
-Texture2D TEXTURE_BACKGROUND_IMG = LoadTexture("./resources/sprites/menu-background.png");
-    Rectangle TEXTURE_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_BACKGROUND_IMG.height,.width=TEXTURE_BACKGROUND_IMG.width,.x=0,.y=0};
+        Texture2D TEXTURE_GAMING_BACKGROUND_IMG = LoadTexture("./resources/sprites/background.png");
+            Rectangle TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_GAMING_BACKGROUND_IMG.height,.width=TEXTURE_GAMING_BACKGROUND_IMG.width,.x=0,.y=0};
 
-Texture2D TEXTURE_GAMING_BACKGROUND_IMG = LoadTexture("./resources/sprites/background.png");
-    Rectangle TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_GAMING_BACKGROUND_IMG.height,.width=TEXTURE_GAMING_BACKGROUND_IMG.width,.x=0,.y=0};
+    //sun
+        Texture2D TEXTURE_SUN_IMG = LoadTexture("./resources/sprites/sun.png");
+
 
 //----------------------------------
 
@@ -1003,11 +1016,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     int indexOfNextSun = 0;
     //time of spawn of suns = 15s
     double spawnRateSun = 8.0;   
-    //initializing the size of all suns
-    for (int i=0;i<SIZE_OF_SUN_ARR;i++){
-        sunArray[i].height = 20;
-        sunArray[i].width = 20;
-    }
+   
 
 
 //------------------------
@@ -1373,7 +1382,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                     DrawZombieArr(zombieArr,indexOfNextZombie);
 
                     //Suns
-                    DrawSuns(sunArray,indexOfNextSun);
+                    DrawSuns(sunArray,indexOfNextSun,TEXTURE_SUN_IMG);
 
                     //Gaming deck
                     DrawGamingDeck(DeckOfPlants,sunGamingStorage, &cardSelected);
@@ -1450,7 +1459,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     // TODO: Unload all loaded data (textures, fonts, audio) here!
     UnloadTexture(TEXTURE_BACKGROUND_IMG);
     UnloadTexture(TEXTURE_GAMING_BACKGROUND_IMG);
-
+    UnloadTexture(TEXTURE_SUN_IMG);
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
