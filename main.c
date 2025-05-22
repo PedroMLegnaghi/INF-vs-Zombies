@@ -20,8 +20,8 @@
 #define VALUE_OF_EACH_SUN 25
 
 //Btn display
-#define BTN_WIDTH 240
-#define BTN_HEIGHT 40
+#define BTN_WIDTH 280
+#define BTN_HEIGHT 120
 int BTN_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
 
 //Sizes of arrays
@@ -885,12 +885,14 @@ int main (void){
         homePageOptions[3]= CONFIGURATIONS;
         homePageOptions[4]= EXIT;
 
+//margin from title
+const int marginFromTitle=110
         //Filling the homePageOptionsRec 
         for (int i=0;i<HOME_PAGE_OPTIONS_QUANTITY;i++){
             homePageOptionsRec[i].height = BTN_HEIGHT;
             homePageOptionsRec[i].width = BTN_WIDTH;
             homePageOptionsRec[i].x=BTN_CENTERED_X;
-            homePageOptionsRec[i].y = 110+60*i;
+            homePageOptionsRec[i].y = marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY)*i;
         }
 
 //---------
@@ -910,8 +912,10 @@ int main (void){
         for (int i=0;i<GAMING_MENU_OPTIONS_QUANTITY;i++){
             gamingMenuOptionsRec[i].height = BTN_HEIGHT;
             gamingMenuOptionsRec[i].width = BTN_WIDTH;
-            gamingMenuOptionsRec[i].x=BTN_CENTERED_X;
-            gamingMenuOptionsRec[i].y = 110+60*i;
+
+gamingMenuOptionsRec[i].x=BTN_X-CENTERED;
+
+gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMING_MENU_OPTIONS_QUANTITY)*i;
         }
 
 //---------------------------
