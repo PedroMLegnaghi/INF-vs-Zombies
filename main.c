@@ -873,6 +873,7 @@ int main (void){
 
 
 //--textures
+
 Vector2 origin = {0,0};
     //background
         Texture2D TEXTURE_BACKGROUND_IMG = LoadTexture("./resources/sprites/menu-background.png");
@@ -892,6 +893,25 @@ Vector2 origin = {0,0};
         //grass
             Texture2D TEXTURE_GRASS_IMG = LoadTexture("./resources/sprites/grass.png");
                 Rectangle TEXTURE_GRASS_IMG_SOURCE_REC = {.height=TEXTURE_GRASS_IMG.height,.width=TEXTURE_GRASS_IMG.width,.x=0,.y=0};
+
+    //buttons
+            Texture2D TEXTURE_EXIT_BTN_IMG = LoadTexture("./resources/sprites/exit-button.png");
+                Rectangle TEXTURE_EXIT_BTN_IMG_SOURCE_REC = {.height=TEXTURE_EXIT_BTN_IMG.height,.width=TEXTURE_EXIT_BTN_IMG.width,.x=0,.y=0};
+
+            Texture2D TEXTURE_LEADERBOARD_BTN_IMG = LoadTexture("./resources/sprites/leaderboard-button.png");
+                Rectangle TEXTURE_LEADERBOARD_BTN_IMG_SOURCE_REC = {.height=TEXTURE_LEADERBOARD_BTN_IMG.height,.width=TEXTURE_LEADERBOARD_BTN_IMG.width,.x=0,.y=0};
+
+            Texture2D TEXTURE_PLAY_BTN_IMG = LoadTexture("./resources/sprites/play-button.png");
+                Rectangle TEXTURE_PLAY_BTN_IMG_SOURCE_REC = {.height=TEXTURE_PLAY_BTN_IMG.height,.width=TEXTURE_PLAY_BTN_IMG.width,.x=0,.y=0};
+
+            Texture2D TEXTURE_CONFIGURATIONS_BTN_IMG = LoadTexture("./resources/sprites/menu-button.png");
+                Rectangle TEXTURE_CONFIGURATIONS_BTN_IMG_SOURCE_REC = {.height=TEXTURE_CONFIGURATIONS_BTN_IMG.height,.width=TEXTURE_CONFIGURATIONS_BTN_IMG.width,.x=0,.y=0};
+
+            Texture2D TEXTURE_ABOUT_BTN_IMG = LoadTexture("./resources/sprites/menu-button.png");
+                Rectangle TEXTURE_ABOUT_BTN_IMG_SOURCE_REC = {.height=TEXTURE_ABOUT_BTN_IMG.height,.width=TEXTURE_ABOUT_BTN_IMG.width,.x=0,.y=0};
+
+            Texture2D TEXTURE_RESUME_BTN_IMG = LoadTexture("./resources/sprites/menu-button.png");
+                Rectangle TEXTURE_RESUME_BTN_IMG_SOURCE_REC = {.height=TEXTURE_RESUME_BTN_IMG.height,.width=TEXTURE_RESUME_BTN_IMG.width,.x=0,.y=0};
 
 
 //----------------------------------
@@ -1297,16 +1317,12 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                     DrawTexturePro(TEXTURE_BACKGROUND_IMG,TEXTURE_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
                     // DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GREEN);
 
-                    //homePageOptions
-                    for(int i=0;i<HOME_PAGE_OPTIONS_QUANTITY;i++){
-                        DrawRectangleRec(homePageOptionsRec[i], WHITE);
-                         DrawRectangleLines(homePageOptionsRec[i].x, homePageOptionsRec[i].y, homePageOptionsRec[i].width, homePageOptionsRec[i].height, BLACK);
-                        //tracking hover over the options
-                        if(homePageOptionsRecHover[i]==true){
-                            DrawRectangleRec(homePageOptionsRec[i], RED);
-                        }
-                    }
-                 
+                    
+                    DrawTexturePro(TEXTURE_PLAY_BTN_IMG,TEXTURE_PLAY_BTN_IMG_SOURCE_REC,homePageOptionsRec[0],origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_LEADERBOARD_BTN_IMG,TEXTURE_LEADERBOARD_BTN_IMG_SOURCE_REC,homePageOptionsRec[1],origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_ABOUT_BTN_IMG,TEXTURE_ABOUT_BTN_IMG_SOURCE_REC,homePageOptionsRec[2],origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_CONFIGURATIONS_BTN_IMG,TEXTURE_CONFIGURATIONS_BTN_IMG_SOURCE_REC,homePageOptionsRec[3],origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_EXIT_BTN_IMG,TEXTURE_EXIT_BTN_IMG_SOURCE_REC,homePageOptionsRec[4],origin,0.0f,WHITE);
 
                 } break;
                 case USER_DATA:
@@ -1418,15 +1434,9 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                     //Background 
                     DrawTexturePro(TEXTURE_BACKGROUND_IMG,TEXTURE_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
                     //Drawing Menu options
-                    for(int i=0;i<GAMING_MENU_OPTIONS_QUANTITY;i++){
-                        DrawRectangleRec(gamingMenuOptionsRec[i], WHITE);
-                         DrawRectangleLines(gamingMenuOptionsRec[i].x, gamingMenuOptionsRec[i].y, gamingMenuOptionsRec[i].width, gamingMenuOptionsRec[i].height, BLACK);
-                         //tracking hover over the options
-                         if(gamingMenuOptionsRecHover[i]==true){
-                             DrawRectangleRec(gamingMenuOptionsRec[i], RED);
-                            }
-                        }
-                     
+                    DrawTexturePro(TEXTURE_RESUME_BTN_IMG,TEXTURE_RESUME_BTN_IMG_SOURCE_REC,homePageOptionsRec[0],origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_CONFIGURATIONS_BTN_IMG,TEXTURE_CONFIGURATIONS_BTN_IMG_SOURCE_REC,homePageOptionsRec[1],origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_EXIT_BTN_IMG,TEXTURE_EXIT_BTN_IMG_SOURCE_REC,homePageOptionsRec[2],origin,0.0f,WHITE);                     
 
 
                 }break;
@@ -1473,6 +1483,12 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     UnloadTexture(TEXTURE_SUN_IMG);
     UnloadTexture(TEXTURE_GRASS_IMG);
     UnloadTexture(TEXTURE_DIRT_IMG);
+    UnloadTexture(TEXTURE_EXIT_BTN_IMG);
+    UnloadTexture(TEXTURE_PLAY_BTN_IMG);
+    UnloadTexture(TEXTURE_LEADERBOARD_BTN_IMG);
+    UnloadTexture(TEXTURE_CONFIGURATIONS_BTN_IMG);
+    UnloadTexture(TEXTURE_ABOUT_BTN_IMG);
+    UnloadTexture(TEXTURE_RESUME_BTN_IMG);
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
