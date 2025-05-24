@@ -122,6 +122,7 @@ typedef enum {
     bool isAttacking;
     //damage is given in damage/frames
     float damage;
+    Texture2D texture;
 }Zombie;
 //----------------------
 
@@ -137,7 +138,7 @@ typedef struct
     float velocity;
     //usedto optimize the verification of colision with zombies
     int rowOfShot;
-
+    Texture2D texture;
 }PeaShot;
 
 //-----------------
@@ -158,8 +159,9 @@ typedef struct
     double referenceTime;
     Color color;
     int rowOfPlant;
+    Texture2D texture;
+    PeaShot peashot;
     //sound?
-    //png?
     
 }Plant;
 
@@ -176,79 +178,17 @@ typedef struct
 //PLANT
 const Plant NULL_PLANT ={0};
 
-const Plant PLANT_SUNFLOWER={
-    .format.height= LAWN_HEIGHT_VALUE-20,
-    .format.width= LAWN_WIDTH_VALUE-20,
-    .format.x= 0,
-    .format.y= 0,
-    .type = TYPE_SUNFLOWER,
-    .cost = COST_SUNFLOWER,
-    .color = BROWN, 
-    .actionTime=ACTION_TIME_SUNFLOWER,
-    .existanceTime=0,
-    .referenceTime=0,
-    .existanceTime=0,
-    .health=HEALTH_OF_SUNFLOWER
-};
 
-const Plant PLANT_GREEN_PEASHOOTER={
-    .format.height= LAWN_HEIGHT_VALUE-20,
-    .format.width= LAWN_WIDTH_VALUE-20,
-    .format.x= 0,
-    .format.y= 0,
-    .type = TYPE_GREEN_PEASHOOTER,
-    .cost = COST_PEASHOOTER,
-    .color = BLUE, 
-    .actionTime=ACTION_TIME_PEASHOOTER,
-    .existanceTime=0,
-    .referenceTime=0,
-    .existanceTime=0,
-    .health=HEALTH_OF_GREEN_PEASHOOTER
-};
 //------------------
 
 //PEASHOT
 const PeaShot NULL_PEA={0};
-const PeaShot NORMAL_GREEN_PEASHOT={
-    .damage=20,
-    .format={
-        .height=5,
-        .width=5,
-        .x=0,
-        .y=0
-    },
-    .color=WHITE,
-    .velocity=1,
-    .rowOfShot=0
-};
+
 //----------------
 
 //ZOMBIE
-const Zombie NORMAL_ZOMBIE={
-    .color=GRAY,
-    .velocity = 0.5,
-    .health =100,
-    .rowOfZombie=-1,
-    .format={
-        //make zombie appear from outside of the window
-        .x=SCREEN_WIDTH+30,
-        .y=0,
-        .width=20,
-        .height=LAWN_Y_VALUE
-    },
-    .isAttacking=0,
-    //damage=20/second
-    .damage =0.33
-};
-const Zombie NULL_ZOMBIE={
-    .color=0,
-    .format={0},
-    .health=0,
-    .rowOfZombie=0,
-    .velocity=0,
-    .isAttacking=0,
-    .damage=0
-};
+
+const Zombie NULL_ZOMBIE={0};
 //--------------------------------
 
 //================================================================================================================================================
@@ -401,7 +341,15 @@ void DrawPlants(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]){
         for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
             //if the plant [i][j] isn't empty(NULLED)
             if(plantArr[i][j].format.x!=NULL_PLANT.format.x){
-                DrawRectangleRec(plantArr[i][j].format,plantArr[i][j].color );
+                Vector2 origin = {0,0};
+                Rectangle PlantTextureSourceRectangle = {
+                    .width=plantArr[i][j].texture.width,
+                    .height=plantArr[i][j].texture.height,
+                    .y=0,
+                    .x=0
+                };
+                 DrawTexturePro(plantArr[i][j].texture,PlantTextureSourceRectangle,plantArr[i][j].format,origin,0.0f,WHITE);
+                // DrawRectangleRec(plantArr[i][j].format,plantArr[i][j].color );
             }
         }
     }
@@ -468,9 +416,9 @@ void shootPea(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],PeaShot peaSh
                             UpdateReferenceTime(&plantArr[i][j]);
                             
                             // shot the pea (accordingly to it's type, in that case, normal_green_peashooteer) at a position near the green peashooter
-                            float x = plantArr[i][j].format.x + 5;
-                            float y = plantArr[i][j].format.y + (LAWN_HEIGHT_VALUE/2);
-                            PeaShot pea = NORMAL_GREEN_PEASHOT;
+                            float x = plantArr[i][j].format.x+plantArr[i][j].format.width;
+                            float y = plantArr[i][j].format.y+15;
+                            PeaShot pea = plantArr[i][j].peashot;
                             pea.format.x=x;
                             pea.format.y=y;
                             pea.rowOfShot=i;
@@ -486,9 +434,16 @@ void shootPea(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],PeaShot peaSh
     
 //DrawPeShots: Draw all Peas of array of peas until the last element
 void DrawPeaShots (PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR],int indexOfNextPea){
+    Vector2 origin ={0,0};
     for(int i=0;i<indexOfNextPea;i++)
     {
-        DrawRectangleRec(peaShotsArr[i].format, peaShotsArr[i].color);
+        Rectangle texture_source_rectangle = {
+            .width = peaShotsArr[i].texture.width,
+            .height = peaShotsArr[i].texture.height,
+            .x=0,
+            .y=0
+        };
+        DrawTexturePro(peaShotsArr[i].texture,texture_source_rectangle,peaShotsArr[i].format,origin,0.0f,WHITE);
     }
 }
 
@@ -520,7 +475,11 @@ void RemovePeaFromArr(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int indexOfPeaTo
 
 //DrawZombie: Draw a given zombie
 void DrawZombie(Zombie zombie){
-    DrawRectangleRec(zombie.format, zombie.color);
+    Vector2 origin ={0,0};
+    Rectangle TEXTURE_ZOMBIE_IMG_SOURCE_REC = {.height=zombie.texture.height,.width=zombie.texture.width,.x=0,.y=0};
+    
+    DrawTexturePro(zombie.texture,TEXTURE_ZOMBIE_IMG_SOURCE_REC,zombie.format,origin,0.0f,WHITE);
+
 }
 
 //DrawZombieArr: Given the array of zombies and the indexOfNextZombies, draw them in the scren
@@ -547,8 +506,8 @@ void AddZombieToZombiesArr(Zombie zombie, Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR]
 }
 
 //AddZombiesToZomviesArrRandomly: Add a random zombie at a random position to the array
-void AddZombieToZombiesArrRandomly( Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR], int *indexOfNextZombie,Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]){
-    Zombie zombie = NORMAL_ZOMBIE;
+void AddZombieToZombiesArrRandomly( Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR],Zombie zombieToBeGenerated, int *indexOfNextZombie,Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]){
+    Zombie zombie = zombieToBeGenerated;
     //generating zombie's row randomly
     int row = rand() % (NUMBER_ROWS_LAWN);
     zombie.rowOfZombie=row;
@@ -743,6 +702,7 @@ void DrawMoldureOfSelectedCard(Plant cardSelected){
 //DrawGamingDeck:
 //given the deck of plants, the quantity of suns adn the card selected, draw the interface, checking if one card is being hovered and highlightening it, and updating the card selected(if needed)
 void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSun, Plant *cardSelected){
+    Vector2 origin = {0,0};
     //Drawing the sun counter
     int DECK_RECTANGLE_X_VALUECpy = DECK_RECTANGLE_X_VALUE;
     //Drawing the rectangle that subscribes the sun counter
@@ -753,31 +713,31 @@ void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSu
     DrawRectangle(DECK_RECTANGLE_X_VALUE+5,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,DECK_ELEMENT_WIDTH_VALUE-10,30,RAYWHITE);
     DrawRectangleLines(DECK_RECTANGLE_X_VALUE+5,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,DECK_ELEMENT_WIDTH_VALUE-10,30,BLACK);
     DrawText(TextFormat(" %d", quantityOfSun),DECK_RECTANGLE_X_VALUE+20,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,20,BLACK);
+
     //Drawing the deck of plants
     for (int i=0;i<SIZE_OF_DECK;i++){
         DECK_RECTANGLE_X_VALUECpy+= DECK_ELEMENT_WIDTH_VALUE;
-        Plant plantBoxOfCard ={
-            .format={
-                .x= DECK_RECTANGLE_X_VALUECpy,
-                .y =DECK_RECTANGLE_Y_VALUE,
-                .width= DECK_ELEMENT_WIDTH_VALUE,
-                .height= DECK_ELEMENT_HEIGHT_VALUE
-            },
-            .color=DeckOfPlants[i].color,
-            .cost=DeckOfPlants[i].cost,
-            .type=DeckOfPlants[i].type,
-            .existanceTime=0,
-            .referenceTime=0,
-            .actionTime = DeckOfPlants[i].actionTime,
-            .creationTime = 0,
-            .health=DeckOfPlants[i].health
+        Plant plantBoxOfCard =DeckOfPlants[i];
+        plantBoxOfCard.format.x= DECK_RECTANGLE_X_VALUECpy;
+        plantBoxOfCard.format.y =DECK_RECTANGLE_Y_VALUE;
+        plantBoxOfCard.format.width= DECK_ELEMENT_WIDTH_VALUE;
+        plantBoxOfCard.format.height= DECK_ELEMENT_HEIGHT_VALUE;
+        plantBoxOfCard.existanceTime=0;
+        plantBoxOfCard.referenceTime=0;
+        plantBoxOfCard.creationTime = 0;
 
+        Rectangle textureSourceRectanglePlant = {
+            .height=DeckOfPlants[i].texture.height,
+            .width=DeckOfPlants[i].texture.width,
+            .x=0,
+            .y=0
         };
         DrawRectangleLines(DECK_RECTANGLE_X_VALUECpy,DECK_RECTANGLE_Y_VALUE,DECK_ELEMENT_WIDTH_VALUE,DECK_ELEMENT_HEIGHT_VALUE,BLACK);
         //if the box is being hovered,
         if (CheckCollisionPointRec(mousePoint, plantBoxOfCard.format)) {
             //highlight it
             DrawRectangleRec(plantBoxOfCard.format,GRAY);
+
             if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)||IsGestureDetected(KEY_ENTER)){
                 *cardSelected=plantBoxOfCard;
                 
@@ -787,7 +747,9 @@ void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSu
             DrawRectangleRec(plantBoxOfCard.format,MAROON);
         }
         //Drawing the plants within the boxes
-        DrawRectangle(DECK_RECTANGLE_X_VALUECpy+10,DECK_RECTANGLE_Y_VALUE+20,20,20,DeckOfPlants[i].color);
+        DrawTexturePro(plantBoxOfCard.texture,textureSourceRectanglePlant,plantBoxOfCard.format,origin,0.0f,WHITE);
+
+        // DrawRectangle(DECK_RECTANGLE_X_VALUECpy+10,DECK_RECTANGLE_Y_VALUE+20,20,20,DeckOfPlants[i].color);
     }
 }
 
@@ -832,8 +794,8 @@ void PutPlantToField
             //my selected card, by default, has, already, color, type, cost,height and width. But i doesn't have a proper x and y to be displayed on the lawn
             //              *add that plant to the array of plants
             Plant plant = *cardSelected;
-            plant.format.x=lawnRectangles[r][c].x;
-            plant.format.y=lawnRectangles[r][c].y;
+            plant.format.x=lawnRectangles[r][c].x+(lawnRectangles[r][c].width-plant.format.width)/2;
+            plant.format.y=lawnRectangles[r][c].y+(lawnRectangles[r][c].height-plant.format.height)/2;
             plant.creationTime=GetTime();
             plant.rowOfPlant = r;
             plantArr[r][c]=plant;
@@ -849,9 +811,9 @@ void PutPlantToField
 
         }
     }
-
-
 }
+
+
 //--------------------------------
 
 // ================================================================================================================================================================================================================================================
@@ -913,10 +875,85 @@ Vector2 origin = {0,0};
             Texture2D TEXTURE_RESUME_BTN_IMG = LoadTexture("./resources/sprites/menu-button.png");
                 Rectangle TEXTURE_RESUME_BTN_IMG_SOURCE_REC = {.height=TEXTURE_RESUME_BTN_IMG.height,.width=TEXTURE_RESUME_BTN_IMG.width,.x=0,.y=0};
 
+        //zombies
+            Texture2D TEXTURE_NORMAL_ZOMBIE_IMG = LoadTexture("./resources/sprites/zombie.png");
+
+        //plants
+
+            //sunflower
+            Texture2D TEXTURE_SUNFLOWER_IMG = LoadTexture("./resources/sprites/sunflower.png");
+
+            //Green peashooter
+            Texture2D TEXTURE_GREEN_PEASHOOTER_IMG = LoadTexture("./resources/sprites/peashooter.png");
+                //Green peashot
+                Texture2D TEXTURE_GREEN_PEASHOT_IMG = LoadTexture("./resources/sprites/peashooter-proj.png");
+
 
 //----------------------------------
+const int PLANT_WIDTH = LAWN_WIDTH_VALUE-40;
+const Plant PLANT_SUNFLOWER={
+    .format.height= LAWN_HEIGHT_VALUE-20,
+    .format.width= PLANT_WIDTH,
+    .format.x= 0,
+    .format.y= 0,
+    .type = TYPE_SUNFLOWER,
+    .cost = COST_SUNFLOWER,
+    .color = BROWN, 
+    .actionTime=ACTION_TIME_SUNFLOWER,
+    .existanceTime=0,
+    .referenceTime=0,
+    .existanceTime=0,
+    .health=HEALTH_OF_SUNFLOWER,
+    .texture = TEXTURE_SUNFLOWER_IMG
+    
+};
 
-
+const PeaShot NORMAL_GREEN_PEASHOT={
+    .damage=20,
+    .format={
+        .height=10,
+        .width=10,
+        .x=0,
+        .y=0
+    },
+    .color=WHITE,
+    .velocity=1,
+    .rowOfShot=0,
+    .texture = TEXTURE_GREEN_PEASHOT_IMG
+};
+const Plant PLANT_GREEN_PEASHOOTER={
+    .format.height= LAWN_HEIGHT_VALUE-20,
+    .format.width= PLANT_WIDTH,
+    .format.x= 0,
+    .format.y= 0,
+    .type = TYPE_GREEN_PEASHOOTER,
+    .cost = COST_PEASHOOTER,
+    .color = BLUE, 
+    .actionTime=ACTION_TIME_PEASHOOTER,
+    .existanceTime=0,
+    .referenceTime=0,
+    .existanceTime=0,
+    .health=HEALTH_OF_GREEN_PEASHOOTER,
+    .peashot = NORMAL_GREEN_PEASHOT,
+    .texture = TEXTURE_GREEN_PEASHOOTER_IMG
+};
+const Zombie NORMAL_ZOMBIE={
+    .color=GRAY,
+    .velocity = 0.5,
+    .health =100,
+    .rowOfZombie=-1,
+    .format={
+        //make zombie appear from outside of the window
+        .x=SCREEN_WIDTH+30,
+        .y=0,
+        .width=60,
+        .height=LAWN_Y_VALUE
+    },
+    .isAttacking=0,
+    //damage=20/second
+    .damage =0.33,
+    .texture = TEXTURE_NORMAL_ZOMBIE_IMG
+};
 //margin from title from homepage and menu
 const int marginFromTitle=150;
 
@@ -1065,7 +1102,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
     Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]={0};
     int indexOfNextZombie=0;
-    double spawnRateZombie = 30.0;
+    double spawnRateZombie = 5.0;
     bool firstZombieSpawn =0;
     double timeOfLastZombie = GetTime();  //saves the actualTime
     double timeForFirstSpawnZombie=45.0;
@@ -1210,14 +1247,14 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 //wait more for the first zombie spawn
                 if(firstZombieSpawn){
                     if((timeSpawnZombieTracking-timeOfLastZombie>timeForFirstSpawnZombie)){
-                        AddZombieToZombiesArrRandomly(zombieArr,&indexOfNextZombie,lawnRectangles);
+                        AddZombieToZombiesArrRandomly(zombieArr,NORMAL_ZOMBIE,&indexOfNextZombie,lawnRectangles);
                         timeOfLastZombie=GetTime();
                     }
                 
                 //normal zombie spawn
                 }else{
                     if((timeSpawnZombieTracking-timeOfLastZombie>spawnRateZombie)&&indexOfNextZombie<SIZE_OF_ZOMBIES_ARR){
-                        AddZombieToZombiesArrRandomly(zombieArr,&indexOfNextZombie,lawnRectangles);
+                        AddZombieToZombiesArrRandomly(zombieArr,NORMAL_ZOMBIE,&indexOfNextZombie,lawnRectangles);
                         timeOfLastZombie=GetTime();
                     }
                 }
@@ -1314,8 +1351,10 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                     // TODO: Draw HOMEPAGE screen here!
 
                     //Background
+                    
                     DrawTexturePro(TEXTURE_BACKGROUND_IMG,TEXTURE_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
                     // DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GREEN);
+                    // DrawTexturePro(NORMAL_GREEN_PEASHOT.texture,TEXTURE_GREEN_PEASHOT_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
 
                     
                     DrawTexturePro(TEXTURE_PLAY_BTN_IMG,TEXTURE_PLAY_BTN_IMG_SOURCE_REC,homePageOptionsRec[0],origin,0.0f,WHITE);
@@ -1430,18 +1469,15 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
 
                 case MENU:{
-                    
                     //Background 
                     DrawTexturePro(TEXTURE_BACKGROUND_IMG,TEXTURE_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
                     //Drawing Menu options
                     DrawTexturePro(TEXTURE_RESUME_BTN_IMG,TEXTURE_RESUME_BTN_IMG_SOURCE_REC,gamingMenuOptionsRec[0],origin,0.0f,WHITE);
                     DrawTexturePro(TEXTURE_CONFIGURATIONS_BTN_IMG,TEXTURE_CONFIGURATIONS_BTN_IMG_SOURCE_REC,gamingMenuOptionsRec[1],origin,0.0f,WHITE);
                     DrawTexturePro(TEXTURE_EXIT_BTN_IMG,TEXTURE_EXIT_BTN_IMG_SOURCE_REC,gamingMenuOptionsRec[2],origin,0.0f,WHITE);
-                   
-                     
-
-
                 }break;
+
+
                 case ABOUT:
                 {
                     
@@ -1455,11 +1491,9 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
                  case CONFIGURATIONS:
                 {
-                    
                     // TODO: Draw CONFIGURATIONS screen here!
                     DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLUE);
                     DrawText("Configurations screen, you can quit the program now!", 20, 20, 40, DARKBLUE);
-
                 } break;
 
 
@@ -1491,6 +1525,10 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     UnloadTexture(TEXTURE_CONFIGURATIONS_BTN_IMG);
     UnloadTexture(TEXTURE_ABOUT_BTN_IMG);
     UnloadTexture(TEXTURE_RESUME_BTN_IMG);
+    UnloadTexture(TEXTURE_SUNFLOWER_IMG);
+    UnloadTexture(TEXTURE_NORMAL_ZOMBIE_IMG);
+    UnloadTexture(TEXTURE_GREEN_PEASHOOTER_IMG);
+    UnloadTexture(TEXTURE_GREEN_PEASHOT_IMG);
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
