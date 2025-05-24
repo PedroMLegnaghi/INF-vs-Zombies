@@ -12,6 +12,7 @@
     "*.ejs": "html",
     "random": "c",
     "*.m": "c",
-    "variant": "c"
+    "variant": "c",
+    "format": "c"
   }
 }

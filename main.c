@@ -23,7 +23,7 @@
 
 //Sizes of arrays
 #define SIZE_OF_SUN_ARR 100 //maximum quantity of suns in screen
-#define SIZE_OF_DECK 2 
+#define SIZE_OF_DECK 3 
 #define SIZE_OF_ZOMBIES_ARR 100 //maximum quantity of zombies in screen
 #define SIZE_OF_PEASHOT_ARR 1000 //maximum quantity of peashots in screen
 
@@ -72,6 +72,7 @@ typedef enum GAME_SCREEN {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGUR
 typedef enum COST_OF_PLANT{
     COST_SUNFLOWER = 50,
     COST_PEASHOOTER = 100,
+    COST_WALLNUT = 75
     
 }COST_OF_PLANT;
 
@@ -89,6 +90,7 @@ typedef enum action_time{
 typedef enum TYPE_OF_PLANT{
     TYPE_SUNFLOWER =0,
     TYPE_GREEN_PEASHOOTER,
+    TYPE_WALLNUT
 }TYPE_OF_PLANT;
 
 //enumaration to reference the HEALTH_OF_PLANT
@@ -96,6 +98,7 @@ typedef enum TYPE_OF_PLANT{
 typedef enum {
     HEALTH_OF_SUNFLOWER = 100,
     HEALTH_OF_GREEN_PEASHOOTER = 100,
+    HEALTH_OF_WALLNUT = 1000
 }HEALTH_OF_PLANT;
 
 
@@ -887,6 +890,10 @@ Vector2 origin = {0,0};
             Texture2D TEXTURE_GREEN_PEASHOOTER_IMG = LoadTexture("./resources/sprites/peashooter.png");
                 //Green peashot
                 Texture2D TEXTURE_GREEN_PEASHOT_IMG = LoadTexture("./resources/sprites/peashooter-proj.png");
+            
+            //Wallnut
+            Texture2D TEXTURE_WALLNUT_IMG = LoadTexture("./resources/sprites/wallnut.png");
+
 
 
 //----------------------------------
@@ -936,6 +943,21 @@ const Plant PLANT_GREEN_PEASHOOTER={
     .health=HEALTH_OF_GREEN_PEASHOOTER,
     .peashot = NORMAL_GREEN_PEASHOT,
     .texture = TEXTURE_GREEN_PEASHOOTER_IMG
+};
+
+const Plant PLANT_WALLNUT={
+    .format.height= LAWN_HEIGHT_VALUE-20,
+    .format.width= PLANT_WIDTH,
+    .format.x= 0,
+    .format.y= 0,
+    .type = TYPE_WALLNUT,
+    .cost = COST_WALLNUT,
+    .color = BLUE, 
+    .existanceTime=0,
+    .referenceTime=0,
+    .existanceTime=0,
+    .health=HEALTH_OF_WALLNUT,
+    .texture = TEXTURE_WALLNUT_IMG
 };
 const Zombie NORMAL_ZOMBIE={
     .color=GRAY,
@@ -1036,6 +1058,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     //DO A FUNCTION INITDECK!
     DeckOfPlants[0] = PLANT_SUNFLOWER;
     DeckOfPlants[1] = PLANT_GREEN_PEASHOOTER;
+    DeckOfPlants[2] = PLANT_WALLNUT;
 
     //used to track which card is selected. If card is all nulled, then there's no card selected
     Plant cardSelected = {0};
@@ -1529,6 +1552,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     UnloadTexture(TEXTURE_NORMAL_ZOMBIE_IMG);
     UnloadTexture(TEXTURE_GREEN_PEASHOOTER_IMG);
     UnloadTexture(TEXTURE_GREEN_PEASHOT_IMG);
+    UnloadTexture(TEXTURE_WALLNUT_IMG);
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
