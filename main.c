@@ -181,7 +181,7 @@ typedef struct
 //================================================================================================================================================
 
 //PLANT
-const Plant NULL_PLANT ={0};
+const Plant NULL_PLANT ={.actionTime=0,.color=0,.cost=0,.creationTime=0,.existanceTime=0,.format=0,.health=0,.peashot=0,.referenceTime=0,.rowOfPlant=0,.texture=0,.type=TYPE_NULL_PLANT};
 
 
 //------------------
@@ -409,37 +409,43 @@ void addPeaToArr(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR],PeaShot pea, int *inde
 
 //shootPea: Given the array of plants and the array of peas, first checks if its time to shoot a pea. If so, shoot with the proprieties combining with the peashooter and add 
 //          that pea to the array of peas
-void shootPea(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int *indexOfNextPea){
+void shootPea(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int *indexOfNextPea, Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]){
+    for(int w=0;w<SIZE_OF_ZOMBIES_ARR;w++){
     for(int i=0; i<NUMBER_ROWS_LAWN; i++)
     {
         for(int j=0; j<NUMBER_COLUMN_LAWN; j++)
         {
-            // if the plant is a green peashooter and is not a empty (nulled) plant
-            if (plantArr[i][j].type == TYPE_GREEN_PEASHOOTER&&plantArr[i][j].format.x != NULL_PLANT.format.x)
-            {
-                if(*indexOfNextPea<SIZE_OF_PEASHOT_ARR){
-                    // if it's time to shoot a pea
-                        if (plantArr[i][j].actionTime <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime))
-                        {
-                            // update reference time properly, to enable the tracking of the next time to shot a pea for that plant
-                            UpdateReferenceTime(&plantArr[i][j]);
-                            
-                            // shot the pea (accordingly to it's type, in that case, normal_green_peashooteer) at a position near the green peashooter
-                            float x = plantArr[i][j].format.x+plantArr[i][j].format.width;
-                            float y = plantArr[i][j].format.y+15;
-                            PeaShot pea = plantArr[i][j].peashot;
-                            pea.format.x=x;
-                            pea.format.y=y;
-                            pea.rowOfShot=i;
-                            
-                            //add that pea to the arr
-                            addPeaToArr(peaShotsArr,pea,indexOfNextPea);
+            //if there's a zombie in the same row of the plant
+                if(zombieArr[w].rowOfZombie==plantArr[i][j].rowOfPlant){
+
+                // if the plant is a green peashooter and is not a empty (nulled) plant
+                if (plantArr[i][j].type == TYPE_GREEN_PEASHOOTER&&plantArr[i][j].format.x != NULL_PLANT.format.x)
+                {
+                    if(*indexOfNextPea<SIZE_OF_PEASHOT_ARR){
+                        // if it's time to shoot a pea
+                            if (plantArr[i][j].actionTime <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime))
+                            {
+                                // update reference time properly, to enable the tracking of the next time to shot a pea for that plant
+                                UpdateReferenceTime(&plantArr[i][j]);
+                                
+                                // shot the pea (accordingly to it's type, in that case, normal_green_peashooteer) at a position near the green peashooter
+                                float x = plantArr[i][j].format.x+plantArr[i][j].format.width;
+                                float y = plantArr[i][j].format.y+15;
+                                PeaShot pea = plantArr[i][j].peashot;
+                                pea.format.x=x;
+                                pea.format.y=y;
+                                pea.rowOfShot=i;
+                                
+                                //add that pea to the arr
+                                addPeaToArr(peaShotsArr,pea,indexOfNextPea);
+                            }
                         }
                     }
                 }
             }
         }
     }
+}
     
 //DrawPeShots: Draw all Peas of array of peas until the last element
 void DrawPeaShots (PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR],int indexOfNextPea){
@@ -616,10 +622,11 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
                                  bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],
                                  int *indexOfNextPea,
                                  int *indexOfNextZombie,
-                                Sound peaImpactWithZombieSound)
+                                Sound peaImpactWithZombieSound,
+                                Sound zombieAtePlant)
 {
     // SHOOT NEW PEAS
-    shootPea(plantArr, peaShotsArr, indexOfNextPea);
+    shootPea(plantArr, peaShotsArr, indexOfNextPea,zombieArr);
 
     // 1. UPDATE PEA POSITIONS
 
@@ -671,9 +678,10 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
             for(int c=0;c<NUMBER_COLUMN_LAWN;c++)
             {
                 //if the plant died, remove it from the screen
-                if(plantArr[r][c].health<=0)
+                if(plantArr[r][c].health<=0&&plantArr[r][c].type!=TYPE_NULL_PLANT)
                 {
-                        RemovePlantFromArr(plantArr,occupationOfLawn,r,c);
+                    PlaySound(zombieAtePlant);
+                    RemovePlantFromArr(plantArr,occupationOfLawn,r,c);
                 }
 
                 //if a colision zombie/plant is happening
@@ -798,7 +806,7 @@ void RemoveSelectedCard(Plant *cardSelected) {
 //checks if plant can be put and properly put it
 void PutPlantToField
 (Plant plantArr [NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], 
-    Plant *cardSelected, unsigned int *sunStorage,bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],Rectangle lawnRectangles[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],Sound soundOfPlantingPlant)
+    Plant *cardSelected, unsigned int *sunStorage,bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],Rectangle lawnRectangles[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],Sound soundOfPlantingPlant,Sound shovelSound)
     {
         //checks if there's a lawn being hovered
         bool isHovered =0;
@@ -819,6 +827,7 @@ void PutPlantToField
         if(isHovered&&cardSelected->format.x!=0&&IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
             //if it is a shovel that is being selected, siimply just remove de plant in the spot selected
             if((*cardSelected).type==TYPE_SHOVEL){
+                PlaySound(shovelSound);
                 RemovePlantFromArr(plantArr,occupationOfLawn,r,c);
             }
 
@@ -1217,7 +1226,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     double spawnRateZombie = 5.0;
     bool firstZombieSpawn =1;
     double timeOfLastZombie = GetTime();  //saves the actualTime
-    double timeForFirstSpawnZombie=45.0;
+    double timeForFirstSpawnZombie=5.0;
 
 
 //------------------------
@@ -1328,7 +1337,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 previousScreen=currentScreen;
 
                 //if zombie has gone out of the screen
-                if(updatePlantsAndZombiesGameplay(plantArr,peaShotsArr,zombieArr,occupationOfLawn,&indexOfNextPea,&indexOfNextZombie,SOUND_PEASHOT_IMPACT)){
+                if(updatePlantsAndZombiesGameplay(plantArr,peaShotsArr,zombieArr,occupationOfLawn,&indexOfNextPea,&indexOfNextZombie,SOUND_PEASHOT_IMPACT,SOUND_ZOMBIE_EAT_PLANT)){
                     PlaySound(SOUND_LOSE_MUSIC);
                     currentScreen=END_GAME;
 
@@ -1384,7 +1393,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 }
 
 
-                PutPlantToField(plantArr,&cardSelected,&sunGamingStorage,occupationOfLawn,lawnRectangles,SOUND_PLANTING_PLANT);
+                PutPlantToField(plantArr,&cardSelected,&sunGamingStorage,occupationOfLawn,lawnRectangles,SOUND_PLANTING_PLANT,SOUND_SHOVEL);
 
 
                 GenerateSunSunflower(plantArr,lawnRectangles,groundOfTheSuns,sunArray,&indexOfNextSun);
