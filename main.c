@@ -615,7 +615,8 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
                                  Zombie zombieArr[SIZE_OF_ZOMBIES_ARR],
                                  bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],
                                  int *indexOfNextPea,
-                                 int *indexOfNextZombie)
+                                 int *indexOfNextZombie,
+                                Sound peaImpactWithZombieSound)
 {
     // SHOOT NEW PEAS
     shootPea(plantArr, peaShotsArr, indexOfNextPea);
@@ -648,6 +649,7 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
         {
                 if (verifyPeaShotColisionWithZombie(peaShotsArr[j], zombieArr[i])) 
                 {//if zombie was shot, update its health and remove that pea that shot him
+                        PlaySound(peaImpactWithZombieSound);
                         UpdateZombieHealth(&zombieArr[i], peaShotsArr[j].damage);
                         RemovePeaFromArr(peaShotsArr,j,indexOfNextPea);
                         j--;        //as pea was removed, need to update the index of iteration of peas
@@ -796,7 +798,7 @@ void RemoveSelectedCard(Plant *cardSelected) {
 //checks if plant can be put and properly put it
 void PutPlantToField
 (Plant plantArr [NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], 
-    Plant *cardSelected, unsigned int *sunStorage,bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],Rectangle lawnRectangles[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN])
+    Plant *cardSelected, unsigned int *sunStorage,bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],Rectangle lawnRectangles[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],Sound soundOfPlantingPlant)
     {
         //checks if there's a lawn being hovered
         bool isHovered =0;
@@ -825,6 +827,7 @@ void PutPlantToField
             else if(*sunStorage>=cardSelected->cost&&occupationOfLawn[r][c]!=1){
             //my selected card, by default, has, already, color, type, cost,height and width. But i doesn't have a proper x and y to be displayed on the lawn
             //              *add that plant to the array of plants
+            PlaySound(soundOfPlantingPlant);
             Plant plant = *cardSelected;
             plant.format.x=lawnRectangles[r][c].x+(lawnRectangles[r][c].width-plant.format.width)/2;
             plant.format.y=lawnRectangles[r][c].y+(lawnRectangles[r][c].height-plant.format.height)/2;
@@ -864,6 +867,36 @@ int main (void){
     GAME_SCREEN currentScreen = LOGO;
     GAME_SCREEN previousScreen = HOMEPAGE;
 //--------
+
+//--audio
+    InitAudioDevice();
+
+    //btn
+    Sound SOUND_BTN_CLICK = LoadSound("./resources/sound/buttons/buttonclick.ogg");
+    Sound SOUND_BTN_HOVER = LoadSound("./resources/sound/buttons/ceramic.ogg");
+
+    //gamestages--
+    Sound SOUND_LOSE_MUSIC = LoadSound("./resources/sound/gameStages/losemusic.ogg");
+    Sound SOUND_PAUSE = LoadSound("./resources/sound/gameStages/pause.ogg");
+    Sound SOUND_ZOMBIES_COMING = LoadSound("./resources/sound/gameStages/thezombiesarecomming.ogg");
+    Sound SOUND_WIN = LoadSound("./resources/sound/gameStages/win.ogg");
+
+    //plants
+    Sound SOUND_PEASHOT_IMPACT = LoadSound("./resources/sound/plant/juicy.ogg");
+    Sound SOUND_PLANTING_PLANT = LoadSound("./resources/sound/plant/plant.ogg");
+    Sound SOUND_COLLECTING_SUN = LoadSound("./resources/sound/plant/points.ogg");
+    Sound SOUND_SHOVEL = LoadSound("./resources/sound/plant/shovel.ogg");
+
+    //soundtracks
+    Sound SOUND_HOMEPAGE_MENU = LoadSound("./resources/sound/soundtracks/homepage.mp3");
+    Sound SOUND_GAMEPLAY = LoadSound("./resources/sound/soundtracks/gameplay.mp3");
+
+    //zombies
+    Sound SOUND_ZOMBIE_SPAWN = LoadSound("./resources/sound/zombies/groan3.ogg");
+    Sound SOUND_ZOMBIE_EAT_PLANT = LoadSound("./resources/sound/zombies/bigchomp.ogg");
+    
+
+    
 
 
 //--textures
@@ -1037,6 +1070,7 @@ int BTN_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
 
     Rectangle homePageOptionsRec[HOME_PAGE_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refers to the options of the game in the landpage(PLAY, leaderboard, about, configurations and exit)
     bool homePageOptionsRecHover[HOME_PAGE_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered 
+    // bool homePageOptionsSoundHover[HOME_PAGE_OPTIONS_QUANTITY]={0};//array that tells if an option outputed its sound
     GAME_SCREEN homePageOptions[HOME_PAGE_OPTIONS_QUANTITY] ={0};//array to navigate over the options of the game
         //Filling the homePageOptions
         homePageOptions[0]= PLAY;
@@ -1181,7 +1215,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]={0};
     int indexOfNextZombie=0;
     double spawnRateZombie = 5.0;
-    bool firstZombieSpawn =0;
+    bool firstZombieSpawn =1;
     double timeOfLastZombie = GetTime();  //saves the actualTime
     double timeForFirstSpawnZombie=45.0;
 
@@ -1233,6 +1267,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
             if (CheckCollisionPointRec(mousePoint, homePageOptionsRec[i])) {
                 homePageOptionsRecHover[i] = 1;
                 if(IsGestureDetected(GESTURE_TAP)){
+                    PlaySound(SOUND_BTN_CLICK);
                     previousScreen=currentScreen;
                     currentScreen = homePageOptions[i];
                 }
@@ -1293,8 +1328,10 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 previousScreen=currentScreen;
 
                 //if zombie has gone out of the screen
-                if(updatePlantsAndZombiesGameplay(plantArr,peaShotsArr,zombieArr,occupationOfLawn,&indexOfNextPea,&indexOfNextZombie)){
+                if(updatePlantsAndZombiesGameplay(plantArr,peaShotsArr,zombieArr,occupationOfLawn,&indexOfNextPea,&indexOfNextZombie,SOUND_PEASHOT_IMPACT)){
+                    PlaySound(SOUND_LOSE_MUSIC);
                     currentScreen=END_GAME;
+
                 }
 
                 UpdateExistanceTime(plantArr);
@@ -1325,13 +1362,16 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 //wait more for the first zombie spawn
                 if(firstZombieSpawn){
                     if((timeSpawnZombieTracking-timeOfLastZombie>timeForFirstSpawnZombie)){
+                        PlaySound(SOUND_ZOMBIES_COMING);
                         AddZombieToZombiesArrRandomly(zombieArr,NORMAL_ZOMBIE,&indexOfNextZombie,lawnRectangles);
                         timeOfLastZombie=GetTime();
+                        firstZombieSpawn=0;
                     }
                 
                 //normal zombie spawn
                 }else{
                     if((timeSpawnZombieTracking-timeOfLastZombie>spawnRateZombie)&&indexOfNextZombie<SIZE_OF_ZOMBIES_ARR){
+                        PlaySound(SOUND_ZOMBIE_SPAWN);
                         AddZombieToZombiesArrRandomly(zombieArr,NORMAL_ZOMBIE,&indexOfNextZombie,lawnRectangles);
                         timeOfLastZombie=GetTime();
                     }
@@ -1339,17 +1379,19 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
 
                 if(collectSun(sunArray,&indexOfNextSun,groundOfTheSuns)){
+                    PlaySound(SOUND_COLLECTING_SUN);
                     addSunToStorage(&sunGamingStorage);
                 }
 
 
-                PutPlantToField(plantArr,&cardSelected,&sunGamingStorage,occupationOfLawn,lawnRectangles);
+                PutPlantToField(plantArr,&cardSelected,&sunGamingStorage,occupationOfLawn,lawnRectangles,SOUND_PLANTING_PLANT);
 
 
                 GenerateSunSunflower(plantArr,lawnRectangles,groundOfTheSuns,sunArray,&indexOfNextSun);
 
                 //Menu, if esc pressed
                 if(IsKeyPressed(KEY_ESCAPE)){
+                    PlaySound(SOUND_PAUSE);
                     currentScreen = MENU;
                 }
                 
@@ -1364,7 +1406,9 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 {
                     if (CheckCollisionPointRec(mousePoint, gamingMenuOptionsRec[i])) {
                         gamingMenuOptionsRecHover[i] = 1;
+                        
                         if(IsGestureDetected(GESTURE_TAP)){
+                            PlaySound(SOUND_BTN_CLICK);
                             previousScreen=currentScreen;
                             currentScreen = gamingMenuOptions[i];
                         }
@@ -1611,6 +1655,27 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     UnloadTexture(TEXTURE_GREEN_PEASHOT_IMG);
     UnloadTexture(TEXTURE_WALLNUT_IMG);
     UnloadTexture(TEXTURE_SHOVEL_IMG);
+
+    //unload sounds
+        UnloadSound(SOUND_BTN_CLICK);
+        UnloadSound(SOUND_BTN_HOVER);
+        UnloadSound(SOUND_COLLECTING_SUN);
+        UnloadSound(SOUND_GAMEPLAY);
+        UnloadSound(SOUND_HOMEPAGE_MENU);
+        UnloadSound(SOUND_LOSE_MUSIC);
+        UnloadSound(SOUND_PAUSE);
+        UnloadSound(SOUND_PEASHOT_IMPACT);
+        UnloadSound(SOUND_PLANTING_PLANT);
+        UnloadSound(SOUND_SHOVEL);
+        UnloadSound(SOUND_WIN);
+        UnloadSound(SOUND_ZOMBIE_EAT_PLANT);
+        UnloadSound(SOUND_ZOMBIE_SPAWN);
+        UnloadSound(SOUND_ZOMBIES_COMING);
+
+
+
+
+    CloseAudioDevice();
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
