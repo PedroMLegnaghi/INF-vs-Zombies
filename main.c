@@ -416,7 +416,7 @@ void shootPea(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],PeaShot peaSh
         for(int j=0; j<NUMBER_COLUMN_LAWN; j++)
         {
             //if there's a zombie in the same row of the plant
-                if(zombieArr[w].rowOfZombie==plantArr[i][j].rowOfPlant){
+                if((zombieArr[w].rowOfZombie==plantArr[i][j].rowOfPlant)&&zombieArr[w].format.x<=SCREEN_WIDTH-DISTANCE_LAWN_RIGHT_EDGE-DISTANCE_LAWN_RIGHT_EDGE){
 
                 // if the plant is a green peashooter and is not a empty (nulled) plant
                 if (plantArr[i][j].type == TYPE_GREEN_PEASHOOTER&&plantArr[i][j].format.x != NULL_PLANT.format.x)
@@ -1002,15 +1002,16 @@ const Plant PLANT_SUNFLOWER={
     .referenceTime=0,
     .existanceTime=0,
     .health=HEALTH_OF_SUNFLOWER,
-    .texture = TEXTURE_SUNFLOWER_IMG
+    .texture = TEXTURE_SUNFLOWER_IMG,
+    .rowOfPlant=-1
     
 };
 
 const PeaShot NORMAL_GREEN_PEASHOT={
     .damage=20,
     .format={
-        .height=10,
-        .width=10,
+        .height=20,
+        .width=20,
         .x=0,
         .y=0
     },
@@ -1033,7 +1034,8 @@ const Plant PLANT_GREEN_PEASHOOTER={
     .existanceTime=0,
     .health=HEALTH_OF_GREEN_PEASHOOTER,
     .peashot = NORMAL_GREEN_PEASHOT,
-    .texture = TEXTURE_GREEN_PEASHOOTER_IMG
+    .texture = TEXTURE_GREEN_PEASHOOTER_IMG,
+    .rowOfPlant=-1
 };
 
 const Plant PLANT_WALLNUT={
@@ -1054,7 +1056,7 @@ const Zombie NORMAL_ZOMBIE={
     .color=GRAY,
     .velocity = 0.5,
     .health =100,
-    .rowOfZombie=-1,
+    .rowOfZombie=-10,
     .format={
         //make zombie appear from outside of the window
         .x=SCREEN_WIDTH+30,
@@ -1222,11 +1224,15 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
 
     Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]={0};
+    //initializing zombie array not to conflict with shooting peas mechanic
+        for(int i=0;i<SIZE_OF_ZOMBIES_ARR;i++){
+            zombieArr[i].rowOfZombie=-1;
+        }
     int indexOfNextZombie=0;
     double spawnRateZombie = 5.0;
     bool firstZombieSpawn =1;
     double timeOfLastZombie = GetTime();  //saves the actualTime
-    double timeForFirstSpawnZombie=5.0;
+    double timeForFirstSpawnZombie=30.0;
 
 
 //------------------------
