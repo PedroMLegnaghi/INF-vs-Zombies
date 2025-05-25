@@ -12,8 +12,8 @@
 #define MAX_SIZE_OF_NAME 15
 #define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
 #define GAMING_MENU_OPTIONS_QUANTITY 3 //resume, configurations and exit
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 580
+#define SCREEN_WIDTH 900
+#define SCREEN_HEIGHT 900
 #define TARGET_FPS 60
 #define NUMBER_COLUMN_LAWN 9
 #define NUMBER_ROWS_LAWN 5
@@ -23,7 +23,7 @@
 
 //Sizes of arrays
 #define SIZE_OF_SUN_ARR 100 //maximum quantity of suns in screen
-#define SIZE_OF_DECK 3 
+#define SIZE_OF_DECK 3+1    //maximum size of deck (3 plants + 1 shovel) 
 #define SIZE_OF_ZOMBIES_ARR 100 //maximum quantity of zombies in screen
 #define SIZE_OF_PEASHOT_ARR 1000 //maximum quantity of peashots in screen
 
@@ -90,7 +90,9 @@ typedef enum action_time{
 typedef enum TYPE_OF_PLANT{
     TYPE_SUNFLOWER =0,
     TYPE_GREEN_PEASHOOTER,
-    TYPE_WALLNUT
+    TYPE_WALLNUT,
+    TYPE_SHOVEL,
+    TYPE_NULL_PLANT
 }TYPE_OF_PLANT;
 
 //enumaration to reference the HEALTH_OF_PLANT
@@ -317,8 +319,10 @@ void UpdateHealthOfPlant(Plant *plant, float damage){
 
 //RemovePlantFromArr: Remove a certain plant from the array    
 void RemovePlantFromArr(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],int rowOfPlantToBeRemoved, int columnOfPlantToBeRemoved ){
-    plantArr[rowOfPlantToBeRemoved][columnOfPlantToBeRemoved]=NULL_PLANT;//null the plant == remove
-    occupationOfLawn[rowOfPlantToBeRemoved][columnOfPlantToBeRemoved]=0;//update the occupation of the lawn
+    if(plantArr[rowOfPlantToBeRemoved][columnOfPlantToBeRemoved].type!=TYPE_NULL_PLANT){
+        plantArr[rowOfPlantToBeRemoved][columnOfPlantToBeRemoved]=NULL_PLANT;//null the plant == remove
+        occupationOfLawn[rowOfPlantToBeRemoved][columnOfPlantToBeRemoved]=0;//update the occupation of the lawn
+    }
 }
 
 //UpdateExistanceTime:
@@ -326,7 +330,9 @@ void RemovePlantFromArr(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],boo
 void UpdateExistanceTime(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]){
     for(int i=0;i<NUMBER_ROWS_LAWN;i++){
         for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
+            if(plantArr[i][j].type!=TYPE_NULL_PLANT){
             plantArr[i][j].existanceTime=GetTime()-plantArr[i][j].creationTime;
+            }
         }
     }
 }
@@ -343,7 +349,7 @@ void DrawPlants(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]){
     for(int i=0;i<NUMBER_ROWS_LAWN;i++){
         for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
             //if the plant [i][j] isn't empty(NULLED)
-            if(plantArr[i][j].format.x!=NULL_PLANT.format.x){
+            if(plantArr[i][j].type!=TYPE_NULL_PLANT){
                 Vector2 origin = {0,0};
                 Rectangle PlantTextureSourceRectangle = {
                     .width=plantArr[i][j].texture.width,
@@ -364,34 +370,34 @@ void DrawPlants(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]){
 // given the array of plants and the array of suns, add to the array of suns a sun near 
 // the sunflower that generated it
 void GenerateSunSunflower(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],float groundOfTheSuns[SIZE_OF_SUN_ARR], Rectangle arr_of_suns[SIZE_OF_SUN_ARR], int *indexOfNextSun){
-    for(int i=0; i<NUMBER_ROWS_LAWN; i++){
-        for(int j=0; j<NUMBER_COLUMN_LAWN; j++){
-
-            // if the plant exists and is a sunflower
-            if (plantArr[i][j].type == TYPE_SUNFLOWER&&plantArr[i][j].format.x != NULL_PLANT.format.x)
-            {
-                // if it is time to generate a sun
-                if (plantArr[i][j].actionTime <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime))
+        for(int i=0; i<NUMBER_ROWS_LAWN; i++){
+            for(int j=0; j<NUMBER_COLUMN_LAWN; j++){
+                if(plantArr[i][j].type!=TYPE_NULL_PLANT){
+                // if the plant exists and is a sunflower
+                if (plantArr[i][j].type == TYPE_SUNFLOWER&&plantArr[i][j].format.x != NULL_PLANT.format.x)
                 {
-                    // update reference time properly, to enable tracking when it is time to generate another sun of that plant
-                    UpdateReferenceTime(&plantArr[i][j]);
+                    // if it is time to generate a sun
+                    if (plantArr[i][j].actionTime <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime))
+                    {
+                        // update reference time properly, to enable tracking when it is time to generate another sun of that plant
+                        UpdateReferenceTime(&plantArr[i][j]);
 
-                    // check sun limit
-                    if (*indexOfNextSun >= SIZE_OF_SUN_ARR) return;
+                        // check sun limit
+                        if (*indexOfNextSun >= SIZE_OF_SUN_ARR) return;
 
-                    // position sun near the sunflower
-                    float x = plantArr[i][j].format.x + 22;
-                    float y = plantArr[i][j].format.y - 5;
+                        // position sun near the sunflower
+                        float x = plantArr[i][j].format.x + 22;
+                        float y = plantArr[i][j].format.y - 5;
 
-                    //add that sun to the array of suns
-                    AddSunToArray(arr_of_suns, indexOfNextSun,lawn_array,i,j,groundOfTheSuns, (int)x, (int)y);
+                        //add that sun to the array of suns
+                        AddSunToArray(arr_of_suns, indexOfNextSun,lawn_array,i,j,groundOfTheSuns, (int)x, (int)y);
 
+                    }
                 }
             }
         }
     }
 }
-
 //PLANT/PEASHOOTER----------------------------------------
 
 //addPeaToArr: Given the array of peas, the x and y coordinates of that pea, add a pea at the end of the array
@@ -579,16 +585,20 @@ bool verifyPeaShotColisionWithZombie(PeaShot pea, Zombie zombie){
 
 //verifyPlantColisionWithZombie:given a Zombie and a plant, checks if they collided
 bool verifyPlantColisionWithZombie(Plant plant, Zombie zombie){
-    //if they are in the same row
- if(zombie.rowOfZombie==plant.rowOfPlant){
-        // if 
-        //x coord of the zombie is beetwen the:
-        //x coord of the plant && x coord of the plant + its width 
-        //&&
-        
-        //they colided, return true
-        if(((zombie.format.x>=plant.format.x) && (zombie.format.x<=(plant.format.width+plant.format.x)))){
-            return true;
+
+    if(plant.type!=TYPE_NULL_PLANT){
+    
+        //if they are in the same row
+    if(zombie.rowOfZombie==plant.rowOfPlant){
+            // if 
+            //x coord of the zombie is beetwen the:
+            //x coord of the plant && x coord of the plant + its width 
+            //&&
+            
+            //they colided, return true
+            if(((zombie.format.x>=plant.format.x) && (zombie.format.x<=(plant.format.width+plant.format.x)))){
+                return true;
+            }
         }
     }
     //else return false
@@ -717,6 +727,11 @@ void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSu
     DrawRectangleLines(DECK_RECTANGLE_X_VALUE+5,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,DECK_ELEMENT_WIDTH_VALUE-10,30,BLACK);
     DrawText(TextFormat(" %d", quantityOfSun),DECK_RECTANGLE_X_VALUE+20,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,20,BLACK);
 
+    
+
+    //used to attribute keys to options
+    int keyOfCard = KEY_ONE;
+
     //Drawing the deck of plants
     for (int i=0;i<SIZE_OF_DECK;i++){
         DECK_RECTANGLE_X_VALUECpy+= DECK_ELEMENT_WIDTH_VALUE;
@@ -736,24 +751,33 @@ void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSu
             .y=0
         };
         DrawRectangleLines(DECK_RECTANGLE_X_VALUECpy,DECK_RECTANGLE_Y_VALUE,DECK_ELEMENT_WIDTH_VALUE,DECK_ELEMENT_HEIGHT_VALUE,BLACK);
+        
+        //user pressing number 1,2,3... selects the cards
+        if(IsKeyPressed(keyOfCard)){
+            *cardSelected=plantBoxOfCard;
+        }
+        
         //if the box is being hovered,
         if (CheckCollisionPointRec(mousePoint, plantBoxOfCard.format)) {
+            
             //highlight it
             DrawRectangleRec(plantBoxOfCard.format,GRAY);
 
-            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)||IsGestureDetected(KEY_ENTER)){
+            //if its being hovered and also has been clicked, selected card = that plant
+            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)||IsKeyPressed(KEY_ENTER)){
                 *cardSelected=plantBoxOfCard;
-                
             }
         }else{
             //else, draw it normaly
-            DrawRectangleRec(plantBoxOfCard.format,MAROON);
+            DrawRectangleRec(plantBoxOfCard.format,BROWN);
         }
         //Drawing the plants within the boxes
         DrawTexturePro(plantBoxOfCard.texture,textureSourceRectanglePlant,plantBoxOfCard.format,origin,0.0f,WHITE);
 
-        // DrawRectangle(DECK_RECTANGLE_X_VALUECpy+10,DECK_RECTANGLE_Y_VALUE+20,20,20,DeckOfPlants[i].color);
+        //updating the key of the cards accordingly to its order in the InGameDeck
+        keyOfCard++;
     }
+
 }
 
 // RemoveSelectedCard: 
@@ -791,9 +815,14 @@ void PutPlantToField
         //  a plant is selected && check-colision with a block of lawn(for loop,checks if an element has lawnRecHover [i][j]=1,save that i and j) 
         //&& eventClick tapping
         if(isHovered&&cardSelected->format.x!=0&&IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-            //          if the amount of suns is sufficient to put a plant in the field  &&
+            //if it is a shovel that is being selected, siimply just remove de plant in the spot selected
+            if((*cardSelected).type==TYPE_SHOVEL){
+                RemovePlantFromArr(plantArr,occupationOfLawn,r,c);
+            }
+
+            //     else if the amount of suns is sufficient to put a plant in the field  &&
             //          the position chosen is free to be used (checks if occupationLawn[i][j]!=1)
-            if(*sunStorage>=cardSelected->cost&&occupationOfLawn[r][c]!=1){
+            else if(*sunStorage>=cardSelected->cost&&occupationOfLawn[r][c]!=1){
             //my selected card, by default, has, already, color, type, cost,height and width. But i doesn't have a proper x and y to be displayed on the lawn
             //              *add that plant to the array of plants
             Plant plant = *cardSelected;
@@ -806,13 +835,13 @@ void PutPlantToField
             *sunStorage-=cardSelected->cost;
             //              *update the occupationLawn
             occupationOfLawn[r][c]=1;
-            //              *reset the selectedCard
-            cardSelected->format.x = 0;
-            cardSelected->format.y = 0;
-            cardSelected->format.width = 0;
-            cardSelected->format.height = 0;
-
+            
         }
+        //              *reset the selectedCard
+        cardSelected->format.x = 0;
+        cardSelected->format.y = 0;
+        cardSelected->format.width = 0;
+        cardSelected->format.height = 0;
     }
 }
 
@@ -894,10 +923,30 @@ Vector2 origin = {0,0};
             //Wallnut
             Texture2D TEXTURE_WALLNUT_IMG = LoadTexture("./resources/sprites/wallnut.png");
 
+            //Shovel
+            Texture2D TEXTURE_SHOVEL_IMG = LoadTexture("./resources/sprites/shovel.png");
+
+
 
 
 //----------------------------------
 const int PLANT_WIDTH = LAWN_WIDTH_VALUE-40;
+
+const Plant SHOVEL_REMOVE_PLANTS = {
+    .actionTime=0,
+    .color=0,
+    .cost=0,
+    .creationTime=0,
+    .existanceTime=0,
+    .format.height= LAWN_HEIGHT_VALUE-20,
+    .format.width= PLANT_WIDTH,
+    .health=0,
+    .peashot=0,
+    .referenceTime=0,
+    .rowOfPlant=0,
+    .texture=TEXTURE_SHOVEL_IMG,
+    .type=TYPE_SHOVEL};
+
 const Plant PLANT_SUNFLOWER={
     .format.height= LAWN_HEIGHT_VALUE-20,
     .format.width= PLANT_WIDTH,
@@ -1059,6 +1108,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     DeckOfPlants[0] = PLANT_SUNFLOWER;
     DeckOfPlants[1] = PLANT_GREEN_PEASHOOTER;
     DeckOfPlants[2] = PLANT_WALLNUT;
+    DeckOfPlants[3] = SHOVEL_REMOVE_PLANTS;
 
     //used to track which card is selected. If card is all nulled, then there's no card selected
     Plant cardSelected = {0};
@@ -1069,6 +1119,11 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
     //used to track which plants are deployed in the field(lawn)
     Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]={0};
+    for(int i=0;i<NUMBER_ROWS_LAWN;i++){
+        for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
+            plantArr[i][j].type=TYPE_NULL_PLANT;
+        }
+    }
 
 //----------------------
 
@@ -1376,6 +1431,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                     //Background
                     
                     DrawTexturePro(TEXTURE_BACKGROUND_IMG,TEXTURE_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
+                    
                     // DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GREEN);
                     // DrawTexturePro(NORMAL_GREEN_PEASHOT.texture,TEXTURE_GREEN_PEASHOT_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
 
@@ -1435,6 +1491,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 {
                     //TODO:Draw GAMEPLAY screen here!
                     DrawTexturePro(TEXTURE_GAMING_BACKGROUND_IMG,TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
+                    
                     //Lawn drawing
                     for(int i=0;i<NUMBER_ROWS_LAWN;i++){
                         for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
@@ -1553,6 +1610,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     UnloadTexture(TEXTURE_GREEN_PEASHOOTER_IMG);
     UnloadTexture(TEXTURE_GREEN_PEASHOT_IMG);
     UnloadTexture(TEXTURE_WALLNUT_IMG);
+    UnloadTexture(TEXTURE_SHOVEL_IMG);
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
