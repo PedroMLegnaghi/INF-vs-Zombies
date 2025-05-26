@@ -326,12 +326,14 @@ void RemovePlantFromArr(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],boo
 }
 
 //UpdateExistanceTime:
-//given a Plant array, update the existance time of each plant
-void UpdateExistanceTime(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]){
+//given a Plant array and an int timeCorrection(when another event is actioned in the middle of the gameplay), 
+//update the existance time of each plant without counting timeCorrection seconds, as not to count unvalid seconds(in menu, for example)
+//if no timeCorrection needed, then timeCorrection==0
+void UpdateExistanceTime(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],float timeCorrection){
     for(int i=0;i<NUMBER_ROWS_LAWN;i++){
         for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
             if(plantArr[i][j].type!=TYPE_NULL_PLANT){
-            plantArr[i][j].existanceTime=GetTime()-plantArr[i][j].creationTime;
+            plantArr[i][j].existanceTime=GetTime()-plantArr[i][j].creationTime-timeCorrection;
             }
         }
     }
@@ -856,10 +858,86 @@ void PutPlantToField
         cardSelected->format.height = 0;
     }
 }
-
-
 //--------------------------------
+//about screen--
+    void DrawAboutScreen() {
+        const char *aboutText = 
+            "About INF vs ZOMBIES\n\n"
+            "INF vs ZOMBIES is a fun and strategic tower defense game inspired by Plants vs Zombies, "
+            "developed as a project for the Algorithms and Programming course at the Federal University "
+            "of Rio Grande do Sul (UFRGS).\n\n"
+            "Players must defend their base from waves of zombies by placing different plants, each with "
+            "unique abilities, along a grid. Strategy and quick thinking are key to surviving the "
+            "endless undead hordes!\n\n"
+            "Built from scratch in C using the Raylib library, this project was designed to recreate the "
+            "fun of the original game while strengthening my C programming skills, problem-solving "
+            "ability, and proactive development approach.\n\n"
+            "Whether you're a fan of tower defense games or just curious about game development in C, "
+            "INF vs ZOMBIES offers a mix of challenge and creativity, with a little programming twist!\n\n"
+            "Ready to stop the zombie invasion? Let the battle begin!\n\n"
+            "(Educational project for UFRGS - Instituto de Informatica)";
 
+        
+        // Text settings
+        int titleFontSize = 30;
+        int bodyFontSize = 20;
+        int charsPerLine = 60; 
+        //this multiplier stands for the spacing between the lines
+        int lineHeight = bodyFontSize * 1.3f;
+        int startY = 50;
+        
+        // Draw Background
+        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
+        
+        // Draw title (centered)
+        const char *title = "About INF vs ZOMBIES";
+        int titleWidth = MeasureText(title, titleFontSize);
+        DrawText(title, (SCREEN_WIDTH- titleWidth)/2, startY, titleFontSize, GREEN);
+        
+        // Draw text
+        // const char *textPtr = aboutText;
+        int currentY = startY + titleFontSize + 40;
+        
+        int j = 0; //index to iterate over the text
+        while (aboutText[j]!='\0') {
+            // Handle paragraph breaks
+            if (aboutText[j] == '\n') {
+                currentY += lineHeight; // Extra space for paragraphs
+                j++;
+                //if a breakline was found, skip to the next iteration
+                continue;
+            }
+            
+            char line[256];
+            int i=0;
+
+            // Extract one line's worth of characters(continue until either Reach max line length (charsPerLine-1),
+            //hit a newline character or reach the end of the string)
+            while (i < charsPerLine-1 && (aboutText[j]!='\0') && aboutText[j] != '\n') {
+                line[i] = aboutText[j];
+                i++;
+                j++;
+            }
+
+            //ending adequately the line of the frase
+            line[i] = '\0';
+            
+            // Draw the line (centered)
+            int textWidth = MeasureText(line, bodyFontSize);
+            DrawText(line, SCREEN_WIDTH/2 - textWidth/2, currentY, bodyFontSize, WHITE);
+            
+            // Move to next line
+            currentY += lineHeight;
+            
+            // Skip newline characters (already handled above)
+            if (aboutText[i] == '\n') j++;
+        }
+        
+        // Draw return instruction
+        const char *returnText = "Press ESC to return";
+        DrawText(returnText, SCREEN_WIDTH - MeasureText(returnText, 18) - 20, 
+                SCREEN_HEIGHT - 30, 18, GRAY);
+    }
 // ================================================================================================================================================================================================================================================
 //MAIN================================================================================================================================================================================================================================================
 //================================================================================================================================================================================================================================================
@@ -885,9 +963,10 @@ int main (void){
     Sound SOUND_BTN_HOVER = LoadSound("./resources/sound/buttons/ceramic.ogg");
 
     //gamestages--
-    Sound SOUND_LOSE_MUSIC = LoadSound("./resources/sound/gameStages/losemusic.ogg");
+    Sound SOUND_LOST_MUSIC = LoadSound("./resources/sound/gameStages/losemusic.ogg");
     Sound SOUND_PAUSE = LoadSound("./resources/sound/gameStages/pause.ogg");
     Sound SOUND_ZOMBIES_COMING = LoadSound("./resources/sound/gameStages/thezombiesarecomming.ogg");
+        SetSoundVolume(SOUND_ZOMBIES_COMING,1.0f);
     Sound SOUND_WIN = LoadSound("./resources/sound/gameStages/win.ogg");
 
     //plants
@@ -898,7 +977,10 @@ int main (void){
 
     //soundtracks
     Sound SOUND_HOMEPAGE_MENU = LoadSound("./resources/sound/soundtracks/homepage.mp3");
+        SetSoundVolume(SOUND_HOMEPAGE_MENU,0.4f);
+
     Sound SOUND_GAMEPLAY = LoadSound("./resources/sound/soundtracks/gameplay.mp3");
+        SetSoundVolume(SOUND_GAMEPLAY,0.2f);
 
     //zombies
     Sound SOUND_ZOMBIE_SPAWN = LoadSound("./resources/sound/zombies/groan3.ogg");
@@ -912,12 +994,16 @@ int main (void){
 
 Vector2 origin = {0,0};
     //background
-        Texture2D TEXTURE_BACKGROUND_IMG = LoadTexture("./resources/sprites/menu-background.png");
+        Texture2D TEXTURE_BACKGROUND_IMG = LoadTexture("./resources/sprites/coloredBackGroundPVZ.png");
             Rectangle TEXTURE_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_BACKGROUND_IMG.height,.width=TEXTURE_BACKGROUND_IMG.width,.x=0,.y=0};
 
-        Texture2D TEXTURE_GAMING_BACKGROUND_IMG = LoadTexture("./resources/sprites/background.png");
+        Texture2D TEXTURE_GAMING_BACKGROUND_IMG = LoadTexture("./resources/sprites/dayBackgroundGame.png");
             Rectangle TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_GAMING_BACKGROUND_IMG.height,.width=TEXTURE_GAMING_BACKGROUND_IMG.width,.x=0,.y=0};
 
+        Texture2D TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG = LoadTexture("./resources/sprites/confirmingQuit.png");
+            Rectangle TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG.height,.width=TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG.width,.x=0,.y=0};
+
+        
     //sun
         Texture2D TEXTURE_SUN_IMG = LoadTexture("./resources/sprites/sun.png");
 
@@ -940,14 +1026,17 @@ Vector2 origin = {0,0};
             Texture2D TEXTURE_PLAY_BTN_IMG = LoadTexture("./resources/sprites/play-button.png");
                 Rectangle TEXTURE_PLAY_BTN_IMG_SOURCE_REC = {.height=TEXTURE_PLAY_BTN_IMG.height,.width=TEXTURE_PLAY_BTN_IMG.width,.x=0,.y=0};
 
-            Texture2D TEXTURE_CONFIGURATIONS_BTN_IMG = LoadTexture("./resources/sprites/menu-button.png");
+            Texture2D TEXTURE_CONFIGURATIONS_BTN_IMG = LoadTexture("./resources/sprites/configurations-button.png");
                 Rectangle TEXTURE_CONFIGURATIONS_BTN_IMG_SOURCE_REC = {.height=TEXTURE_CONFIGURATIONS_BTN_IMG.height,.width=TEXTURE_CONFIGURATIONS_BTN_IMG.width,.x=0,.y=0};
 
-            Texture2D TEXTURE_ABOUT_BTN_IMG = LoadTexture("./resources/sprites/menu-button.png");
+            Texture2D TEXTURE_ABOUT_BTN_IMG = LoadTexture("./resources/sprites/about-button.png");
                 Rectangle TEXTURE_ABOUT_BTN_IMG_SOURCE_REC = {.height=TEXTURE_ABOUT_BTN_IMG.height,.width=TEXTURE_ABOUT_BTN_IMG.width,.x=0,.y=0};
 
-            Texture2D TEXTURE_RESUME_BTN_IMG = LoadTexture("./resources/sprites/menu-button.png");
+            Texture2D TEXTURE_RESUME_BTN_IMG = LoadTexture("./resources/sprites/resume-button.png");
                 Rectangle TEXTURE_RESUME_BTN_IMG_SOURCE_REC = {.height=TEXTURE_RESUME_BTN_IMG.height,.width=TEXTURE_RESUME_BTN_IMG.width,.x=0,.y=0};
+
+            Texture2D TEXTURE_GOBACK_BTN_IMG = LoadTexture("./resources/sprites/goBack-button.png");
+                Rectangle TEXTURE_GOBACK_BTN_IMG_SOURCE_REC = {.height=TEXTURE_GOBACK_BTN_IMG.height,.width=TEXTURE_GOBACK_BTN_IMG.width,.x=0,.y=0};
 
         //zombies
             Texture2D TEXTURE_NORMAL_ZOMBIE_IMG = LoadTexture("./resources/sprites/zombie.png");
@@ -968,10 +1057,8 @@ Vector2 origin = {0,0};
             //Shovel
             Texture2D TEXTURE_SHOVEL_IMG = LoadTexture("./resources/sprites/shovel.png");
 
-
-
-
 //----------------------------------
+
 const int PLANT_WIDTH = LAWN_WIDTH_VALUE-40;
 
 const Plant SHOVEL_REMOVE_PLANTS = {
@@ -1069,13 +1156,17 @@ const Zombie NORMAL_ZOMBIE={
     .damage =0.33,
     .texture = TEXTURE_NORMAL_ZOMBIE_IMG
 };
-//margin from title from homepage and menu
-const int marginFromTitle=150;
 
+const int marginFromTitle=0.3*SCREEN_HEIGHT;
 //Btn display
 int BTN_WIDTH =SCREEN_WIDTH/3.5;
-int BTN_HEIGHT =(SCREEN_WIDTH-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY-60;
-int BTN_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
+//margin from title from homepage and menu
+int BTN_HEIGHT =(SCREEN_WIDTH-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY;
+int BTN_CENTERED_X_FOR_TWO_BUTTONS = (SCREEN_WIDTH-BTN_WIDTH*2)/2;
+int BTN_ALONE_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
+int BTN_INITIAL_Y=marginFromTitle;
+int BTN_DYNAMIC_Y=BTN_INITIAL_Y;
+
 
 //--HomePage
 
@@ -1090,12 +1181,30 @@ int BTN_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
         homePageOptions[3]= CONFIGURATIONS;
         homePageOptions[4]= EXIT;
 
+        //If index is odd, option goes to the right, if index is even, option to the left
+
         //Filling the homePageOptionsRec 
         for (int i=0;i<HOME_PAGE_OPTIONS_QUANTITY;i++){
-            homePageOptionsRec[i].height = BTN_HEIGHT;
-            homePageOptionsRec[i].width = BTN_WIDTH;
-            homePageOptionsRec[i].x=BTN_CENTERED_X;
-            homePageOptionsRec[i].y = marginFromTitle+(((SCREEN_HEIGHT-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY))*i+5*i;
+            //if its even
+            if(!(i&1)){
+                homePageOptionsRec[i].height = BTN_HEIGHT;
+                homePageOptionsRec[i].width = BTN_WIDTH;
+                homePageOptionsRec[i].x=BTN_CENTERED_X_FOR_TWO_BUTTONS;
+                homePageOptionsRec[i].y = BTN_DYNAMIC_Y;
+            }else{
+                //if its odd
+                homePageOptionsRec[i].height = BTN_HEIGHT;
+                homePageOptionsRec[i].width = BTN_WIDTH;
+                homePageOptionsRec[i].x=BTN_CENTERED_X_FOR_TWO_BUTTONS+BTN_WIDTH;
+                homePageOptionsRec[i].y =BTN_DYNAMIC_Y;
+                BTN_DYNAMIC_Y+=BTN_HEIGHT;
+                // (((SCREEN_HEIGHT-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY))*i
+            }
+        }
+        //if the home_page_option_quantity is an odd number, then the last option will be displayed alone, so,
+        //we need to centralize it
+        if(HOME_PAGE_OPTIONS_QUANTITY&1){
+            homePageOptionsRec[HOME_PAGE_OPTIONS_QUANTITY-1].x=BTN_ALONE_CENTERED_X;
         }
 
 //---------
@@ -1116,18 +1225,31 @@ int BTN_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
             gamingMenuOptionsRec[i].height = BTN_HEIGHT;
             gamingMenuOptionsRec[i].width = BTN_WIDTH;
 
-gamingMenuOptionsRec[i].x=BTN_CENTERED_X;
+gamingMenuOptionsRec[i].x=BTN_ALONE_CENTERED_X;
 
 gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMING_MENU_OPTIONS_QUANTITY)*i;
         }
 
 //---------------------------
 
+//--about section
+Rectangle BTN_GOBACK={.x=SCREEN_WIDTH/30,.y=SCREEN_HEIGHT/30,.width=BTN_WIDTH,.height=BTN_HEIGHT};
+bool BTN_GOBACK_HOVER =0;
 
 //--exiting application
+    //--exit confirmation
+        Rectangle GOBACK_BTN_CPY=BTN_GOBACK;
+            GOBACK_BTN_CPY.x = BTN_CENTERED_X_FOR_TWO_BUTTONS;
+            GOBACK_BTN_CPY.y =(SCREEN_HEIGHT-BTN_HEIGHT*2)/2;
+            bool GOBACK_BTN_CPY_HOVER =0;
 
+        Rectangle EXIT_BTN_CPY=BTN_GOBACK;
+            EXIT_BTN_CPY.x = BTN_CENTERED_X_FOR_TWO_BUTTONS+BTN_WIDTH;
+            EXIT_BTN_CPY.y =(SCREEN_HEIGHT-BTN_HEIGHT*2)/2;
+            bool EXIT_BTN_CPY_HOVER =0;
     SetExitKey(KEY_NULL); // Disable KEY_ESCAPE to close window, X-button still works
     bool exitWindow = false;    // Flag to set window to exit
+    
 //---------
 
 
@@ -1194,7 +1316,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
 //SUN----------------------
 
-    double timOfLastSun = GetTime();
+    double timeOfLastSun = 0;
     //array to track the suns, if the x and y coordinates are "-1", then we consider it an empty sun
     Rectangle sunArray[SIZE_OF_SUN_ARR]={0};
     //array to track the quantity of sun that the player has
@@ -1205,6 +1327,8 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     int indexOfNextSun = 0;
     //time of spawn of suns = 15s
     double spawnRateSun = 8.0;   
+    //used to spawn sun appropriately
+    double timeSpawnSunTracking =0;
    
 
 
@@ -1231,8 +1355,10 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     int indexOfNextZombie=0;
     double spawnRateZombie = 5.0;
     bool firstZombieSpawn =1;
-    double timeOfLastZombie = GetTime();  //saves the actualTime
+    double timeOfLastZombie = 0;  //saves the actualTime
     double timeForFirstSpawnZombie=30.0;
+    //used to spawn zombies appropriately
+    double timeSpawnZombieTracking =0;
 
 
 //------------------------
@@ -1275,19 +1401,30 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
             case HOMEPAGE:
             {
+
                 // TODO: Update HOMEPAGE screen variables here!
-                //checks if an rectangle(option) is hovered, so that we can highlight that ractangle
+
+                //playing intromusic once and in loops of its lasting size
+                if(!IsSoundPlaying(SOUND_HOMEPAGE_MENU)){
+                    PlaySound(SOUND_HOMEPAGE_MENU);
+                }
+
+
                  for (int i = 0; i < HOME_PAGE_OPTIONS_QUANTITY; i++)
         {
-            if (CheckCollisionPointRec(mousePoint, homePageOptionsRec[i])) {
-                homePageOptionsRecHover[i] = 1;
-                if(IsGestureDetected(GESTURE_TAP)){
-                    PlaySound(SOUND_BTN_CLICK);
-                    previousScreen=currentScreen;
-                    currentScreen = homePageOptions[i];
-                }
-            }
-            else homePageOptionsRecHover[i] = 0;
+                    if (CheckCollisionPointRec(mousePoint, homePageOptionsRec[i])) {
+                        if(!homePageOptionsRecHover[i]){
+                            PlaySound(SOUND_BTN_HOVER);
+                        }
+                        homePageOptionsRecHover[i] = 1;
+                        if(IsGestureDetected(GESTURE_TAP)){
+                            PlaySound(SOUND_BTN_CLICK);
+                            previousScreen=currentScreen;
+                            StopSound(SOUND_HOMEPAGE_MENU);
+                            currentScreen = homePageOptions[i];
+                        }
+                    }
+                    else {homePageOptionsRecHover[i] = 0;}
         }
             } break;
 
@@ -1330,26 +1467,33 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
                 if (IsKeyPressed(KEY_ENTER) && sizeOfName > 0) {
                     currentScreen = GAMEPLAY; 
+                    timeOfLastZombie=GetTime();
+                    timeOfLastSun=GetTime();
+                
                 }
             } break;
             
-
+            bool menuWasACTIONED=0;
+            float timeSpentAtMenu=0;
 
             case GAMEPLAY:
             {
                 // TODO: Update GAMEPLAY screen variables here!
 
-
+                
                 previousScreen=currentScreen;
-
+                if(!IsSoundPlaying(SOUND_GAMEPLAY)){
+                    
+                    PlaySound(SOUND_GAMEPLAY);
+                }
                 //if zombie has gone out of the screen
                 if(updatePlantsAndZombiesGameplay(plantArr,peaShotsArr,zombieArr,occupationOfLawn,&indexOfNextPea,&indexOfNextZombie,SOUND_PEASHOT_IMPACT,SOUND_ZOMBIE_EAT_PLANT)){
-                    PlaySound(SOUND_LOSE_MUSIC);
+                    PlaySound(SOUND_LOST_MUSIC);
+                    StopSound(SOUND_GAMEPLAY);
                     currentScreen=END_GAME;
 
                 }
 
-                UpdateExistanceTime(plantArr);
 
                 updateSunsPosition(sunArray,indexOfNextSun,groundOfTheSuns);
 
@@ -1361,19 +1505,30 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                         else lawnRectanglesHover[i][j] = 0;
                     }
                 }
-
+                if(!menuWasACTIONED){
                 //used to spawn sun appropriately
-                double timeSpawnSunTracking =GetTime();
+                 timeSpawnSunTracking =GetTime();
 
                 //used to spawn zombies appropriately
-                double timeSpawnZombieTracking =GetTime();
+                 timeSpawnZombieTracking =GetTime();
 
-                //spawn of the suns
-                if((timeSpawnSunTracking-timOfLastSun>spawnRateSun)&&indexOfNextSun<SIZE_OF_SUN_ARR){
-                    AddRandomlySunToArr(sunArray, &indexOfNextSun,lawnRectangles,groundOfTheSuns);
-                    timOfLastSun=GetTime();
+                UpdateExistanceTime(plantArr,0);
+                }else{
+                //used to spawn sun appropriately
+                 timeSpawnSunTracking =GetTime()-timeSpentAtMenu;
+
+                //used to spawn zombies appropriately
+                 timeSpawnZombieTracking =GetTime()-timeSpentAtMenu;
+
+                UpdateExistanceTime(plantArr,timeSpentAtMenu);
                 }
 
+                //spawn of the suns
+                if((timeSpawnSunTracking-timeOfLastSun>spawnRateSun)&&indexOfNextSun<SIZE_OF_SUN_ARR){
+                    AddRandomlySunToArr(sunArray, &indexOfNextSun,lawnRectangles,groundOfTheSuns);
+                    timeOfLastSun=GetTime();
+                }
+                
                 //wait more for the first zombie spawn
                 if(firstZombieSpawn){
                     if((timeSpawnZombieTracking-timeOfLastZombie>timeForFirstSpawnZombie)){
@@ -1381,6 +1536,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                         AddZombieToZombiesArrRandomly(zombieArr,NORMAL_ZOMBIE,&indexOfNextZombie,lawnRectangles);
                         timeOfLastZombie=GetTime();
                         firstZombieSpawn=0;
+                        menuWasACTIONED=0;
                     }
                 
                 //normal zombie spawn
@@ -1389,6 +1545,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                         PlaySound(SOUND_ZOMBIE_SPAWN);
                         AddZombieToZombiesArrRandomly(zombieArr,NORMAL_ZOMBIE,&indexOfNextZombie,lawnRectangles);
                         timeOfLastZombie=GetTime();
+                        menuWasACTIONED=0;
                     }
                 }
 
@@ -1408,8 +1565,8 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 if(IsKeyPressed(KEY_ESCAPE)){
                     PlaySound(SOUND_PAUSE);
                     currentScreen = MENU;
+                    menuWasACTIONED=1;
                 }
-                
             } break;
 
            //CASE ENDGAME?
@@ -1420,11 +1577,15 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 for (int i = 0; i < GAMING_MENU_OPTIONS_QUANTITY; i++)
                 {
                     if (CheckCollisionPointRec(mousePoint, gamingMenuOptionsRec[i])) {
+                         if(!gamingMenuOptionsRecHover[i]){
+                            PlaySound(SOUND_BTN_HOVER);
+                        }
                         gamingMenuOptionsRecHover[i] = 1;
                         
                         if(IsGestureDetected(GESTURE_TAP)){
                             PlaySound(SOUND_BTN_CLICK);
                             previousScreen=currentScreen;
+                            timeSpentAtMenu=GetTime()-timeSpawnSunTracking;
                             currentScreen = gamingMenuOptions[i];
                         }
                     }
@@ -1440,7 +1601,21 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
             case ABOUT:
             {
+                
                 // TODO: Update ENDING screen variables here
+                if (CheckCollisionPointRec(mousePoint, BTN_GOBACK)) {
+                        if(!BTN_GOBACK_HOVER){
+                            PlaySound(SOUND_BTN_HOVER);
+                        }
+                        BTN_GOBACK_HOVER = 1;
+                        if(IsGestureDetected(GESTURE_TAP)){
+                            PlaySound(SOUND_BTN_CLICK);
+                            previousScreen=currentScreen;
+                            StopSound(SOUND_HOMEPAGE_MENU);
+                            currentScreen = HOMEPAGE;
+                        }
+                    }
+                    else {BTN_GOBACK_HOVER = 0;}
             } break;
 
 
@@ -1456,6 +1631,32 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                
             // A request for close window has been issued, we can save data before closing
             // or just show a message asking for confirmation
+            if (CheckCollisionPointRec(mousePoint, GOBACK_BTN_CPY)) {
+                        if(!GOBACK_BTN_CPY_HOVER){
+                            PlaySound(SOUND_BTN_HOVER);
+                        }
+                        GOBACK_BTN_CPY_HOVER = 1;
+                        if(IsGestureDetected(GESTURE_TAP)){
+                            PlaySound(SOUND_BTN_CLICK);
+                            currentScreen = previousScreen;
+                            StopSound(SOUND_HOMEPAGE_MENU);
+                            previousScreen=currentScreen;
+                        }
+            }
+            else if (CheckCollisionPointRec(mousePoint, EXIT_BTN_CPY)) {
+                        if(!EXIT_BTN_CPY_HOVER){
+                            PlaySound(SOUND_BTN_HOVER);
+                        }
+                        EXIT_BTN_CPY_HOVER = 1;
+                        if(IsGestureDetected(GESTURE_TAP)){
+                            PlaySound(SOUND_BTN_CLICK);
+                            StopSound(SOUND_HOMEPAGE_MENU);
+                           exitWindow = true;
+                        }
+                        }
+              else{  GOBACK_BTN_CPY_HOVER = 0;
+            EXIT_BTN_CPY_HOVER=0;}
+                
             if (IsKeyPressed(KEY_Y)) exitWindow = true;
             else if (IsKeyPressed(KEY_N)) {
                 currentScreen=previousScreen;
@@ -1621,8 +1822,11 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 {
                     
                     // TODO: Draw ABOUT screen here!
-                    DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLUE);
-                    DrawText("This is the about screen, you can quit the program now!", 20, 20, 40, DARKBLUE);
+                    // DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
+                    ClearBackground(RAYWHITE);
+                    DrawAboutScreen();
+                    DrawTexturePro(TEXTURE_GOBACK_BTN_IMG,TEXTURE_GOBACK_BTN_IMG_SOURCE_REC,BTN_GOBACK,origin,0.0f,WHITE);
+                    // DrawText("INF vs ZOMBIES is a fun and strategic tower defense game inspired by Plants vs Zombies, developed as a project for the Algorithms and Programming course at the Federal University of Rio Grande do Sul (UFRGS).\nPlayers must defend their base from waves of zombies by placing different plants, each with unique abilities, along a grid. Strategy and quick thinking are key to surviving the endless undead hordes!\nBuilt from scratch in C using the Raylib library, this project was designed to recreate the fun of the original game while strengthening my C programming skills, problem-solving ability, and proactive development approach. Every line of code was crafted to deepen my understanding of efficient logic, clean structure, and real-time game mechanics.\nWhether you're a fan of tower defense games or just curious about game development in C, INF vs ZOMBIES offers a mix of challenge and creativity—with a little programming twist!\nReady to stop the zombie invasion? Let the battle begin!\n(Educational project for UFRGS - Instituto de Informática)", 20, 20, 40, BLACK);
                   
 
                 } break;
@@ -1638,10 +1842,10 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
                  case EXIT:
                 {
-                    
                     // TODO: Draw EXIT screen here!
-                DrawRectangle(0, 100, SCREEN_WIDTH, 200, BLACK);
-                DrawText("Are you sure you want to exit program :( ? [Y/N]", 40, 180, 30, WHITE);
+                    DrawTexturePro(TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG,TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_GOBACK_BTN_IMG,TEXTURE_GOBACK_BTN_IMG_SOURCE_REC,GOBACK_BTN_CPY,origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_EXIT_BTN_IMG,TEXTURE_EXIT_BTN_IMG_SOURCE_REC,EXIT_BTN_CPY,origin,0.0f,WHITE);
             
                 } break;
                 default: break;
@@ -1677,7 +1881,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
         UnloadSound(SOUND_COLLECTING_SUN);
         UnloadSound(SOUND_GAMEPLAY);
         UnloadSound(SOUND_HOMEPAGE_MENU);
-        UnloadSound(SOUND_LOSE_MUSIC);
+        UnloadSound(SOUND_LOST_MUSIC);
         UnloadSound(SOUND_PAUSE);
         UnloadSound(SOUND_PEASHOT_IMPACT);
         UnloadSound(SOUND_PLANTING_PLANT);
