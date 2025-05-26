@@ -12,6 +12,7 @@
 #define MAX_SIZE_OF_NAME 15
 #define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
 #define GAMING_MENU_OPTIONS_QUANTITY 3 //resume, configurations and exit
+#define CONFIGURATIONS_OPTIONS_QUANTITY 13//quantity of options in the configurations menu, 6 options + 6 corresponding rectangles mute/unmute +1 Back to menu option
 #define SCREEN_WIDTH 900
 #define SCREEN_HEIGHT 900
 #define TARGET_FPS 60
@@ -66,7 +67,23 @@ const Rectangle SCREEN_RECTANGLE={
 //enumaration to reference to the gameScreens of the game
 typedef enum GAME_SCREEN {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURATIONS, EXIT 
     ,USER_DATA, DECK_SELECTION, GAMEPLAY,END_GAME,MENU, RESUME} GAME_SCREEN;
-    
+ 
+//enumeration to reference the options of the configurations menu
+typedef enum{
+    CONFIGURATIONS_BTN_ZOMBIES=0,
+    CONFIGURATIONS_SOUND_ZOMBIES,
+    CONFIGURATIONS_BTN_PLANTS,
+    CONFIGURATIONS_SOUND_PLANTS,
+    CONFIGURATIONS_BTN_BACKGROUND,
+    CONFIGURATIONS_SOUND_BACKGROUND,
+    CONFIGURATIONS_BTN_PEASHOTS,
+    CONFIGURATIONS_SOUND_PEASHOTS,
+    CONFIGURATIONS_BTN_SUNS,
+    CONFIGURATIONS_SOUND_SUNS,
+    CONFIGURATIONS_BTN_SOUNDEFFECTS,
+    CONFIGURATIONS_SOUND_SOUNDEFFECTS,
+    CONFIGURATIONS_BTN_GOBACK} CONFIGURATIONS_OPTIONS;
+
 //enumeration to reference the cost of each plant.
 //model: COST_(type_of_plant)
 typedef enum COST_OF_PLANT{
@@ -1003,7 +1020,10 @@ Vector2 origin = {0,0};
         Texture2D TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG = LoadTexture("./resources/sprites/confirmingQuit.png");
             Rectangle TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG.height,.width=TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG.width,.x=0,.y=0};
 
-        
+        Texture2D TEXTURE_CONFIGURATIONS_BACKGROUND_IMG = LoadTexture("./resources/sprites/configurationsBackground.png");
+            Rectangle TEXTURE_CONFIGURATIONS_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_CONFIGURATIONS_BACKGROUND_IMG.height,.width=TEXTURE_CONFIGURATIONS_BACKGROUND_IMG.width,.x=0,.y=0};
+
+
     //sun
         Texture2D TEXTURE_SUN_IMG = LoadTexture("./resources/sprites/sun.png");
 
@@ -1037,6 +1057,32 @@ Vector2 origin = {0,0};
 
             Texture2D TEXTURE_GOBACK_BTN_IMG = LoadTexture("./resources/sprites/goBack-button.png");
                 Rectangle TEXTURE_GOBACK_BTN_IMG_SOURCE_REC = {.height=TEXTURE_GOBACK_BTN_IMG.height,.width=TEXTURE_GOBACK_BTN_IMG.width,.x=0,.y=0};
+            
+            Texture2D TEXTURE_ZOMBIES_BTN_IMG = LoadTexture("./resources/sprites/zombies-button-transparent.png");
+                Rectangle TEXTURE_ZOMBIES_BTN_IMG_SOURCE_REC = {.height=TEXTURE_ZOMBIES_BTN_IMG.height,.width=TEXTURE_ZOMBIES_BTN_IMG.width,.x=0,.y=0};
+            
+            Texture2D TEXTURE_PLANTS_BTN_IMG = LoadTexture("./resources/sprites/plants-button-transparent.png");
+                Rectangle TEXTURE_PLANTS_BTN_IMG_SOURCE_REC = {.height=TEXTURE_PLANTS_BTN_IMG.height,.width=TEXTURE_PLANTS_BTN_IMG.width,.x=0,.y=0};
+            
+            Texture2D TEXTURE_PEASHOTS_BTN_IMG = LoadTexture("./resources/sprites/peashots-button-transparent.png");
+                Rectangle TEXTURE_PEASHOTS_BTN_IMG_SOURCE_REC = {.height=TEXTURE_PEASHOTS_BTN_IMG.height,.width=TEXTURE_PEASHOTS_BTN_IMG.width,.x=0,.y=0};
+            
+            Texture2D TEXTURE_BACKGROUND_BTN_IMG = LoadTexture("./resources/sprites/background-button-transparent.png");
+                Rectangle TEXTURE_BACKGROUND_BTN_IMG_SOURCE_REC = {.height=TEXTURE_BACKGROUND_BTN_IMG.height,.width=TEXTURE_BACKGROUND_BTN_IMG.width,.x=0,.y=0};
+
+            Texture2D TEXTURE_SOUNDEFFECTS_BTN_IMG = LoadTexture("./resources/sprites/soundeffects-button-transparent.png");
+                Rectangle TEXTURE_SOUNDEFFECTS_BTN_IMG_SOURCE_REC = {.height=TEXTURE_SOUNDEFFECTS_BTN_IMG.height,.width=TEXTURE_SOUNDEFFECTS_BTN_IMG.width,.x=0,.y=0};
+
+            Texture2D TEXTURE_SUNS_BTN_IMG = LoadTexture("./resources/sprites/suns-button-transparent.png");
+                Rectangle TEXTURE_SUNS_BTN_IMG_SOURCE_REC = {.height=TEXTURE_SUNS_BTN_IMG.height,.width=TEXTURE_SUNS_BTN_IMG.width,.x=0,.y=0};
+
+            Texture2D TEXTURE_UNMUTE_BTN_IMG = LoadTexture("./resources/sprites/unmute-button-transparent.png");
+                Rectangle TEXTURE_UNMUTE_BTN_IMG_SOURCE_REC = {.height=TEXTURE_UNMUTE_BTN_IMG.height,.width=TEXTURE_UNMUTE_BTN_IMG.width,.x=0,.y=0};
+
+            Texture2D TEXTURE_MUTE_BTN_IMG = LoadTexture("./resources/sprites/mute-button-transparent.png");
+                Rectangle TEXTURE_MUTE_BTN_IMG_SOURCE_REC = {.height=TEXTURE_MUTE_BTN_IMG.height,.width=TEXTURE_MUTE_BTN_IMG.width,.x=0,.y=0};
+                
+            
 
         //zombies
             Texture2D TEXTURE_NORMAL_ZOMBIE_IMG = LoadTexture("./resources/sprites/zombie.png");
@@ -1167,6 +1213,9 @@ int BTN_ALONE_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
 int BTN_INITIAL_Y=marginFromTitle;
 int BTN_DYNAMIC_Y=BTN_INITIAL_Y;
 
+//--about section
+Rectangle BTN_GOBACK={.x=SCREEN_WIDTH/30,.y=SCREEN_HEIGHT/30,.width=BTN_WIDTH,.height=BTN_HEIGHT};
+bool BTN_GOBACK_HOVER =0;
 
 //--HomePage
 
@@ -1208,7 +1257,58 @@ int BTN_DYNAMIC_Y=BTN_INITIAL_Y;
         }
 
 //---------
+//Configurations Menu
 
+    Rectangle configurationsOptionsRec[CONFIGURATIONS_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refers to the options of the game in the landpage(PLAY, leaderboard, about, configurations and exit)
+    bool configurationsOptionsRecHover[CONFIGURATIONS_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered
+    bool mutedSounds[CONFIGURATIONS_OPTIONS_QUANTITY]={0}; 
+    // bool configurationsOptionsSoundHover[CONFIGURATIONS_OPTIONS_QUANTITY]={0};//array that tells if an option outputed its sound
+    
+    CONFIGURATIONS_OPTIONS configurationsOptions[CONFIGURATIONS_OPTIONS_QUANTITY] ={0};//array to navigate over the options of the game
+    //Filling the configurationsOptions
+    //backgroundMusic ->mute/unmute
+    //zombies ->mute/unmute
+    //plants ->mute/unmute
+    //peashots ->mute/unmute
+    //sun ->mute/unmute
+    //soundEffects ->mute/unmute
+    
+    configurationsOptions[CONFIGURATIONS_SOUND_BACKGROUND]= CONFIGURATIONS_SOUND_BACKGROUND;
+    configurationsOptions[CONFIGURATIONS_BTN_BACKGROUND]= CONFIGURATIONS_BTN_BACKGROUND;
+    configurationsOptions[CONFIGURATIONS_SOUND_ZOMBIES]= CONFIGURATIONS_SOUND_ZOMBIES;
+    configurationsOptions[CONFIGURATIONS_BTN_ZOMBIES]= CONFIGURATIONS_BTN_ZOMBIES;
+    configurationsOptions[CONFIGURATIONS_SOUND_PLANTS]= CONFIGURATIONS_SOUND_PLANTS;
+    configurationsOptions[CONFIGURATIONS_BTN_PLANTS]= CONFIGURATIONS_BTN_PLANTS;
+    configurationsOptions[CONFIGURATIONS_SOUND_PEASHOTS]= CONFIGURATIONS_SOUND_PEASHOTS;
+    configurationsOptions[CONFIGURATIONS_BTN_PEASHOTS]= CONFIGURATIONS_BTN_PEASHOTS;
+    configurationsOptions[CONFIGURATIONS_SOUND_SUNS]= CONFIGURATIONS_SOUND_SUNS;
+    configurationsOptions[CONFIGURATIONS_BTN_SUNS]= CONFIGURATIONS_BTN_SUNS;
+    configurationsOptions[CONFIGURATIONS_SOUND_SOUNDEFFECTS]= CONFIGURATIONS_SOUND_SOUNDEFFECTS;
+    configurationsOptions[CONFIGURATIONS_BTN_SOUNDEFFECTS]= CONFIGURATIONS_BTN_SOUNDEFFECTS;
+    configurationsOptions[CONFIGURATIONS_BTN_GOBACK]= CONFIGURATIONS_BTN_GOBACK;
+
+    //Filling the configurationsOptionsRec
+    BTN_DYNAMIC_Y=BTN_INITIAL_Y;
+        //If index is odd, option goes to the right, if index is even, option to the left
+        for (int i=0;i<CONFIGURATIONS_OPTIONS_QUANTITY;i++){
+            //if its even
+            if(!(i&1)){
+                configurationsOptionsRec[i].height = BTN_HEIGHT;
+                configurationsOptionsRec[i].width = BTN_WIDTH;
+                configurationsOptionsRec[i].x=BTN_CENTERED_X_FOR_TWO_BUTTONS;
+                configurationsOptionsRec[i].y = BTN_DYNAMIC_Y;
+            }else{
+                //if its odd
+                configurationsOptionsRec[i].height = BTN_HEIGHT;
+                configurationsOptionsRec[i].width = BTN_WIDTH;
+                configurationsOptionsRec[i].x=BTN_CENTERED_X_FOR_TWO_BUTTONS+BTN_WIDTH;
+                configurationsOptionsRec[i].y =BTN_DYNAMIC_Y;
+                BTN_DYNAMIC_Y+=BTN_HEIGHT;
+                // (((SCREEN_HEIGHT-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY))*i
+            }
+        }
+        configurationsOptionsRec[CONFIGURATIONS_BTN_GOBACK]=BTN_GOBACK;
+        configurationsOptionsRec[CONFIGURATIONS_BTN_GOBACK].x=0;
 
 
 //--Gaming Menu
@@ -1232,9 +1332,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
 //---------------------------
 
-//--about section
-Rectangle BTN_GOBACK={.x=SCREEN_WIDTH/30,.y=SCREEN_HEIGHT/30,.width=BTN_WIDTH,.height=BTN_HEIGHT};
-bool BTN_GOBACK_HOVER =0;
+
 
 //--exiting application
     //--exit confirmation
@@ -1621,8 +1719,128 @@ bool BTN_GOBACK_HOVER =0;
 
              case CONFIGURATIONS:
             {
-                // TODO: Update ENDING screen variables here!
-            } break;
+
+                //playing intromusic once and in loops of its lasting size
+                if(previousScreen==HOMEPAGE){
+                    if(!IsSoundPlaying(SOUND_HOMEPAGE_MENU)){
+                        PlaySound(SOUND_HOMEPAGE_MENU);
+                    }
+                }else if(previousScreen==GAMEPLAY){
+                    if(!IsSoundPlaying(SOUND_GAMEPLAY)){
+                        PlaySound(SOUND_GAMEPLAY);
+                    }
+                }
+
+
+                 for (int i = 0; i < CONFIGURATIONS_OPTIONS_QUANTITY; i++)
+        {
+                    if (CheckCollisionPointRec(mousePoint, configurationsOptionsRec[i])) {
+                        if(!configurationsOptionsRecHover[i]){
+                            PlaySound(SOUND_BTN_HOVER);
+                        }
+                        configurationsOptionsRecHover[i] = 1;
+                        if(IsGestureDetected(GESTURE_TAP)){
+                            PlaySound(SOUND_BTN_CLICK);
+                            if(configurationsOptions[i]==CONFIGURATIONS_BTN_GOBACK){
+                                StopSound(SOUND_HOMEPAGE_MENU);
+                                currentScreen = previousScreen;
+                                previousScreen=currentScreen;
+
+                                //if the sound isn't muted, then mute it
+                            }else if(!mutedSounds[i]){
+                                // TODO: Handle other configuration options
+                                //mute the respective sound according to the type of the button
+                                switch (configurationsOptions[i])
+                                {
+                                case CONFIGURATIONS_SOUND_ZOMBIES:{
+                                    SetSoundVolume(SOUND_ZOMBIE_SPAWN,0.0f);
+                                    SetSoundVolume(SOUND_ZOMBIE_EAT_PLANT,0.0f);
+                                }break;
+
+                                case CONFIGURATIONS_SOUND_PLANTS:{
+                                    SetSoundVolume(SOUND_PLANTING_PLANT,0.0f);
+                                    SetSoundVolume(SOUND_SHOVEL,0.0f);
+                                    SetSoundVolume(SOUND_PEASHOT_IMPACT,0.0f);
+                                }break;
+
+                                 case CONFIGURATIONS_SOUND_BACKGROUND:{
+                                    SetSoundVolume(SOUND_HOMEPAGE_MENU,0.0f);
+                                    SetSoundVolume(SOUND_GAMEPLAY,0.0f);
+                                }break;
+
+                                case CONFIGURATIONS_SOUND_PEASHOTS:{
+                                    SetSoundVolume(SOUND_PEASHOT_IMPACT,0.0f);
+                                }break;
+
+                                case CONFIGURATIONS_SOUND_SUNS:{
+                                    SetSoundVolume(SOUND_COLLECTING_SUN,0.0f);
+                                }break;
+
+                                case CONFIGURATIONS_SOUND_SOUNDEFFECTS:{
+                                    SetSoundVolume(SOUND_ZOMBIE_SPAWN,0.0f);
+                                    SetSoundVolume(SOUND_ZOMBIE_EAT_PLANT,0.0f);
+                                    SetSoundVolume(SOUND_PLANTING_PLANT,0.0f);
+                                    SetSoundVolume(SOUND_SHOVEL,0.0f);
+                                    SetSoundVolume(SOUND_PEASHOT_IMPACT,0.0f);
+                                    SetSoundVolume(SOUND_HOMEPAGE_MENU,0.0f);
+                                    SetSoundVolume(SOUND_GAMEPLAY,0.0f);
+                                    SetSoundVolume(SOUND_COLLECTING_SUN,0.0f);
+                                }break;
+                                default:
+                                    break;
+                                }
+                                //update the variable
+                                mutedSounds[i]=1;
+
+                                //if the sound is muted, unmute it
+                            } else if(mutedSounds[i]){
+                                switch (configurationsOptions[i])
+                                {
+                                case CONFIGURATIONS_SOUND_ZOMBIES:{
+                                    SetSoundVolume(SOUND_ZOMBIE_SPAWN,1.0f);
+                                    SetSoundVolume(SOUND_ZOMBIE_EAT_PLANT,1.0f);
+                                }break;
+
+                                case CONFIGURATIONS_SOUND_PLANTS:{
+                                    SetSoundVolume(SOUND_PLANTING_PLANT,1.0f);
+                                    SetSoundVolume(SOUND_SHOVEL,1.0f);
+                                    SetSoundVolume(SOUND_PEASHOT_IMPACT,1.0f);
+                                }break;
+
+                                 case CONFIGURATIONS_SOUND_BACKGROUND:{
+                                    SetSoundVolume(SOUND_HOMEPAGE_MENU,0.4f);
+                                    SetSoundVolume(SOUND_GAMEPLAY,0.4f);
+                                }break;
+
+                                case CONFIGURATIONS_SOUND_PEASHOTS:{
+                                    SetSoundVolume(SOUND_PEASHOT_IMPACT,1.0f);
+                                }break;
+
+                                case CONFIGURATIONS_SOUND_SUNS:{
+                                    SetSoundVolume(SOUND_COLLECTING_SUN,0.6f);
+                                }break;
+
+                                case CONFIGURATIONS_SOUND_SOUNDEFFECTS:{
+                                    SetSoundVolume(SOUND_ZOMBIE_SPAWN,1.0f);
+                                    SetSoundVolume(SOUND_ZOMBIE_EAT_PLANT,1.0f);
+                                    SetSoundVolume(SOUND_PLANTING_PLANT,1.0f);
+                                    SetSoundVolume(SOUND_SHOVEL,1.0f);
+                                    SetSoundVolume(SOUND_PEASHOT_IMPACT,1.0f);
+                                    SetSoundVolume(SOUND_HOMEPAGE_MENU,0.4f);
+                                    SetSoundVolume(SOUND_GAMEPLAY,0.4f);
+                                    SetSoundVolume(SOUND_COLLECTING_SUN,0.6f);
+                                }break;
+                                
+                                default:
+                                    break;
+                                }
+                                mutedSounds[i]=0;
+                            }
+                            //and update the soundsmuted variavel
+                        }
+                    }
+                    else {configurationsOptionsRecHover[i] = 0;}
+            }} break;
 
 
              case EXIT:
@@ -1835,8 +2053,60 @@ bool BTN_GOBACK_HOVER =0;
                  case CONFIGURATIONS:
                 {
                     // TODO: Draw CONFIGURATIONS screen here!
-                    DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLUE);
-                    DrawText("Configurations screen, you can quit the program now!", 20, 20, 40, DARKBLUE);
+                    //Background
+                    DrawTexturePro(TEXTURE_CONFIGURATIONS_BACKGROUND_IMG,TEXTURE_CONFIGURATIONS_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
+
+                    
+                    DrawTexturePro(TEXTURE_PLAY_BTN_IMG,TEXTURE_PLAY_BTN_IMG_SOURCE_REC,homePageOptionsRec[0],origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_LEADERBOARD_BTN_IMG,TEXTURE_LEADERBOARD_BTN_IMG_SOURCE_REC,homePageOptionsRec[1],origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_ABOUT_BTN_IMG,TEXTURE_ABOUT_BTN_IMG_SOURCE_REC,homePageOptionsRec[2],origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_CONFIGURATIONS_BTN_IMG,TEXTURE_CONFIGURATIONS_BTN_IMG_SOURCE_REC,homePageOptionsRec[3],origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_EXIT_BTN_IMG,TEXTURE_EXIT_BTN_IMG_SOURCE_REC,homePageOptionsRec[4],origin,0.0f,WHITE);
+
+                    DrawTexturePro(TEXTURE_MUTE_BTN_IMG,TEXTURE_MUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_BACKGROUND],origin,0.0f,WHITE);
+                    if(mutedSounds[CONFIGURATIONS_SOUND_BACKGROUND]){
+                        DrawTexturePro(TEXTURE_UNMUTE_BTN_IMG,TEXTURE_UNMUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_BACKGROUND],origin,0.0f,WHITE);
+                    }else{
+                        DrawTexturePro(TEXTURE_MUTE_BTN_IMG,TEXTURE_MUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_BACKGROUND],origin,0.0f,WHITE);
+                    }
+                    DrawTexturePro(TEXTURE_BACKGROUND_BTN_IMG,TEXTURE_BACKGROUND_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_BTN_BACKGROUND],origin,0.0f,WHITE);  
+
+                    if(mutedSounds[CONFIGURATIONS_SOUND_ZOMBIES]){
+                        DrawTexturePro(TEXTURE_UNMUTE_BTN_IMG,TEXTURE_UNMUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_ZOMBIES],origin,0.0f,WHITE);
+                    }else{
+                        DrawTexturePro(TEXTURE_MUTE_BTN_IMG,TEXTURE_MUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_ZOMBIES],origin,0.0f,WHITE);
+                    }
+                    DrawTexturePro(TEXTURE_ZOMBIES_BTN_IMG,TEXTURE_ZOMBIES_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_BTN_ZOMBIES],origin,0.0f,WHITE);  
+
+                    if(mutedSounds[CONFIGURATIONS_SOUND_PLANTS]){
+                        DrawTexturePro(TEXTURE_UNMUTE_BTN_IMG,TEXTURE_UNMUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_PLANTS],origin,0.0f,WHITE);
+                    }else{
+                        DrawTexturePro(TEXTURE_MUTE_BTN_IMG,TEXTURE_MUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_PLANTS],origin,0.0f,WHITE);
+                    }
+                    DrawTexturePro(TEXTURE_PLANTS_BTN_IMG,TEXTURE_PLANTS_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_BTN_PLANTS],origin,0.0f,WHITE);  
+
+                    if(mutedSounds[CONFIGURATIONS_SOUND_PEASHOTS]){
+                        DrawTexturePro(TEXTURE_UNMUTE_BTN_IMG,TEXTURE_UNMUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_PEASHOTS],origin,0.0f,WHITE);
+                    }else{
+                        DrawTexturePro(TEXTURE_MUTE_BTN_IMG,TEXTURE_MUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_PEASHOTS],origin,0.0f,WHITE);
+                    }
+                    DrawTexturePro(TEXTURE_PEASHOTS_BTN_IMG,TEXTURE_PEASHOTS_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_BTN_PEASHOTS],origin,0.0f,WHITE);  
+
+                    if(mutedSounds[CONFIGURATIONS_SOUND_SUNS]){
+                        DrawTexturePro(TEXTURE_UNMUTE_BTN_IMG,TEXTURE_UNMUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_SUNS],origin,0.0f,WHITE);
+                    }else{
+                        DrawTexturePro(TEXTURE_MUTE_BTN_IMG,TEXTURE_MUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_SUNS],origin,0.0f,WHITE);
+                    }
+                    DrawTexturePro(TEXTURE_SUNS_BTN_IMG,TEXTURE_SUNS_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_BTN_SUNS],origin,0.0f,WHITE);  
+
+                    if(mutedSounds[CONFIGURATIONS_SOUND_SOUNDEFFECTS]){
+                        DrawTexturePro(TEXTURE_UNMUTE_BTN_IMG,TEXTURE_UNMUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_SOUNDEFFECTS],origin,0.0f,WHITE);
+                    }else{
+                        DrawTexturePro(TEXTURE_MUTE_BTN_IMG,TEXTURE_MUTE_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_SOUND_SOUNDEFFECTS],origin,0.0f,WHITE);
+                    }
+                    DrawTexturePro(TEXTURE_SOUNDEFFECTS_BTN_IMG,TEXTURE_SOUNDEFFECTS_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_BTN_SOUNDEFFECTS],origin,0.0f,WHITE);
+      
+                    DrawTexturePro(TEXTURE_GOBACK_BTN_IMG,TEXTURE_GOBACK_BTN_IMG_SOURCE_REC,configurationsOptionsRec[CONFIGURATIONS_BTN_GOBACK],origin,0.0f,WHITE);                      
                 } break;
 
 
@@ -1874,7 +2144,21 @@ bool BTN_GOBACK_HOVER =0;
     UnloadTexture(TEXTURE_GREEN_PEASHOT_IMG);
     UnloadTexture(TEXTURE_WALLNUT_IMG);
     UnloadTexture(TEXTURE_SHOVEL_IMG);
-
+    UnloadTexture(TEXTURE_GOBACK_BTN_IMG);
+    UnloadTexture(TEXTURE_EXIT_BTN_IMG);
+    UnloadTexture(TEXTURE_CONFIGURATIONS_BTN_IMG);
+    UnloadTexture(TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG);
+    UnloadTexture(TEXTURE_CONFIGURATIONS_BACKGROUND_IMG);
+    UnloadTexture(TEXTURE_PLAY_BTN_IMG);
+    UnloadTexture(TEXTURE_GAMING_BACKGROUND_IMG);
+    UnloadTexture(TEXTURE_MUTE_BTN_IMG);
+    UnloadTexture(TEXTURE_UNMUTE_BTN_IMG);
+    UnloadTexture(TEXTURE_SUNS_BTN_IMG);
+    UnloadTexture(TEXTURE_ZOMBIES_BTN_IMG);
+    UnloadTexture(TEXTURE_PLANTS_BTN_IMG);
+    UnloadTexture(TEXTURE_PEASHOTS_BTN_IMG);
+    UnloadTexture(TEXTURE_ABOUT_BTN_IMG);
+    
     //unload sounds
         UnloadSound(SOUND_BTN_CLICK);
         UnloadSound(SOUND_BTN_HOVER);
@@ -1896,7 +2180,7 @@ bool BTN_GOBACK_HOVER =0;
 
     CloseAudioDevice();
     CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------
 
     return 0;
 
