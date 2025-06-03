@@ -9,6 +9,8 @@
 #include "main.h"
 #include "Textures.h"
 #include "Sound.h"
+#include "Buttons.h"
+#include "Homepage.h"
 //================================================================================================================================================
 //CONSTANTS=======================================================================================================================================
 //================================================================================================================================================
@@ -65,60 +67,10 @@ LoadAllTextures();
 
 InitGameStructs();
 
-
-const int marginFromTitle=0.3*SCREEN_HEIGHT;
-//Btn display
-int BTN_WIDTH =SCREEN_WIDTH/3.5;
-//margin from title from homepage and menu
-int BTN_HEIGHT =(SCREEN_WIDTH-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY;
-int BTN_CENTERED_X_FOR_TWO_BUTTONS = (SCREEN_WIDTH-BTN_WIDTH*2)/2;
-int BTN_ALONE_CENTERED_X = (SCREEN_WIDTH-BTN_WIDTH)/2;
-int BTN_INITIAL_Y=marginFromTitle;
-int BTN_DYNAMIC_Y=BTN_INITIAL_Y;
-
-//--about section
-Rectangle BTN_GOBACK={.x=SCREEN_WIDTH/30,.y=SCREEN_HEIGHT/30,.width=BTN_WIDTH,.height=BTN_HEIGHT};
-bool BTN_GOBACK_HOVER =0;
+InitButtons();
 
 //--HomePage
-
-    Rectangle homePageOptionsRec[HOME_PAGE_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refers to the options of the game in the landpage(PLAY, leaderboard, about, configurations and exit)
-    bool homePageOptionsRecHover[HOME_PAGE_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered 
-    // bool homePageOptionsSoundHover[HOME_PAGE_OPTIONS_QUANTITY]={0};//array that tells if an option outputed its sound
-    GAME_SCREEN homePageOptions[HOME_PAGE_OPTIONS_QUANTITY] ={0};//array to navigate over the options of the game
-        //Filling the homePageOptions
-        homePageOptions[0]= PLAY;
-        homePageOptions[1]= LEADERBOARD;
-        homePageOptions[2]= ABOUT;
-        homePageOptions[3]= CONFIGURATIONS;
-        homePageOptions[4]= EXIT;
-
-        //If index is odd, option goes to the right, if index is even, option to the left
-
-        //Filling the homePageOptionsRec 
-        for (int i=0;i<HOME_PAGE_OPTIONS_QUANTITY;i++){
-            //if its even
-            if(!(i&1)){
-                homePageOptionsRec[i].height = BTN_HEIGHT;
-                homePageOptionsRec[i].width = BTN_WIDTH;
-                homePageOptionsRec[i].x=BTN_CENTERED_X_FOR_TWO_BUTTONS;
-                homePageOptionsRec[i].y = BTN_DYNAMIC_Y;
-            }else{
-                //if its odd
-                homePageOptionsRec[i].height = BTN_HEIGHT;
-                homePageOptionsRec[i].width = BTN_WIDTH;
-                homePageOptionsRec[i].x=BTN_CENTERED_X_FOR_TWO_BUTTONS+BTN_WIDTH;
-                homePageOptionsRec[i].y =BTN_DYNAMIC_Y;
-                BTN_DYNAMIC_Y+=BTN_HEIGHT;
-                // (((SCREEN_HEIGHT-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY))*i
-            }
-        }
-        //if the home_page_option_quantity is an odd number, then the last option will be displayed alone, so,
-        //we need to centralize it
-        if(HOME_PAGE_OPTIONS_QUANTITY&1){
-            homePageOptionsRec[HOME_PAGE_OPTIONS_QUANTITY-1].x=BTN_ALONE_CENTERED_X;
-        }
-
+InitHomePage();
 //---------
 //Configurations Menu
 
@@ -341,7 +293,7 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
                 framesCounter++;    // Count frames
 
                 // Wait for 7 seconds (420 frames) before jumping to HOMEPAGE screen
-                if (framesCounter > 2)
+                if (framesCounter > 240)
                 {
                     currentScreen = HOMEPAGE;
                 }
