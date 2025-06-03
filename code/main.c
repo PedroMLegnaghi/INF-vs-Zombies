@@ -7,6 +7,8 @@
 #include "Plants.h"
 #include "Structs.h"
 #include "main.h"
+#include "Textures.h"
+#include "Sound.h"
 //================================================================================================================================================
 //CONSTANTS=======================================================================================================================================
 //================================================================================================================================================
@@ -54,234 +56,15 @@ int main (void){
 
 //--audio
     InitAudioDevice();
-
-    //btn
-    Sound SOUND_BTN_CLICK = LoadSound("./resources/sound/buttons/buttonclick.ogg");
-    Sound SOUND_BTN_HOVER = LoadSound("./resources/sound/buttons/ceramic.ogg");
-
-    //gamestages--
-    Sound SOUND_LOST_MUSIC = LoadSound("./resources/sound/gameStages/losemusic.ogg");
-    Sound SOUND_PAUSE = LoadSound("./resources/sound/gameStages/pause.ogg");
-    Sound SOUND_ZOMBIES_COMING = LoadSound("./resources/sound/gameStages/thezombiesarecomming.ogg");
-        SetSoundVolume(SOUND_ZOMBIES_COMING,1.0f);
-    Sound SOUND_WIN = LoadSound("./resources/sound/gameStages/win.ogg");
-
-    //plants
-    Sound SOUND_PEASHOT_IMPACT = LoadSound("./resources/sound/plant/juicy.ogg");
-    Sound SOUND_PLANTING_PLANT = LoadSound("./resources/sound/plant/plant.ogg");
-    Sound SOUND_COLLECTING_SUN = LoadSound("./resources/sound/plant/points.ogg");
-    Sound SOUND_SHOVEL = LoadSound("./resources/sound/plant/shovel.ogg");
-
-    //soundtracks
-    Sound SOUND_HOMEPAGE_MENU = LoadSound("./resources/sound/soundtracks/homepage.mp3");
-        SetSoundVolume(SOUND_HOMEPAGE_MENU,0.4f);
-
-    Sound SOUND_GAMEPLAY = LoadSound("./resources/sound/soundtracks/gameplay.mp3");
-        SetSoundVolume(SOUND_GAMEPLAY,0.2f);
-
-    //zombies
-    Sound SOUND_ZOMBIE_SPAWN = LoadSound("./resources/sound/zombies/groan3.ogg");
-    Sound SOUND_ZOMBIE_EAT_PLANT = LoadSound("./resources/sound/zombies/bigchomp.ogg");
-    
-
+    LoadAllSounds();
     
 
 
 //--textures
+LoadAllTextures();
 
-Vector2 origin = {0,0};
-    //background
-        Texture2D TEXTURE_BACKGROUND_IMG = LoadTexture("./resources/sprites/coloredBackGroundPVZ.png");
-            Rectangle TEXTURE_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_BACKGROUND_IMG.height,.width=TEXTURE_BACKGROUND_IMG.width,.x=0,.y=0};
+InitGameStructs();
 
-        Texture2D TEXTURE_GAMING_BACKGROUND_IMG = LoadTexture("./resources/sprites/dayBackgroundGame.png");
-            Rectangle TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_GAMING_BACKGROUND_IMG.height,.width=TEXTURE_GAMING_BACKGROUND_IMG.width,.x=0,.y=0};
-
-        Texture2D TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG = LoadTexture("./resources/sprites/confirmingQuit.png");
-            Rectangle TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG.height,.width=TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG.width,.x=0,.y=0};
-
-        Texture2D TEXTURE_CONFIGURATIONS_BACKGROUND_IMG = LoadTexture("./resources/sprites/configurationsBackground.png");
-            Rectangle TEXTURE_CONFIGURATIONS_BACKGROUND_IMG_SOURCE_REC = {.height=TEXTURE_CONFIGURATIONS_BACKGROUND_IMG.height,.width=TEXTURE_CONFIGURATIONS_BACKGROUND_IMG.width,.x=0,.y=0};
-
-
-    //sun
-        Texture2D TEXTURE_SUN_IMG = LoadTexture("./resources/sprites/sun.png");
-
-    //lawn
-        //dirt
-            Texture2D TEXTURE_DIRT_IMG = LoadTexture("./resources/sprites/dirt.png");
-                Rectangle TEXTURE_DIRT_IMG_SOURCE_REC = {.height=TEXTURE_DIRT_IMG.height,.width=TEXTURE_DIRT_IMG.width,.x=0,.y=0};
-
-        //grass
-            Texture2D TEXTURE_GRASS_IMG = LoadTexture("./resources/sprites/grass.png");
-                Rectangle TEXTURE_GRASS_IMG_SOURCE_REC = {.height=TEXTURE_GRASS_IMG.height,.width=TEXTURE_GRASS_IMG.width,.x=0,.y=0};
-
-    //buttons
-            Texture2D TEXTURE_EXIT_BTN_IMG = LoadTexture("./resources/sprites/exit-button.png");
-                Rectangle TEXTURE_EXIT_BTN_IMG_SOURCE_REC = {.height=TEXTURE_EXIT_BTN_IMG.height,.width=TEXTURE_EXIT_BTN_IMG.width,.x=0,.y=0};
-
-            Texture2D TEXTURE_LEADERBOARD_BTN_IMG = LoadTexture("./resources/sprites/leaderboard-button.png");
-                Rectangle TEXTURE_LEADERBOARD_BTN_IMG_SOURCE_REC = {.height=TEXTURE_LEADERBOARD_BTN_IMG.height,.width=TEXTURE_LEADERBOARD_BTN_IMG.width,.x=0,.y=0};
-
-            Texture2D TEXTURE_PLAY_BTN_IMG = LoadTexture("./resources/sprites/play-button.png");
-                Rectangle TEXTURE_PLAY_BTN_IMG_SOURCE_REC = {.height=TEXTURE_PLAY_BTN_IMG.height,.width=TEXTURE_PLAY_BTN_IMG.width,.x=0,.y=0};
-
-            Texture2D TEXTURE_CONFIGURATIONS_BTN_IMG = LoadTexture("./resources/sprites/configurations-button.png");
-                Rectangle TEXTURE_CONFIGURATIONS_BTN_IMG_SOURCE_REC = {.height=TEXTURE_CONFIGURATIONS_BTN_IMG.height,.width=TEXTURE_CONFIGURATIONS_BTN_IMG.width,.x=0,.y=0};
-
-            Texture2D TEXTURE_ABOUT_BTN_IMG = LoadTexture("./resources/sprites/about-button.png");
-                Rectangle TEXTURE_ABOUT_BTN_IMG_SOURCE_REC = {.height=TEXTURE_ABOUT_BTN_IMG.height,.width=TEXTURE_ABOUT_BTN_IMG.width,.x=0,.y=0};
-
-            Texture2D TEXTURE_RESUME_BTN_IMG = LoadTexture("./resources/sprites/resume-button.png");
-                Rectangle TEXTURE_RESUME_BTN_IMG_SOURCE_REC = {.height=TEXTURE_RESUME_BTN_IMG.height,.width=TEXTURE_RESUME_BTN_IMG.width,.x=0,.y=0};
-
-            Texture2D TEXTURE_GOBACK_BTN_IMG = LoadTexture("./resources/sprites/goBack-button.png");
-                Rectangle TEXTURE_GOBACK_BTN_IMG_SOURCE_REC = {.height=TEXTURE_GOBACK_BTN_IMG.height,.width=TEXTURE_GOBACK_BTN_IMG.width,.x=0,.y=0};
-            
-            Texture2D TEXTURE_ZOMBIES_BTN_IMG = LoadTexture("./resources/sprites/zombies-button-transparent.png");
-                Rectangle TEXTURE_ZOMBIES_BTN_IMG_SOURCE_REC = {.height=TEXTURE_ZOMBIES_BTN_IMG.height,.width=TEXTURE_ZOMBIES_BTN_IMG.width,.x=0,.y=0};
-            
-            Texture2D TEXTURE_PLANTS_BTN_IMG = LoadTexture("./resources/sprites/plants-button-transparent.png");
-                Rectangle TEXTURE_PLANTS_BTN_IMG_SOURCE_REC = {.height=TEXTURE_PLANTS_BTN_IMG.height,.width=TEXTURE_PLANTS_BTN_IMG.width,.x=0,.y=0};
-            
-            Texture2D TEXTURE_PEASHOTS_BTN_IMG = LoadTexture("./resources/sprites/peashots-button-transparent.png");
-                Rectangle TEXTURE_PEASHOTS_BTN_IMG_SOURCE_REC = {.height=TEXTURE_PEASHOTS_BTN_IMG.height,.width=TEXTURE_PEASHOTS_BTN_IMG.width,.x=0,.y=0};
-            
-            Texture2D TEXTURE_BACKGROUND_BTN_IMG = LoadTexture("./resources/sprites/background-button-transparent.png");
-                Rectangle TEXTURE_BACKGROUND_BTN_IMG_SOURCE_REC = {.height=TEXTURE_BACKGROUND_BTN_IMG.height,.width=TEXTURE_BACKGROUND_BTN_IMG.width,.x=0,.y=0};
-
-            Texture2D TEXTURE_SOUNDEFFECTS_BTN_IMG = LoadTexture("./resources/sprites/soundeffects-button-transparent.png");
-                Rectangle TEXTURE_SOUNDEFFECTS_BTN_IMG_SOURCE_REC = {.height=TEXTURE_SOUNDEFFECTS_BTN_IMG.height,.width=TEXTURE_SOUNDEFFECTS_BTN_IMG.width,.x=0,.y=0};
-
-            Texture2D TEXTURE_SUNS_BTN_IMG = LoadTexture("./resources/sprites/suns-button-transparent.png");
-                Rectangle TEXTURE_SUNS_BTN_IMG_SOURCE_REC = {.height=TEXTURE_SUNS_BTN_IMG.height,.width=TEXTURE_SUNS_BTN_IMG.width,.x=0,.y=0};
-
-            Texture2D TEXTURE_UNMUTE_BTN_IMG = LoadTexture("./resources/sprites/unmute-button-transparent.png");
-                Rectangle TEXTURE_UNMUTE_BTN_IMG_SOURCE_REC = {.height=TEXTURE_UNMUTE_BTN_IMG.height,.width=TEXTURE_UNMUTE_BTN_IMG.width,.x=0,.y=0};
-
-            Texture2D TEXTURE_MUTE_BTN_IMG = LoadTexture("./resources/sprites/mute-button-transparent.png");
-                Rectangle TEXTURE_MUTE_BTN_IMG_SOURCE_REC = {.height=TEXTURE_MUTE_BTN_IMG.height,.width=TEXTURE_MUTE_BTN_IMG.width,.x=0,.y=0};
-                
-            
-
-        //zombies
-            Texture2D TEXTURE_NORMAL_ZOMBIE_IMG = LoadTexture("./resources/sprites/zombie.png");
-
-        //plants
-
-            //sunflower
-            Texture2D TEXTURE_SUNFLOWER_IMG = LoadTexture("./resources/sprites/sunflower.png");
-
-            //Green peashooter
-            Texture2D TEXTURE_GREEN_PEASHOOTER_IMG = LoadTexture("./resources/sprites/peashooter.png");
-                //Green peashot
-                Texture2D TEXTURE_GREEN_PEASHOT_IMG = LoadTexture("./resources/sprites/peashooter-proj.png");
-            
-            //Wallnut
-            Texture2D TEXTURE_WALLNUT_IMG = LoadTexture("./resources/sprites/wallnut.png");
-
-            //Shovel
-            Texture2D TEXTURE_SHOVEL_IMG = LoadTexture("./resources/sprites/shovel.png");
-
-//----------------------------------
-
-const int PLANT_WIDTH = LAWN_WIDTH_VALUE-40;
-
-const Plant SHOVEL_REMOVE_PLANTS = {
-    .actionTime=0,
-    .color=0,
-    .cost=0,
-    .creationTime=0,
-    .existanceTime=0,
-    .format.height= LAWN_HEIGHT_VALUE-20,
-    .format.width= PLANT_WIDTH,
-    .health=0,
-    .peashot=0,
-    .referenceTime=0,
-    .rowOfPlant=0,
-    .texture=TEXTURE_SHOVEL_IMG,
-    .type=TYPE_SHOVEL};
-
-const Plant PLANT_SUNFLOWER={
-    .format.height= LAWN_HEIGHT_VALUE-20,
-    .format.width= PLANT_WIDTH,
-    .format.x= 0,
-    .format.y= 0,
-    .type = TYPE_SUNFLOWER,
-    .cost = COST_SUNFLOWER,
-    .color = BROWN, 
-    .actionTime=ACTION_TIME_SUNFLOWER,
-    .existanceTime=0,
-    .referenceTime=0,
-    .existanceTime=0,
-    .health=HEALTH_OF_SUNFLOWER,
-    .texture = TEXTURE_SUNFLOWER_IMG,
-    .rowOfPlant=-1
-    
-};
-
-const PeaShot NORMAL_GREEN_PEASHOT={
-    .damage=20,
-    .format={
-        .height=20,
-        .width=20,
-        .x=0,
-        .y=0
-    },
-    .color=WHITE,
-    .velocity=1,
-    .rowOfShot=0,
-    .texture = TEXTURE_GREEN_PEASHOT_IMG
-};
-const Plant PLANT_GREEN_PEASHOOTER={
-    .format.height= LAWN_HEIGHT_VALUE-20,
-    .format.width= PLANT_WIDTH,
-    .format.x= 0,
-    .format.y= 0,
-    .type = TYPE_GREEN_PEASHOOTER,
-    .cost = COST_PEASHOOTER,
-    .color = BLUE, 
-    .actionTime=ACTION_TIME_PEASHOOTER,
-    .existanceTime=0,
-    .referenceTime=0,
-    .existanceTime=0,
-    .health=HEALTH_OF_GREEN_PEASHOOTER,
-    .peashot = NORMAL_GREEN_PEASHOT,
-    .texture = TEXTURE_GREEN_PEASHOOTER_IMG,
-    .rowOfPlant=-1
-};
-
-const Plant PLANT_WALLNUT={
-    .format.height= LAWN_HEIGHT_VALUE-20,
-    .format.width= PLANT_WIDTH,
-    .format.x= 0,
-    .format.y= 0,
-    .type = TYPE_WALLNUT,
-    .cost = COST_WALLNUT,
-    .color = BLUE, 
-    .existanceTime=0,
-    .referenceTime=0,
-    .existanceTime=0,
-    .health=HEALTH_OF_WALLNUT,
-    .texture = TEXTURE_WALLNUT_IMG
-};
-const Zombie NORMAL_ZOMBIE={
-    .color=GRAY,
-    .velocity = 0.5,
-    .health =100,
-    .rowOfZombie=-10,
-    .format={
-        //make zombie appear from outside of the window
-        .x=SCREEN_WIDTH+30,
-        .y=0,
-        .width=60,
-        .height=LAWN_Y_VALUE
-    },
-    .isAttacking=0,
-    //damage=20/second
-    .damage =0.33,
-    .texture = TEXTURE_NORMAL_ZOMBIE_IMG
-};
 
 const int marginFromTitle=0.3*SCREEN_HEIGHT;
 //Btn display
@@ -430,12 +213,10 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     
 //---------
 
-
 //--frameManagement
     int framesCounter = 0;          // Useful to count frames
     SetTargetFPS(TARGET_FPS);               // Set desired framerate (frames-per-second)
 //--------------------------------
-
 
 
 //--PLAYER 
@@ -449,7 +230,6 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
 //DECK-----
     Plant DeckOfPlants [SIZE_OF_DECK]={0};
-    //DO A FUNCTION INITDECK!
     DeckOfPlants[0] = PLANT_SUNFLOWER;
     DeckOfPlants[1] = PLANT_GREEN_PEASHOOTER;
     DeckOfPlants[2] = PLANT_WALLNUT;
@@ -461,7 +241,6 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 //---------------------------------------------
 
 //PLANT ---------------------
-
     //used to track which plants are deployed in the field(lawn)
     Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]={0};
     for(int i=0;i<NUMBER_ROWS_LAWN;i++){
@@ -469,7 +248,6 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
             plantArr[i][j].type=TYPE_NULL_PLANT;
         }
     }
-
 //----------------------
 
 
@@ -489,8 +267,6 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
             }
         }
 //-------------------------------------
-
-
 
 //SUN----------------------
 
@@ -512,15 +288,10 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
 
 //------------------------
 
-
 //PEASHOOTER AND PEASHOT
-
-
     PeaShot peaShotsArr [SIZE_OF_PEASHOT_ARR];
     int indexOfNextPea = 0;
-
 //---------------------
-
 
 //ZOMBIE-----------------
 
@@ -1207,57 +978,9 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     // De-Initialization
     //--------------------------------------------------------------------------------------
     // TODO: Unload all loaded data (textures, fonts, audio) here!
-    UnloadTexture(TEXTURE_BACKGROUND_IMG);
-    UnloadTexture(TEXTURE_GAMING_BACKGROUND_IMG);
-    UnloadTexture(TEXTURE_SUN_IMG);
-    UnloadTexture(TEXTURE_GRASS_IMG);
-    UnloadTexture(TEXTURE_DIRT_IMG);
-    UnloadTexture(TEXTURE_EXIT_BTN_IMG);
-    UnloadTexture(TEXTURE_PLAY_BTN_IMG);
-    UnloadTexture(TEXTURE_LEADERBOARD_BTN_IMG);
-    UnloadTexture(TEXTURE_CONFIGURATIONS_BTN_IMG);
-    UnloadTexture(TEXTURE_ABOUT_BTN_IMG);
-    UnloadTexture(TEXTURE_RESUME_BTN_IMG);
-    UnloadTexture(TEXTURE_SUNFLOWER_IMG);
-    UnloadTexture(TEXTURE_NORMAL_ZOMBIE_IMG);
-    UnloadTexture(TEXTURE_GREEN_PEASHOOTER_IMG);
-    UnloadTexture(TEXTURE_GREEN_PEASHOT_IMG);
-    UnloadTexture(TEXTURE_WALLNUT_IMG);
-    UnloadTexture(TEXTURE_SHOVEL_IMG);
-    UnloadTexture(TEXTURE_GOBACK_BTN_IMG);
-    UnloadTexture(TEXTURE_EXIT_BTN_IMG);
-    UnloadTexture(TEXTURE_CONFIGURATIONS_BTN_IMG);
-    UnloadTexture(TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG);
-    UnloadTexture(TEXTURE_CONFIGURATIONS_BACKGROUND_IMG);
-    UnloadTexture(TEXTURE_PLAY_BTN_IMG);
-    UnloadTexture(TEXTURE_GAMING_BACKGROUND_IMG);
-    UnloadTexture(TEXTURE_MUTE_BTN_IMG);
-    UnloadTexture(TEXTURE_UNMUTE_BTN_IMG);
-    UnloadTexture(TEXTURE_SUNS_BTN_IMG);
-    UnloadTexture(TEXTURE_ZOMBIES_BTN_IMG);
-    UnloadTexture(TEXTURE_PLANTS_BTN_IMG);
-    UnloadTexture(TEXTURE_PEASHOTS_BTN_IMG);
-    UnloadTexture(TEXTURE_ABOUT_BTN_IMG);
+    UnloadAllTextures();
+    UnloadAllSounds();
     
-    //unload sounds
-        UnloadSound(SOUND_BTN_CLICK);
-        UnloadSound(SOUND_BTN_HOVER);
-        UnloadSound(SOUND_COLLECTING_SUN);
-        UnloadSound(SOUND_GAMEPLAY);
-        UnloadSound(SOUND_HOMEPAGE_MENU);
-        UnloadSound(SOUND_LOST_MUSIC);
-        UnloadSound(SOUND_PAUSE);
-        UnloadSound(SOUND_PEASHOT_IMPACT);
-        UnloadSound(SOUND_PLANTING_PLANT);
-        UnloadSound(SOUND_SHOVEL);
-        UnloadSound(SOUND_WIN);
-        UnloadSound(SOUND_ZOMBIE_EAT_PLANT);
-        UnloadSound(SOUND_ZOMBIE_SPAWN);
-        UnloadSound(SOUND_ZOMBIES_COMING);
-
-
-
-
     CloseAudioDevice();
     CloseWindow();        // Close window and OpenGL context
     //-------------------------------------------------------------------------------------

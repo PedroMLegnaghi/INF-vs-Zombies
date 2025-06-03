@@ -1,11 +1,9 @@
 #pragma once
 #include "raylib.h"
 #include "Enums.h"  
-#include "raylib.h"
+
 //ZOMBIE
     typedef struct Zombie{
-        //png/sprite?
-    //sound?
     Color color;
     //given in pixels/frame
     float velocity;
@@ -26,8 +24,6 @@ typedef struct PeaShot
 {
     unsigned int damage;
     Rectangle format;
-    // img?
-    // sound?
     Color color;
     //velocity:in pixels/frame
     float velocity;
@@ -56,11 +52,21 @@ typedef struct Plant
     int rowOfPlant;
     Texture2D texture;
     PeaShot peashot;
-    //sound?
     
 }Plant;
 
-//----------------------------
+//STRUCT CONSTANTS--------------------------------
+
+extern Plant PLANT_SUNFLOWER;
+extern Plant PLANT_GREEN_PEASHOOTER;
+extern Plant PLANT_WALLNUT;
+extern Plant SHOVEL_REMOVE_PLANTS;
+extern PeaShot NORMAL_GREEN_PEASHOT;
+extern Zombie NORMAL_ZOMBIE;
+
 extern const Plant NULL_PLANT;
 extern const PeaShot NULL_PEA;
 extern const Zombie NULL_ZOMBIE;
+
+//FUNCTIONS-------------------------------------
+void InitGameStructs(void);
