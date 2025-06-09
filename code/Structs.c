@@ -2,6 +2,7 @@
 #include "Enums.h"
 #include "Textures.h"
 #include "main.h"
+#include "lawn.h"
 
 
 Plant PLANT_SUNFLOWER;

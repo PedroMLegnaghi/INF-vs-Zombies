@@ -19,15 +19,6 @@
 #define SIZE_OF_ZOMBIES_ARR 100 //maximum quantity of zombies in screen
 #define SIZE_OF_PEASHOT_ARR 1000 //maximum quantity of peashots in screen
 
-//Constants of lawn display
-extern const int DISTANCE_LAWN_RIGHT_EDGE;
-extern const int DISTANCE_LAWN_LEFT_EDGE;
-extern const int DISTANCE_LAWN_INFERIOR_EDGE;
-extern const int DISTANCE_LAWN_SUPERIOR_EDGE;
-extern const int LAWN_WIDTH_VALUE;
-extern const int LAWN_HEIGHT_VALUE;
-extern const int LAWN_X_VALUE;
-extern const int LAWN_Y_VALUE;
 
 //Constants of deck display
 extern const int DECK_RECTANGLE_X_VALUE;

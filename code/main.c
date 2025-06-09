@@ -11,25 +11,12 @@
 #include "Sound.h"
 #include "Buttons.h"
 #include "Homepage.h"
-//================================================================================================================================================
+#include "lawn.h"
+#include "configMenu.h"
+#include "gamingMenu.h"
+#include "deck.h"
+
 //CONSTANTS=======================================================================================================================================
-//================================================================================================================================================
-
-//Constants of lawn display
-const int DISTANCE_LAWN_RIGHT_EDGE = (0.025)*SCREEN_WIDTH;
-const int DISTANCE_LAWN_LEFT_EDGE = DISTANCE_LAWN_RIGHT_EDGE;
-const int DISTANCE_LAWN_INFERIOR_EDGE = DISTANCE_LAWN_RIGHT_EDGE;
-const int DISTANCE_LAWN_SUPERIOR_EDGE = DISTANCE_LAWN_RIGHT_EDGE*2;
-const int LAWN_WIDTH_VALUE = (SCREEN_WIDTH-DISTANCE_LAWN_RIGHT_EDGE-DISTANCE_LAWN_LEFT_EDGE)/NUMBER_COLUMN_LAWN-12;
-const int LAWN_HEIGHT_VALUE = (SCREEN_HEIGHT-DISTANCE_LAWN_INFERIOR_EDGE-DISTANCE_LAWN_SUPERIOR_EDGE)/NUMBER_ROWS_LAWN-8;
-const int LAWN_X_VALUE = LAWN_WIDTH_VALUE;
-const int LAWN_Y_VALUE = LAWN_HEIGHT_VALUE;
-
-//Constants of deck display
-const int DECK_RECTANGLE_X_VALUE = 10;
-const int DECK_RECTANGLE_Y_VALUE = 10;
-const int DECK_ELEMENT_WIDTH_VALUE =LAWN_WIDTH_VALUE;
-const int DECK_ELEMENT_HEIGHT_VALUE = 70;
 
 //User's Mouse
 Vector2 mousePoint = { 0.0f, 0.0f }; 
@@ -43,185 +30,60 @@ const Rectangle SCREEN_RECTANGLE={
 };
 
 
-
 int main (void){
-    //INITIALIZATION
-//----------------------------------------------------------------------------------------------------------------------------------------------
 
+//INITIALIZATION
 
 //--screen
-    srand(time(NULL));
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT,"raylib [core] example - basic screen manager");
-    GAME_SCREEN currentScreen = LOGO;
-    GAME_SCREEN previousScreen = HOMEPAGE;
-//--------
+srand(time(NULL));
+InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT,"raylib [core] example - basic screen manager");
+GAME_SCREEN currentScreen = LOGO;
+GAME_SCREEN previousScreen = HOMEPAGE;
 
 //--audio
-    InitAudioDevice();
-    LoadAllSounds();
+InitAudioDevice();
+LoadAllSounds();
     
-
-
 //--textures
 LoadAllTextures();
 
+//--structs
 InitGameStructs();
 
+//--buttons
 InitButtons();
 
 //--HomePage
 InitHomePage();
-//---------
+
 //Configurations Menu
-
-    Rectangle configurationsOptionsRec[CONFIGURATIONS_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refers to the options of the game in the landpage(PLAY, leaderboard, about, configurations and exit)
-    bool configurationsOptionsRecHover[CONFIGURATIONS_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered
-    bool mutedSounds[CONFIGURATIONS_OPTIONS_QUANTITY]={0}; 
-    // bool configurationsOptionsSoundHover[CONFIGURATIONS_OPTIONS_QUANTITY]={0};//array that tells if an option outputed its sound
-    
-    CONFIGURATIONS_OPTIONS configurationsOptions[CONFIGURATIONS_OPTIONS_QUANTITY] ={0};//array to navigate over the options of the game
-    //Filling the configurationsOptions
-    //backgroundMusic ->mute/unmute
-    //zombies ->mute/unmute
-    //plants ->mute/unmute
-    //peashots ->mute/unmute
-    //sun ->mute/unmute
-    //soundEffects ->mute/unmute
-    
-    configurationsOptions[CONFIGURATIONS_SOUND_BACKGROUND]= CONFIGURATIONS_SOUND_BACKGROUND;
-    configurationsOptions[CONFIGURATIONS_BTN_BACKGROUND]= CONFIGURATIONS_BTN_BACKGROUND;
-    configurationsOptions[CONFIGURATIONS_SOUND_ZOMBIES]= CONFIGURATIONS_SOUND_ZOMBIES;
-    configurationsOptions[CONFIGURATIONS_BTN_ZOMBIES]= CONFIGURATIONS_BTN_ZOMBIES;
-    configurationsOptions[CONFIGURATIONS_SOUND_PLANTS]= CONFIGURATIONS_SOUND_PLANTS;
-    configurationsOptions[CONFIGURATIONS_BTN_PLANTS]= CONFIGURATIONS_BTN_PLANTS;
-    configurationsOptions[CONFIGURATIONS_SOUND_PEASHOTS]= CONFIGURATIONS_SOUND_PEASHOTS;
-    configurationsOptions[CONFIGURATIONS_BTN_PEASHOTS]= CONFIGURATIONS_BTN_PEASHOTS;
-    configurationsOptions[CONFIGURATIONS_SOUND_SUNS]= CONFIGURATIONS_SOUND_SUNS;
-    configurationsOptions[CONFIGURATIONS_BTN_SUNS]= CONFIGURATIONS_BTN_SUNS;
-    configurationsOptions[CONFIGURATIONS_SOUND_SOUNDEFFECTS]= CONFIGURATIONS_SOUND_SOUNDEFFECTS;
-    configurationsOptions[CONFIGURATIONS_BTN_SOUNDEFFECTS]= CONFIGURATIONS_BTN_SOUNDEFFECTS;
-    configurationsOptions[CONFIGURATIONS_BTN_GOBACK]= CONFIGURATIONS_BTN_GOBACK;
-
-    //Filling the configurationsOptionsRec
-    BTN_DYNAMIC_Y=BTN_INITIAL_Y;
-        //If index is odd, option goes to the right, if index is even, option to the left
-        for (int i=0;i<CONFIGURATIONS_OPTIONS_QUANTITY;i++){
-            //if its even
-            if(!(i&1)){
-                configurationsOptionsRec[i].height = BTN_HEIGHT;
-                configurationsOptionsRec[i].width = BTN_WIDTH;
-                configurationsOptionsRec[i].x=BTN_CENTERED_X_FOR_TWO_BUTTONS;
-                configurationsOptionsRec[i].y = BTN_DYNAMIC_Y;
-            }else{
-                //if its odd
-                configurationsOptionsRec[i].height = BTN_HEIGHT;
-                configurationsOptionsRec[i].width = BTN_WIDTH;
-                configurationsOptionsRec[i].x=BTN_CENTERED_X_FOR_TWO_BUTTONS+BTN_WIDTH;
-                configurationsOptionsRec[i].y =BTN_DYNAMIC_Y;
-                BTN_DYNAMIC_Y+=BTN_HEIGHT;
-                // (((SCREEN_HEIGHT-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY))*i
-            }
-        }
-        configurationsOptionsRec[CONFIGURATIONS_BTN_GOBACK]=BTN_GOBACK;
-        configurationsOptionsRec[CONFIGURATIONS_BTN_GOBACK].x=0;
-
+InitConfigurationsMenu();
 
 //--Gaming Menu
-    Rectangle gamingMenuOptionsRec[GAMING_MENU_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refer to the options of the game in the landpage(PLAY, leaderboard, about, configurations and exit)
-    bool gamingMenuOptionsRecHover[GAMING_MENU_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered 
-    GAME_SCREEN gamingMenuOptions[GAMING_MENU_OPTIONS_QUANTITY] ={0};//array to navigate over the options of the game
-        //Filling the homePageOptions
-        gamingMenuOptions[0]= RESUME;
-        gamingMenuOptions[1]= CONFIGURATIONS;
-        gamingMenuOptions[2]= EXIT;
-
-        //Filling the gamingMenuOptionsRec 
-        for (int i=0;i<GAMING_MENU_OPTIONS_QUANTITY;i++){
-            gamingMenuOptionsRec[i].height = BTN_HEIGHT;
-            gamingMenuOptionsRec[i].width = BTN_WIDTH;
-
-gamingMenuOptionsRec[i].x=BTN_ALONE_CENTERED_X;
-
-gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMING_MENU_OPTIONS_QUANTITY)*i;
-        }
-
-//---------------------------
-
-
+InitGamingMenu();
 
 //--exiting application
-    //--exit confirmation
-        Rectangle GOBACK_BTN_CPY=BTN_GOBACK;
-            GOBACK_BTN_CPY.x = BTN_CENTERED_X_FOR_TWO_BUTTONS;
-            GOBACK_BTN_CPY.y =(SCREEN_HEIGHT-BTN_HEIGHT*2)/2;
-            bool GOBACK_BTN_CPY_HOVER =0;
-
-        Rectangle EXIT_BTN_CPY=BTN_GOBACK;
-            EXIT_BTN_CPY.x = BTN_CENTERED_X_FOR_TWO_BUTTONS+BTN_WIDTH;
-            EXIT_BTN_CPY.y =(SCREEN_HEIGHT-BTN_HEIGHT*2)/2;
-            bool EXIT_BTN_CPY_HOVER =0;
-    SetExitKey(KEY_NULL); // Disable KEY_ESCAPE to close window, X-button still works
-    bool exitWindow = false;    // Flag to set window to exit
+SetExitKey(KEY_NULL); // Disable KEY_ESCAPE to close window, X-button still works
+bool exitWindow = false;    // Flag to set window to exit
     
-//---------
-
 //--frameManagement
-    int framesCounter = 0;          // Useful to count frames
-    SetTargetFPS(TARGET_FPS);               // Set desired framerate (frames-per-second)
-//--------------------------------
-
+int framesCounter = 0;          // Useful to count frames
+SetTargetFPS(TARGET_FPS);               // Set desired framerate (frames-per-second)
 
 //--PLAYER 
+char playerName[MAX_SIZE_OF_NAME]={0};
+unsigned int sizeOfName = 0;//variable used to track the size of the name of the user
 
-    char playerName[MAX_SIZE_OF_NAME]={0};
+//--DECK
+InitDeckOfPlants();
 
-    unsigned int sizeOfName = 0;//variable used to track the size of the name of the user
+//--PLANT
+InitPlantArr();
 
-//-----------------
+//--LAWN
+InitLawnRectangles();
 
-
-//DECK-----
-    Plant DeckOfPlants [SIZE_OF_DECK]={0};
-    DeckOfPlants[0] = PLANT_SUNFLOWER;
-    DeckOfPlants[1] = PLANT_GREEN_PEASHOOTER;
-    DeckOfPlants[2] = PLANT_WALLNUT;
-    DeckOfPlants[3] = SHOVEL_REMOVE_PLANTS;
-
-    //used to track which card is selected. If card is all nulled, then there's no card selected
-    Plant cardSelected = {0};
-
-//---------------------------------------------
-
-//PLANT ---------------------
-    //used to track which plants are deployed in the field(lawn)
-    Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]={0};
-    for(int i=0;i<NUMBER_ROWS_LAWN;i++){
-        for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
-            plantArr[i][j].type=TYPE_NULL_PLANT;
-        }
-    }
-//----------------------
-
-
-
-//LAWN--------------
-//lawns of the game
-    //used to verify if a plant already exists in a spot
-    bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]={0};
-    bool lawnRectanglesHover[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN];
-    Rectangle lawnRectangles[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN];
-        for(int i=0;i<NUMBER_ROWS_LAWN;i++){
-            for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
-                lawnRectangles[i][j].x = 30+LAWN_X_VALUE*j;
-                lawnRectangles[i][j].y = 80+LAWN_Y_VALUE*i;
-                lawnRectangles[i][j].width = LAWN_WIDTH_VALUE;
-                lawnRectangles[i][j].height = LAWN_HEIGHT_VALUE;
-            }
-        }
-//-------------------------------------
-
-//SUN----------------------
-
+//--SUN
     double timeOfLastSun = 0;
     //array to track the suns, if the x and y coordinates are "-1", then we consider it an empty sun
     Rectangle sunArray[SIZE_OF_SUN_ARR]={0};
@@ -237,17 +99,12 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     double timeSpawnSunTracking =0;
    
 
-
-//------------------------
-
-//PEASHOOTER AND PEASHOT
+//--PEASHOOTER AND PEASHOT
     PeaShot peaShotsArr [SIZE_OF_PEASHOT_ARR];
     int indexOfNextPea = 0;
 //---------------------
 
-//ZOMBIE-----------------
-
-
+//--ZOMBIE
     Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]={0};
     //initializing zombie array not to conflict with shooting peas mechanic
         for(int i=0;i<SIZE_OF_ZOMBIES_ARR;i++){
@@ -262,7 +119,6 @@ gamingMenuOptionsRec[i].y= marginFromTitle+((SCREEN_HEIGHT-marginFromTitle)/GAMI
     double timeSpawnZombieTracking =0;
 
 
-//------------------------
 
 
 

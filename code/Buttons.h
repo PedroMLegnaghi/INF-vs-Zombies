@@ -15,4 +15,10 @@ extern int BTN_DYNAMIC_Y;
 extern Rectangle BTN_GOBACK;
 extern bool BTN_GOBACK_HOVER ;
 
+//--exit confirmation
+extern Rectangle GOBACK_BTN_CPY;
+extern bool GOBACK_BTN_CPY_HOVER;
+extern Rectangle EXIT_BTN_CPY;
+extern bool EXIT_BTN_CPY_HOVER;
+
 void InitButtons(void);

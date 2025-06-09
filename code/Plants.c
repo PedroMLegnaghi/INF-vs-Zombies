@@ -5,8 +5,11 @@
 #include "main.h"
 #include "stdlib.h"
 #include "string.h"
+#include "lawn.h"
 
-
+ //used to track which plants are deployed in the field(lawn)
+    Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]={0};
+    
 //SUN FUNCTIONS---
 
 //AddSunToArray:
@@ -110,7 +113,14 @@ void DrawSuns(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int indexOfNextSun, Text
 //--------------------------------------------
 
 //PLANTS FUNCTIONS-----
-
+// InitPlantArr: used to initializate the array of plants(which is used to track the plants inGame)
+void InitPlantArr(void){
+    for(int i=0;i<NUMBER_ROWS_LAWN;i++){
+        for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
+            plantArr[i][j].type=TYPE_NULL_PLANT;
+        }
+    }
+}
 //UpdateHealthOfPlant: Given a plant, updates it's health accordingly with a given damage
 void UpdateHealthOfPlant(Plant *plant, float damage){
     //verify if damage is a valid damage
