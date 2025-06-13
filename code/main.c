@@ -15,7 +15,8 @@
 #include "configMenu.h"
 #include "gamingMenu.h"
 #include "deck.h"
-
+#include "Player.h"
+#include "sun.h"
 //CONSTANTS=======================================================================================================================================
 
 //User's Mouse
@@ -70,9 +71,6 @@ bool exitWindow = false;    // Flag to set window to exit
 int framesCounter = 0;          // Useful to count frames
 SetTargetFPS(TARGET_FPS);               // Set desired framerate (frames-per-second)
 
-//--PLAYER 
-char playerName[MAX_SIZE_OF_NAME]={0};
-unsigned int sizeOfName = 0;//variable used to track the size of the name of the user
 
 //--DECK
 InitDeckOfPlants();
@@ -82,22 +80,6 @@ InitPlantArr();
 
 //--LAWN
 InitLawnRectangles();
-
-//--SUN
-    double timeOfLastSun = 0;
-    //array to track the suns, if the x and y coordinates are "-1", then we consider it an empty sun
-    Rectangle sunArray[SIZE_OF_SUN_ARR]={0};
-    //array to track the quantity of sun that the player has
-    unsigned int sunGamingStorage=800;
-    //array to track when a sun hits the ground
-    float groundOfTheSuns[SIZE_OF_SUN_ARR]={0};
-    //indexToTrack the end of the array
-    int indexOfNextSun = 0;
-    //time of spawn of suns = 15s
-    double spawnRateSun = 8.0;   
-    //used to spawn sun appropriately
-    double timeSpawnSunTracking =0;
-   
 
 //--PEASHOOTER AND PEASHOT
     PeaShot peaShotsArr [SIZE_OF_PEASHOT_ARR];

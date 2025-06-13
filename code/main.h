@@ -1,6 +1,5 @@
 #include "raylib.h"
 #pragma once
-#define MAX_SIZE_OF_NAME 15
 #define HOME_PAGE_OPTIONS_QUANTITY 5 //quantity of options in the Homepage
 #define GAMING_MENU_OPTIONS_QUANTITY 3 //resume, configurations and exit
 #define CONFIGURATIONS_OPTIONS_QUANTITY 13//quantity of options in the configurations menu, 6 options + 6 corresponding rectangles mute/unmute +1 Back to menu option
@@ -9,12 +8,9 @@
 #define TARGET_FPS 60
 #define NUMBER_COLUMN_LAWN 9
 #define NUMBER_ROWS_LAWN 5
-#define VALUE_OF_EACH_SUN 25
-#define SUN_HEIGHT 30
-#define SUN_WIDTH 30
+
 
 //Sizes of arrays
-#define SIZE_OF_SUN_ARR 100 //maximum quantity of suns in screen
 #define SIZE_OF_DECK 3+1    //maximum size of deck (3 plants + 1 shovel) 
 #define SIZE_OF_ZOMBIES_ARR 100 //maximum quantity of zombies in screen
 #define SIZE_OF_PEASHOT_ARR 1000 //maximum quantity of peashots in screen

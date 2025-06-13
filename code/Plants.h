@@ -3,8 +3,13 @@
 #include "raylib.h"
 #include <stdbool.h>
 #include "Enums.h"
-#include "main.h"
+#include "Plants.h"
 #include "Structs.h"
+#include "main.h"
+#include "stdlib.h"
+#include "string.h"
+#include "lawn.h"
+#include "sun.h"
 
 // SUN FUNCTIONS
 void AddSunToArray(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int *indexOfNextSun, Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], int rowOfGround, int columnOfGround, float groundOfTheSuns[SIZE_OF_SUN_ARR], int x, int y);
