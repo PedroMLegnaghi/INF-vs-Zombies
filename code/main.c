@@ -577,22 +577,8 @@ InitZombiesArr(zombieArr);
 
                 } break;
 
-
-                 case DECK_SELECTION:
-                {
-                    
-                    // // TODO: Draw ENDING screen here!
-                    // DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
-                    // DrawText(TextFormat("Nice to meet you, %s :)", playerName), 20, 20, 40, DARKBLUE);
-                    // DrawText("Select you deck", 120, 220, 20, DARKBLUE);
-                    currentScreen = GAMEPLAY;
-
-                } break;
-
-
                 case GAMEPLAY:
                 {
-                    //TODO:Draw GAMEPLAY screen here!
                     DrawTexturePro(TEXTURE_GAMING_BACKGROUND_IMG,TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
                     
                     //Lawn drawing
@@ -641,14 +627,10 @@ InitZombiesArr(zombieArr);
                 }break;
 
 
-                //  case END_GAME:{
-                //      
-                //      DrawText("YOU LOST!", (SCREEN_WIDTH-50)/2, 20, 50, DARKGREEN);
-                //     DrawRectangle((SCREEN_WIDTH-50)/2+,, 20,, WHITE);
-                //     if(gamingMenuOptionsRecHover[i]==true){
-                //              DrawRectangleRec(gamingMenuOptionsRec[i], RED);
-                //             }
-                //         }break;
+                 case END_GAME:{
+                     
+                     DrawTexturePro(TEXTURE_ENDGAME_BACKGROUND_IMG,TEXTURE_ENDGAME_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
+                        }break;
 
 
                 case MENU:{
@@ -664,12 +646,9 @@ InitZombiesArr(zombieArr);
                 case ABOUT:
                 {
                     
-                    // TODO: Draw ABOUT screen here!
-                    // DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
                     ClearBackground(RAYWHITE);
                     DrawAboutScreen();
                     DrawTexturePro(TEXTURE_GOBACK_BTN_IMG,TEXTURE_GOBACK_BTN_IMG_SOURCE_REC,BTN_GOBACK,origin,0.0f,WHITE);
-                    // DrawText("INF vs ZOMBIES is a fun and strategic tower defense game inspired by Plants vs Zombies, developed as a project for the Algorithms and Programming course at the Federal University of Rio Grande do Sul (UFRGS).\nPlayers must defend their base from waves of zombies by placing different plants, each with unique abilities, along a grid. Strategy and quick thinking are key to surviving the endless undead hordes!\nBuilt from scratch in C using the Raylib library, this project was designed to recreate the fun of the original game while strengthening my C programming skills, problem-solving ability, and proactive development approach. Every line of code was crafted to deepen my understanding of efficient logic, clean structure, and real-time game mechanics.\nWhether you're a fan of tower defense games or just curious about game development in C, INF vs ZOMBIES offers a mix of challenge and creativity—with a little programming twist!\nReady to stop the zombie invasion? Let the battle begin!\n(Educational project for UFRGS - Instituto de Informática)", 20, 20, 40, BLACK);
                   
 
                 } break;
@@ -677,7 +656,6 @@ InitZombiesArr(zombieArr);
 
                  case CONFIGURATIONS:
                 {
-                    // TODO: Draw CONFIGURATIONS screen here!
                     //Background
                     DrawTexturePro(TEXTURE_CONFIGURATIONS_BACKGROUND_IMG,TEXTURE_CONFIGURATIONS_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
 
@@ -737,7 +715,6 @@ InitZombiesArr(zombieArr);
 
                  case EXIT:
                 {
-                    // TODO: Draw EXIT screen here!
                     DrawTexturePro(TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG,TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
                     DrawTexturePro(TEXTURE_GOBACK_BTN_IMG,TEXTURE_GOBACK_BTN_IMG_SOURCE_REC,GOBACK_BTN_CPY,origin,0.0f,WHITE);
                     DrawTexturePro(TEXTURE_EXIT_BTN_IMG,TEXTURE_EXIT_BTN_IMG_SOURCE_REC,EXIT_BTN_CPY,origin,0.0f,WHITE);
@@ -751,7 +728,6 @@ InitZombiesArr(zombieArr);
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    // TODO: Unload all loaded data (textures, fonts, audio) here!
     UnloadAllTextures();
     UnloadAllSounds();
     

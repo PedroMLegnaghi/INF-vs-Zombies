@@ -1,5 +1,5 @@
-#include "raylib.h"
 #pragma once
+#include "raylib.h"
 
     //btn
     extern Sound SOUND_BTN_CLICK ;

@@ -1,6 +1,6 @@
+#pragma once
 #include "raylib.h"
 #include "main.h"
-#pragma once
 extern const int marginFromTitle;
 //Btn display
 extern int BTN_WIDTH;

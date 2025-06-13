@@ -1,3 +1,4 @@
+#pragma once
 #include "Structs.h"
 #include "main.h"
 #include "Plants.h"

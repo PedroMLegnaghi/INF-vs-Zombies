@@ -1,3 +1,4 @@
+#pragma once
 #include "raylib.h"
 #include "main.h"
 #include "Structs.h"

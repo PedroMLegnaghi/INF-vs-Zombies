@@ -1,8 +1,8 @@
+#pragma once
 #include "raylib.h"
 #include "Enums.h"
 #include "main.h"
 #include "Buttons.h"
-#pragma once
 
 #define GAMING_MENU_OPTIONS_QUANTITY 3 //resume, configurations and exit
 

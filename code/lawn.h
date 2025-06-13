@@ -1,6 +1,6 @@
+#pragma once
 #include "raylib.h"
 #include "main.h"
-#pragma once
 
 #define NUMBER_COLUMN_LAWN 9
 #define NUMBER_ROWS_LAWN 5

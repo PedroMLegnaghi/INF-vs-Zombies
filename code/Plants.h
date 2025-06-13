@@ -1,18 +1,17 @@
 #pragma once
+#define SIZE_OF_PEASHOT_ARR 1000 //maximum quantity of peashots in screen
 
 #include "raylib.h"
 #include <stdbool.h>
-#include "Enums.h"
-#include "Plants.h"
-#include "Structs.h"
+#include "sun.h"
 #include "main.h"
+#include "Enums.h"
+#include "Structs.h"
 #include "stdlib.h"
 #include "string.h"
 #include "lawn.h"
-#include "sun.h"
 #include "zombies.h"
 
-#define SIZE_OF_PEASHOT_ARR 1000 //maximum quantity of peashots in screen
 
 
 //used to track which plants are deployed in the field(lawn)

@@ -1,7 +1,7 @@
+#pragma once
 #include "Buttons.h"
 #include "main.h"
 #include "Enums.h"
-#pragma once
 
 #define CONFIGURATIONS_OPTIONS_QUANTITY 13//quantity of options in the configurations menu, 6 options + 6 corresponding rectangles mute/unmute +1 Back to menu option
 

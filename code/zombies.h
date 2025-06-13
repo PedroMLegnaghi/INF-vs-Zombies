@@ -1,4 +1,5 @@
-
+#pragma once
+#define SIZE_OF_ZOMBIES_ARR 100 //maximum quantity of zombies in screen
 #include "raylib.h"
 #include <stdbool.h>
 #include "Enums.h"
@@ -9,7 +10,6 @@
 #include "string.h"
 #include "lawn.h"
 #include "sun.h"
-#define SIZE_OF_ZOMBIES_ARR 100 //maximum quantity of zombies in screen
 
 //--ZOMBIE
 extern Zombie zombieArr[SIZE_OF_ZOMBIES_ARR];
