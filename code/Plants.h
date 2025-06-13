@@ -11,15 +11,13 @@
 #include "lawn.h"
 #include "sun.h"
 
-// SUN FUNCTIONS
-void AddSunToArray(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int *indexOfNextSun, Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], int rowOfGround, int columnOfGround, float groundOfTheSuns[SIZE_OF_SUN_ARR], int x, int y);
-void AddRandomlySunToArr(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int *indexOfNextSun, Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], float groundOfTheSuns[SIZE_OF_SUN_ARR]);
-void updateSunsPosition(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int indexOfSun, float groundOfTheSuns[SIZE_OF_SUN_ARR]);
-void RemoveSunOfArray(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int *indexOfNextSun, int indexOfSunRemoved, float groundOfTheSuns[SIZE_OF_SUN_ARR]);
-int collectSun(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int *indexOfNextSun, float groundOfTheSuns[SIZE_OF_SUN_ARR]);
-void addSunToStorage(unsigned int *gamingSunStorage);
-void DrawSuns(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int indexOfNextSun, Texture2D sunTexture);
+//used to track which plants are deployed in the field(lawn)
+extern Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN];
 
+//--PEASHOOTER AND PEASHOT
+extern PeaShot peaShotsArr [SIZE_OF_PEASHOT_ARR];
+extern int indexOfNextPea;
+    
 // PLANT FUNCTIONS
 void UpdateHealthOfPlant(Plant *plant, float damage);
 void RemovePlantFromArr(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], int rowOfPlantToBeRemoved, int columnOfPlantToBeRemoved);
@@ -28,8 +26,6 @@ void UpdateReferenceTime(Plant *plant);
 void DrawPlants(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]);
 void GenerateSunSunflower(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], float groundOfTheSuns[SIZE_OF_SUN_ARR], Rectangle arr_of_suns[SIZE_OF_SUN_ARR], int *indexOfNextSun);
 void InitPlantArr(void);
- //used to track which plants are deployed in the field(lawn)
-    extern Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN];
 // PEA FUNCTIONS
 void addPeaToArr(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], PeaShot pea, int *indexOfNextPea);
 void shootPea(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int *indexOfNextPea, Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]);

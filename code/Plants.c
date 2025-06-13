@@ -1,9 +1,13 @@
 #include "raylib.h"
 #include "Plants.h"
 
- //used to track which plants are deployed in the field(lawn)
-    Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]={0};
-    
+//used to track which plants are deployed in the field(lawn)
+Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]={0};
+
+//--PEASHOOTER AND PEASHOT
+PeaShot peaShotsArr [SIZE_OF_PEASHOT_ARR]={0};
+int indexOfNextPea = 0;
+
 
 // InitPlantArr: used to initializate the array of plants(which is used to track the plants inGame)
 void InitPlantArr(void){

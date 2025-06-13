@@ -81,10 +81,7 @@ InitPlantArr();
 //--LAWN
 InitLawnRectangles();
 
-//--PEASHOOTER AND PEASHOT
-    PeaShot peaShotsArr [SIZE_OF_PEASHOT_ARR];
-    int indexOfNextPea = 0;
-//---------------------
+
 
 //--ZOMBIE
     Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]={0};
