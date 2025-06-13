@@ -10,6 +10,7 @@
 #include "string.h"
 #include "lawn.h"
 #include "sun.h"
+#include "zombies.h"
 
 //used to track which plants are deployed in the field(lawn)
 extern Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN];
@@ -32,15 +33,6 @@ void shootPea(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], PeaShot peaS
 void DrawPeaShots(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int indexOfNextPea);
 void UpdatePeaShotPosition(PeaShot *pea);
 void RemovePeaFromArr(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int indexOfPeaToBeRemoved, int *indexOfNextPea);
-
-// ZOMBIE FUNCTIONS
-void DrawZombie(Zombie zombie);
-void DrawZombieArr(Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR], int indexOfNextZombie);
-void AddZombieToZombiesArr(Zombie zombie, Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR], int *indexOfNextZombie);
-void AddZombieToZombiesArrRandomly(Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR], Zombie zombieToBeGenerated, int *indexOfNextZombie, Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN]);
-void UpdateZombiePosition(Zombie *zombie);
-void RemoveZombie(Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR], int *indexOfNextZombie, int indexOfZombieToBeRemoved);
-void UpdateZombieHealth(Zombie *zombie, int damage);
 
 // COLLISION FUNCTIONS
 bool verifyPeaShotColisionWithZombie(PeaShot pea, Zombie zombie);

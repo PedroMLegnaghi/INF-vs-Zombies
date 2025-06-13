@@ -12,7 +12,6 @@
 
 //Sizes of arrays
 #define SIZE_OF_DECK 3+1    //maximum size of deck (3 plants + 1 shovel) 
-#define SIZE_OF_ZOMBIES_ARR 100 //maximum quantity of zombies in screen
 #define SIZE_OF_PEASHOT_ARR 1000 //maximum quantity of peashots in screen
 
 

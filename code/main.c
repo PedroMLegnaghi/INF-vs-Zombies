@@ -17,6 +17,7 @@
 #include "deck.h"
 #include "Player.h"
 #include "sun.h"
+#include "zombies.h"
 //CONSTANTS=======================================================================================================================================
 
 //User's Mouse
@@ -81,25 +82,8 @@ InitPlantArr();
 //--LAWN
 InitLawnRectangles();
 
-
-
-//--ZOMBIE
-    Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]={0};
-    //initializing zombie array not to conflict with shooting peas mechanic
-        for(int i=0;i<SIZE_OF_ZOMBIES_ARR;i++){
-            zombieArr[i].rowOfZombie=-1;
-        }
-    int indexOfNextZombie=0;
-    double spawnRateZombie = 5.0;
-    bool firstZombieSpawn =1;
-    double timeOfLastZombie = 0;  //saves the actualTime
-    double timeForFirstSpawnZombie=30.0;
-    //used to spawn zombies appropriately
-    double timeSpawnZombieTracking =0;
-
-
-
-
+//--ZOMBIES
+InitZombiesArr(zombieArr);
 
 // ====================================================================================================================================================================================================
 //MAIN LOOP GAME====================================================================================================================================================================================
