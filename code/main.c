@@ -182,7 +182,7 @@ InitZombiesArr(zombieArr);
                     // }else{
                     //     strlen(player.playerName)--;
                     // }
-                    player.playerName[strlen(player.playerName)] = '\0';
+                    player.playerName[strlen(player.playerName)-1] = '\0';
                 }
 
                 if (IsKeyPressed(KEY_ENTER) && strlen(player.playerName) > 0) {
