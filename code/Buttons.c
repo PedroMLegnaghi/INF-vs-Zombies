@@ -20,8 +20,14 @@ Rectangle GOBACK_BTN_CPY;
 Rectangle   EXIT_BTN_CPY;
 bool GOBACK_BTN_CPY_HOVER;
 bool EXIT_BTN_CPY_HOVER;
-void InitButtons(void){
 
+//--endgame
+Rectangle BTN_ENDGAME_GOBACK;
+bool BTN_ENDGAME_GOBACK_HOVER;
+
+//InitButtons:
+//Initializes the buttons of the game (sets the width and height of the buttons based on the screen size and margin from title)
+void InitButtons(void){
 //Btn display
  BTN_WIDTH =SCREEN_WIDTH/3.5;
  
@@ -47,4 +53,9 @@ void InitButtons(void){
              EXIT_BTN_CPY.y =(SCREEN_HEIGHT-BTN_HEIGHT*2)/2;
              EXIT_BTN_CPY_HOVER =0;
 
+//--endgame
+    //return to the homepage button
+    BTN_ENDGAME_GOBACK= GOBACK_BTN_CPY;
+    BTN_ENDGAME_GOBACK.x = SCREEN_WIDTH- BTN_ENDGAME_GOBACK.width - SCREEN_WIDTH/30;
+    BTN_ENDGAME_GOBACK_HOVER =0;
 }

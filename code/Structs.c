@@ -99,7 +99,7 @@ void InitGameStructs(void) {
 
     NORMAL_ZOMBIE = (Zombie){
         .color=GRAY,
-        .velocity = 0.5,
+        .velocity = 2,
         .health =100,
         .rowOfZombie=-10,
         .format={

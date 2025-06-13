@@ -19,6 +19,7 @@
 #include "sun.h"
 #include "zombies.h"
 #include "menu.h"
+#include "gameplay.h"
 //CONSTANTS=======================================================================================================================================
 
 //User's Mouse
@@ -250,7 +251,7 @@ InitZombiesArr(zombieArr);
                     timeOfLastSun=GetTime();
                 }
                 
-                //wait more for the first zombie spawn
+                //if it is the first zombie spawn, then spawn it after (timeForFirstSpawnZombie) seconds
                 if(firstZombieSpawn){
                     if((timeSpawnZombieTracking-timeOfLastZombie>timeForFirstSpawnZombie)){
                         PlaySound(SOUND_ZOMBIES_COMING);
@@ -298,8 +299,9 @@ InitZombiesArr(zombieArr);
 
                 for (int i = 0; i < GAMING_MENU_OPTIONS_QUANTITY; i++)
                 {
-                    if (CheckCollisionPointRec(mousePoint, gamingMenuOptionsRec[i])) {
-                         if(!gamingMenuOptionsRecHover[i]){
+                    if (CheckCollisionPointRec(mousePoint, gamingMenuOptionsRec[i])) 
+                    {
+                        if(!gamingMenuOptionsRecHover[i]){
                             PlaySound(SOUND_BTN_HOVER);
                         }
                         gamingMenuOptionsRecHover[i] = 1;
@@ -316,16 +318,33 @@ InitZombiesArr(zombieArr);
                 }
             }break;
 
+            case END_GAME:{
+                if (CheckCollisionPointRec(mousePoint, BTN_ENDGAME_GOBACK)) 
+                    {
+                        if(!BTN_ENDGAME_GOBACK_HOVER)
+                        {
+                            PlaySound(SOUND_BTN_HOVER);
+                        }
+                        BTN_ENDGAME_GOBACK_HOVER = 1;
+
+                        if(IsGestureDetected(GESTURE_TAP)){
+                            PlaySound(SOUND_BTN_CLICK);
+                            previousScreen=currentScreen;
+                            currentScreen = HOMEPAGE;
+                            resetGameplay();
+                        }
+                    }else {
+                        BTN_ENDGAME_GOBACK_HOVER = 0;
+                    }
+
+            }break;
 
             case RESUME:{
                 currentScreen = GAMEPLAY;
             }break;
 
-
             case ABOUT:
             {
-                
-                // TODO: Update ENDING screen variables here
                 if (CheckCollisionPointRec(mousePoint, BTN_GOBACK)) {
                         if(!BTN_GOBACK_HOVER){
                             PlaySound(SOUND_BTN_HOVER);
@@ -629,7 +648,8 @@ InitZombiesArr(zombieArr);
 
                  case END_GAME:{
                      
-                     DrawTexturePro(TEXTURE_ENDGAME_BACKGROUND_IMG,TEXTURE_ENDGAME_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_ENDGAME_BACKGROUND_IMG,TEXTURE_ENDGAME_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_GOBACK_BTN_IMG,TEXTURE_GOBACK_BTN_IMG_SOURCE_REC,BTN_ENDGAME_GOBACK,origin,0.0f,WHITE);
                         }break;
 
 

@@ -2,12 +2,19 @@
 
 Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]={0};
 
-
+//used to track the next zombie to be spawned
 int indexOfNextZombie=0;
+
 double spawnRateZombie = 5.0;
+
+//used to know if it is the first time to spawn a zombie
 bool firstZombieSpawn =1;
-double timeOfLastZombie = 0;  //saves the actualTime
-double timeForFirstSpawnZombie=30.0;
+
+//reference for spawn of zombies
+double timeOfLastZombie = 0;
+
+double timeForFirstSpawnZombie=0.0;
+
 //used to spawn zombies appropriately
 double timeSpawnZombieTracking =0;
 

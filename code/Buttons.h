@@ -21,4 +21,8 @@ extern bool GOBACK_BTN_CPY_HOVER;
 extern Rectangle EXIT_BTN_CPY;
 extern bool EXIT_BTN_CPY_HOVER;
 
+//--endgame
+extern Rectangle BTN_ENDGAME_GOBACK;
+extern bool BTN_ENDGAME_GOBACK_HOVER;
+
 void InitButtons(void);

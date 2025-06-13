@@ -36,21 +36,6 @@ void DrawPeaShots(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int indexOfNextPea);
 void UpdatePeaShotPosition(PeaShot *pea);
 void RemovePeaFromArr(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int indexOfPeaToBeRemoved, int *indexOfNextPea);
 
-// COLLISION FUNCTIONS
-bool verifyPeaShotColisionWithZombie(PeaShot pea, Zombie zombie);
-bool verifyPlantColisionWithZombie(Plant plant, Zombie zombie);
-
-//GAMEPLAY
-int updatePlantsAndZombiesGameplay(
-    Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],
-    PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR],
-    Zombie zombieArr[SIZE_OF_ZOMBIES_ARR],
-    bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],
-    int *indexOfNextPea,
-    int *indexOfNextZombie,
-    Sound peaImpactWithZombieSound,
-    Sound zombieAtePlant
-);
 
 
 //ABOUT FUNCTIONS
