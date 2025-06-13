@@ -170,23 +170,22 @@ InitZombiesArr(zombieArr);
                 while (key > 0) {
                     // NOTE: Only allow keys in range [32..125]
                     //MAX_SIZE_OF_NAME-1 to garantee the space for '\0'
-                    if ((key >= 32) && (key <= 125) && (sizeOfName < MAX_SIZE_OF_NAME-1)) {
-                        playerName[sizeOfName] = (char)key;
-                        sizeOfName++;
+                    if ((key >= 32) && (key <= 125) && (strlen(player.playerName) < MAX_SIZE_OF_NAME-1)) {
+                        player.playerName[strlen(player.playerName)] = (char)key;
                     }
                     key = GetCharPressed();  // Check next character in the queue
                 }
 
                 if (IsKeyPressed(KEY_BACKSPACE)) {
-                    if (sizeOfName == 0){
-                        sizeOfName = 0;
-                    }else{
-                        sizeOfName--;
-                    }
-                    playerName[sizeOfName] = '\0';
+                    // if (strlen(player.playerName) == 0){
+                    //     strlen(player.playerName) = 0;
+                    // }else{
+                    //     strlen(player.playerName)--;
+                    // }
+                    player.playerName[strlen(player.playerName)] = '\0';
                 }
 
-                if (IsKeyPressed(KEY_ENTER) && sizeOfName > 0) {
+                if (IsKeyPressed(KEY_ENTER) && strlen(player.playerName) > 0) {
                     currentScreen = GAMEPLAY; 
                     
                     //initializate variables used to track spawn of zombies and sun
@@ -572,8 +571,8 @@ InitZombiesArr(zombieArr);
                     //Draw a fixed rectangle that fits 8 words
                     Rectangle textBox = { SCREEN_WIDTH/2 - 150, 180,  MeasureText("A",40)*8+30, 50 };
                     //if username more than 8 words, update the box
-                    if(sizeOfName>8){
-                        textBox.width = sizeOfName*MeasureText("A",40)+10;
+                    if(strlen(player.playerName)>8){
+                        textBox.width = strlen(player.playerName)*MeasureText("A",40)+10;
                     }
                     
                     //Title
@@ -582,15 +581,15 @@ InitZombiesArr(zombieArr);
                     //TextInput
                     DrawRectangleRec(textBox, LIGHTGRAY);
                     DrawRectangleLines(textBox.x, textBox.y, textBox.width, textBox.height, RED);
-                    DrawText(playerName, textBox.x + 5, textBox.y + 8, 40, MAROON);
+                    DrawText(player.playerName, textBox.x + 5, textBox.y + 8, 40, MAROON);
 
                     //Text alone
-                    DrawText(TextFormat("Press enter to confirm: %i/%i", sizeOfName, MAX_SIZE_OF_NAME-1), 315, 250, 20, DARKGRAY);
+                    DrawText(TextFormat("Press enter to confirm: %i/%i", strlen(player.playerName), MAX_SIZE_OF_NAME-1), 315, 250, 20, DARKGRAY);
 
 
                     // Draw blinking underscore char
-                    if (sizeOfName < MAX_SIZE_OF_NAME) {
-                     DrawText("_",( textBox.x + 8 + MeasureText(playerName, 40)),(textBox.y + 12), 40, MAROON);
+                    if (strlen(player.playerName) < MAX_SIZE_OF_NAME) {
+                     DrawText("_",( textBox.x + 8 + MeasureText(player.playerName, 40)),(textBox.y + 12), 40, MAROON);
                     } 
                   
 

@@ -92,9 +92,9 @@ void resetGameplay(){
 
     //Reset player
     for(int i = 0; i < MAX_SIZE_OF_NAME; i++) {
-        playerName[i] = '\0';  // Reset each character in the player name to null terminator
+        player.playerName[i] = '\0';  // Reset each character in the player name to null terminator
     }
-    sizeOfName= 0;
+    player.pointsOfPlayer= 0;
 }
 
 //updatePlantsAndZombiesGameplay: Update all projectiles thrown and also manages the 

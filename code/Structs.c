@@ -4,7 +4,6 @@
 #include "main.h"
 #include "lawn.h"
 
-
 Plant PLANT_SUNFLOWER;
 Plant PLANT_GREEN_PEASHOOTER;
 Plant PLANT_WALLNUT;
