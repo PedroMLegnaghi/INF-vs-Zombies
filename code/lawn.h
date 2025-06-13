@@ -1,6 +1,9 @@
 #include "raylib.h"
 #include "main.h"
 #pragma once
+
+#define NUMBER_COLUMN_LAWN 9
+#define NUMBER_ROWS_LAWN 5
 //Constants of lawn display
 extern const int DISTANCE_LAWN_RIGHT_EDGE;
 extern const int DISTANCE_LAWN_LEFT_EDGE ;

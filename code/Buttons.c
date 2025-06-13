@@ -1,6 +1,6 @@
-#include "raylib.h"
-#include "main.h"
+
 #include "Buttons.h"
+#include "Homepage.h"
 const int marginFromTitle=0.3*SCREEN_HEIGHT;
 //Btn display
 int BTN_WIDTH;
@@ -24,6 +24,7 @@ void InitButtons(void){
 
 //Btn display
  BTN_WIDTH =SCREEN_WIDTH/3.5;
+ 
 //margin from title from homepage and menu
  BTN_HEIGHT =(SCREEN_WIDTH-marginFromTitle)/HOME_PAGE_OPTIONS_QUANTITY;
  BTN_CENTERED_X_FOR_TWO_BUTTONS = (SCREEN_WIDTH-BTN_WIDTH*2)/2;
@@ -45,4 +46,5 @@ void InitButtons(void){
              EXIT_BTN_CPY.x = BTN_CENTERED_X_FOR_TWO_BUTTONS+BTN_WIDTH;
              EXIT_BTN_CPY.y =(SCREEN_HEIGHT-BTN_HEIGHT*2)/2;
              EXIT_BTN_CPY_HOVER =0;
+
 }

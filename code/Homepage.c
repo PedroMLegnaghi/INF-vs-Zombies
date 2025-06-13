@@ -1,7 +1,4 @@
-#include "raylib.h"
-#include "main.h"
-#include "Structs.h"
-#include "Buttons.h"
+#include "Homepage.h"
 Rectangle homePageOptionsRec[HOME_PAGE_OPTIONS_QUANTITY]={0};//initializing array of rectangles that refers to the options of the game in the landpage(PLAY, leaderboard, about, configurations and exit)
     bool homePageOptionsRecHover[HOME_PAGE_OPTIONS_QUANTITY]={0};//array that tells if an option is hovered 
     // bool homePageOptionsSoundHover[HOME_PAGE_OPTIONS_QUANTITY]={0};//array that tells if an option outputed its sound

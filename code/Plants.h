@@ -12,6 +12,9 @@
 #include "sun.h"
 #include "zombies.h"
 
+#define SIZE_OF_PEASHOT_ARR 1000 //maximum quantity of peashots in screen
+
+
 //used to track which plants are deployed in the field(lawn)
 extern Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN];
 

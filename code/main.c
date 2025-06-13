@@ -18,6 +18,7 @@
 #include "Player.h"
 #include "sun.h"
 #include "zombies.h"
+#include "menu.h"
 //CONSTANTS=======================================================================================================================================
 
 //User's Mouse
@@ -39,8 +40,9 @@ int main (void){
 //--screen
 srand(time(NULL));
 InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT,"raylib [core] example - basic screen manager");
-GAME_SCREEN currentScreen = LOGO;
-GAME_SCREEN previousScreen = HOMEPAGE;
+    //tracks the screen of the user
+    GAME_SCREEN currentScreen = LOGO;
+    GAME_SCREEN previousScreen = HOMEPAGE;
 
 //--audio
 InitAudioDevice();
@@ -103,12 +105,8 @@ InitZombiesArr(zombieArr);
         //Switch that UPDATES THE VARIABLES
         switch (currentScreen)
         {
-
-
             case LOGO:
-            {
-                // TODO: Update LOGO screen variables here!
-                
+            {                
                 framesCounter++;    // Count frames
 
                 // Wait for 7 seconds (420 frames) before jumping to HOMEPAGE screen
@@ -121,22 +119,24 @@ InitZombiesArr(zombieArr);
 
             case HOMEPAGE:
             {
-
-                // TODO: Update HOMEPAGE screen variables here!
-
                 //playing intromusic once and in loops of its lasting size
                 if(!IsSoundPlaying(SOUND_HOMEPAGE_MENU)){
                     PlaySound(SOUND_HOMEPAGE_MENU);
                 }
 
-
+                
                  for (int i = 0; i < HOME_PAGE_OPTIONS_QUANTITY; i++)
         {
+                    //if user hovered the button
                     if (CheckCollisionPointRec(mousePoint, homePageOptionsRec[i])) {
+                        //and the button is not already hovered
                         if(!homePageOptionsRecHover[i]){
+                            //play sound
                             PlaySound(SOUND_BTN_HOVER);
                         }
+                        //activate the flag that it's being hovered
                         homePageOptionsRecHover[i] = 1;
+                        //if user clicked the button
                         if(IsGestureDetected(GESTURE_TAP)){
                             PlaySound(SOUND_BTN_CLICK);
                             previousScreen=currentScreen;
@@ -144,14 +144,15 @@ InitZombiesArr(zombieArr);
                             currentScreen = homePageOptions[i];
                         }
                     }
+                    //else, turn off flag btn is being hovered (it isn't)
                     else {homePageOptionsRecHover[i] = 0;}
         }
+
             } break;
 
 
             case PLAY:
             {
-                // TODO: Update PLAY screen variables here!
                 currentScreen = USER_DATA;//first thing to be done, is to ask for the User data          
             } break;
 
@@ -159,7 +160,6 @@ InitZombiesArr(zombieArr);
 
               case USER_DATA:
             {
-                // TODO: Update USERDATA screen variables here!
                 previousScreen=currentScreen;
 
                 // Get char pressed (unicode character) on the queue
@@ -187,20 +187,17 @@ InitZombiesArr(zombieArr);
 
                 if (IsKeyPressed(KEY_ENTER) && sizeOfName > 0) {
                     currentScreen = GAMEPLAY; 
+                    
+                    //initializate variables used to track spawn of zombies and sun
                     timeOfLastZombie=GetTime();
                     timeOfLastSun=GetTime();
                 
                 }
             } break;
             
-            bool menuWasACTIONED=0;
-            float timeSpentAtMenu=0;
-
+            
             case GAMEPLAY:
-            {
-                // TODO: Update GAMEPLAY screen variables here!
-
-                
+            {   
                 previousScreen=currentScreen;
                 if(!IsSoundPlaying(SOUND_GAMEPLAY)){
                     
@@ -213,10 +210,9 @@ InitZombiesArr(zombieArr);
                     currentScreen=END_GAME;
 
                 }
-
-
+                
                 updateSunsPosition(sunArray,indexOfNextSun,groundOfTheSuns);
-
+                
                 for(int i=0;i<NUMBER_ROWS_LAWN;i++){
                     for(int j=0;j<NUMBER_COLUMN_LAWN;j++){
                         if (CheckCollisionPointRec(mousePoint, lawnRectangles[i][j])) {
@@ -225,24 +221,29 @@ InitZombiesArr(zombieArr);
                         else lawnRectanglesHover[i][j] = 0;
                     }
                 }
+                
+                //if menu was not actioned, spawn things normaly
                 if(!menuWasACTIONED){
-                //used to spawn sun appropriately
-                 timeSpawnSunTracking =GetTime();
+                    
+                    //used to spawn sun appropriately
+                    timeSpawnSunTracking =GetTime();
+                    
+                    //used to spawn zombies appropriately
+                    timeSpawnZombieTracking =GetTime();
+                    
+                    UpdateExistanceTime(plantArr,0);
 
-                //used to spawn zombies appropriately
-                 timeSpawnZombieTracking =GetTime();
-
-                UpdateExistanceTime(plantArr,0);
+                //if menu was actioned, then deals with spawn considering time spent at menu    
                 }else{
-                //used to spawn sun appropriately
-                 timeSpawnSunTracking =GetTime()-timeSpentAtMenu;
+                    //used to spawn sun appropriately
+                    timeSpawnSunTracking =GetTime()-timeSpentAtMenu;
 
-                //used to spawn zombies appropriately
-                 timeSpawnZombieTracking =GetTime()-timeSpentAtMenu;
+                    //used to spawn zombies appropriately
+                    timeSpawnZombieTracking =GetTime()-timeSpentAtMenu;
 
-                UpdateExistanceTime(plantArr,timeSpentAtMenu);
+                    UpdateExistanceTime(plantArr,timeSpentAtMenu);
                 }
-
+                
                 //spawn of the suns
                 if((timeSpawnSunTracking-timeOfLastSun>spawnRateSun)&&indexOfNextSun<SIZE_OF_SUN_ARR){
                     AddRandomlySunToArr(sunArray, &indexOfNextSun,lawnRectangles,groundOfTheSuns);
@@ -258,8 +259,8 @@ InitZombiesArr(zombieArr);
                         firstZombieSpawn=0;
                         menuWasACTIONED=0;
                     }
-                
-                //normal zombie spawn
+                    
+                    //normal zombie spawn
                 }else{
                     if((timeSpawnZombieTracking-timeOfLastZombie>spawnRateZombie)&&indexOfNextZombie<SIZE_OF_ZOMBIES_ARR){
                         PlaySound(SOUND_ZOMBIE_SPAWN);
@@ -268,17 +269,17 @@ InitZombiesArr(zombieArr);
                         menuWasACTIONED=0;
                     }
                 }
-
-
+                
+                
                 if(collectSun(sunArray,&indexOfNextSun,groundOfTheSuns)){
                     PlaySound(SOUND_COLLECTING_SUN);
                     addSunToStorage(&sunGamingStorage);
                 }
-
-
+                
+                
                 PutPlantToField(plantArr,&cardSelected,&sunGamingStorage,occupationOfLawn,lawnRectangles,SOUND_PLANTING_PLANT,SOUND_SHOVEL);
 
-
+                
                 GenerateSunSunflower(plantArr,lawnRectangles,groundOfTheSuns,sunArray,&indexOfNextSun);
 
                 //Menu, if esc pressed
@@ -287,6 +288,7 @@ InitZombiesArr(zombieArr);
                     currentScreen = MENU;
                     menuWasACTIONED=1;
                 }
+  
             } break;
 
            //CASE ENDGAME?
@@ -305,6 +307,7 @@ InitZombiesArr(zombieArr);
                         if(IsGestureDetected(GESTURE_TAP)){
                             PlaySound(SOUND_BTN_CLICK);
                             previousScreen=currentScreen;
+                            //here the time of the last sun spawned was used as reference to update the timeSpentAtMenu
                             timeSpentAtMenu=GetTime()-timeSpawnSunTracking;
                             currentScreen = gamingMenuOptions[i];
                         }
