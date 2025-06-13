@@ -38,7 +38,7 @@ void RemovePeaFromArr(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int indexOfPeaTo
 bool verifyPeaShotColisionWithZombie(PeaShot pea, Zombie zombie);
 bool verifyPlantColisionWithZombie(Plant plant, Zombie zombie);
 
-// GAMEPLAY/DECK FUNCTIONS
+//GAMEPLAY
 int updatePlantsAndZombiesGameplay(
     Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],
     PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR],
@@ -50,22 +50,6 @@ int updatePlantsAndZombiesGameplay(
     Sound zombieAtePlant
 );
 
-void DrawMoldureOfSelectedCard(Plant cardSelected);
-void DrawGamingDeck(
-    Plant DeckOfPlants[SIZE_OF_DECK],
-    unsigned int quantityOfSun,
-    Plant *cardSelected
-);
-void RemoveSelectedCard(Plant *cardSelected);
-void PutPlantToField(
-    Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],
-    Plant *cardSelected,
-    unsigned int *sunStorage,
-    bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],
-    Rectangle lawnRectangles[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],
-    Sound soundOfPlantingPlant,
-    Sound shovelSound
-);
 
 //ABOUT FUNCTIONS
 void DrawAboutScreen(void);
