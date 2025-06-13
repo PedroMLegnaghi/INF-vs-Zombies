@@ -489,26 +489,25 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
         {
             for(int c=0;c<NUMBER_COLUMN_LAWN;c++)
             {
-                //if the plant died, remove it from the screen
-                if(plantArr[r][c].health<=0&&plantArr[r][c].type!=TYPE_NULL_PLANT)
-                {
-                    PlaySound(zombieAtePlant);
-                    RemovePlantFromArr(plantArr,occupationOfLawn,r,c);
-                }
-
+                // if(plantArr[r][c].type!=TYPE_NULL_PLANT)
+                // {
+                //     RemovePlantFromArr(plantArr,occupationOfLawn,r,c);
+                // }
+                
                 //if a colision zombie/plant is happening
                 if(verifyPlantColisionWithZombie(plantArr[r][c], zombieArr[i]))
                 {
-                        //update isAttacking propriety
-                        //DONT UPDATE THE POSITION OF THE ZOMBIE IF HE'S ATTACKING
-                        //Update healthOfPlant according to the damage that the zombie gives per frame
-                        UpdateHealthOfPlant(&plantArr[r][c],zombieArr[i].damage);
-                        zombieArr[i].isAttacking=1;
+                    //update isAttacking propriety
+                    //DONT UPDATE THE POSITION OF THE ZOMBIE IF HE'S ATTACKING
+                    //Update healthOfPlant according to the damage that the zombie gives per frame
+                    UpdateHealthOfPlant(&plantArr[r][c],zombieArr[i].damage);
+                    zombieArr[i].isAttacking=1;
+                    //if the plant died, remove it from the screen
+                        if(plantArr[r][c].health<=0){
+                            PlaySound(zombieAtePlant);
+                            RemovePlantFromArr(plantArr,occupationOfLawn,r,c);
+                        }
     
-                }
-                else
-                {
-                        if(zombieArr[i].isAttacking);
                 }
             }
         }

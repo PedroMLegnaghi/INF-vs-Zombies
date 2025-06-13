@@ -40,11 +40,11 @@ typedef enum action_time{
 //enumeration to reference the TYPE_OF_PLANTs available
 //model: TYPE_(Plant)
 typedef enum TYPE_OF_PLANT{
-    TYPE_SUNFLOWER =0,
+    TYPE_NULL_PLANT=0,
+    TYPE_SUNFLOWER,
     TYPE_GREEN_PEASHOOTER,
     TYPE_WALLNUT,
     TYPE_SHOVEL,
-    TYPE_NULL_PLANT
 }TYPE_OF_PLANT;
 
 //enumaration to reference the HEALTH_OF_PLANT
