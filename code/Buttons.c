@@ -39,7 +39,7 @@ void InitButtons(void){
  BTN_DYNAMIC_Y=BTN_INITIAL_Y;
 
 //--about section
- BTN_GOBACK= (Rectangle) {.x=SCREEN_WIDTH/30,.y=SCREEN_HEIGHT/30,.width=BTN_WIDTH,.height=BTN_HEIGHT};
+ BTN_GOBACK= (Rectangle) {.x=SCREEN_WIDTH/60,.y=SCREEN_HEIGHT/45,.width=BTN_WIDTH,.height=BTN_HEIGHT};
  BTN_GOBACK_HOVER =0;
  
  //--exit confirmation

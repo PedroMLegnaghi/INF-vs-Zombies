@@ -20,6 +20,7 @@
 #include "zombies.h"
 #include "menu.h"
 #include "gameplay.h"
+#include "file.h"
 //CONSTANTS=======================================================================================================================================
 
 //User's Mouse
@@ -88,6 +89,13 @@ InitLawnRectangles();
 //--ZOMBIES
 InitZombiesArr(zombieArr);
 
+//--FILES 
+//criar se nao existir
+if(!(leaderBoardFile = fopen("leaderboard.bin","rb+"))){
+    leaderBoardFile=fopen("leaderboard.bin", "wb+");
+}
+importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
+
 // ====================================================================================================================================================================================================
 //MAIN LOOP GAME====================================================================================================================================================================================
 // ====================================================================================================================================================================================================
@@ -127,7 +135,7 @@ InitZombiesArr(zombieArr);
 
                 
                  for (int i = 0; i < HOME_PAGE_OPTIONS_QUANTITY; i++)
-        {
+                    {
                     //if user hovered the button
                     if (CheckCollisionPointRec(mousePoint, homePageOptionsRec[i])) {
                         //and the button is not already hovered
@@ -147,7 +155,11 @@ InitZombiesArr(zombieArr);
                     }
                     //else, turn off flag btn is being hovered (it isn't)
                     else {homePageOptionsRecHover[i] = 0;}
-        }
+                    }
+
+                    if(gameHasEnded){
+                        reorderTop5(player,leaderBoardTop5Players);
+                    }
 
             } break;
 
@@ -155,6 +167,8 @@ InitZombiesArr(zombieArr);
             case PLAY:
             {
                 currentScreen = USER_DATA;//first thing to be done, is to ask for the User data          
+                //resetting the player
+                player=(PLAYER){0};
             } break;
 
 
@@ -162,6 +176,7 @@ InitZombiesArr(zombieArr);
               case USER_DATA:
             {
                 previousScreen=currentScreen;
+                
 
                 // Get char pressed (unicode character) on the queue
                 int key = GetCharPressed();
@@ -335,8 +350,34 @@ InitZombiesArr(zombieArr);
                     }else {
                         BTN_ENDGAME_GOBACK_HOVER = 0;
                     }
+                    gameHasEnded=true;
+                    
 
             }break;
+
+            // case WIN:{
+            //     if (CheckCollisionPointRec(mousePoint, BTN_ENDGAME_GOBACK)) 
+            //         {
+            //             if(!BTN_ENDGAME_GOBACK_HOVER)
+            //             {
+            //                 PlaySound(SOUND_BTN_HOVER);
+            //             }
+            //             BTN_ENDGAME_GOBACK_HOVER = 1;
+
+            //             if(IsGestureDetected(GESTURE_TAP)){
+            //                 PlaySound(SOUND_BTN_CLICK);
+            //                 previousScreen=currentScreen;
+            //                 currentScreen = HOMEPAGE;
+            //                 resetGameplay();
+            //             }
+            //         }else {
+            //             BTN_ENDGAME_GOBACK_HOVER = 0;
+            //         }
+            //         gameHasEnded=true;
+                    
+
+            // }break;
+
 
             case RESUME:{
                 currentScreen = GAMEPLAY;
@@ -359,7 +400,21 @@ InitZombiesArr(zombieArr);
                     else {BTN_GOBACK_HOVER = 0;}
             } break;
 
-
+            case LEADERBOARD: {
+                if (CheckCollisionPointRec(mousePoint, BTN_GOBACK)) {
+                        if(!BTN_GOBACK_HOVER){
+                            PlaySound(SOUND_BTN_HOVER);
+                        }
+                        BTN_GOBACK_HOVER = 1;
+                        if(IsGestureDetected(GESTURE_TAP)){
+                            PlaySound(SOUND_BTN_CLICK);
+                            previousScreen=currentScreen;
+                            StopSound(SOUND_HOMEPAGE_MENU);
+                            currentScreen = HOMEPAGE;
+                        }
+                    }
+                    else {BTN_GOBACK_HOVER = 0;}
+            } break;
              case CONFIGURATIONS:
             {
 
@@ -661,6 +716,10 @@ InitZombiesArr(zombieArr);
                     DrawTexturePro(TEXTURE_EXIT_BTN_IMG,TEXTURE_EXIT_BTN_IMG_SOURCE_REC,gamingMenuOptionsRec[2],origin,0.0f,WHITE);
                 }break;
 
+                case LEADERBOARD:{
+                    drawTopFivePlayers(leaderBoardTop5Players);
+                    DrawTexturePro(TEXTURE_GOBACK_BTN_IMG,TEXTURE_GOBACK_BTN_IMG_SOURCE_REC,BTN_GOBACK,origin,0.0f,WHITE);
+                }break;
 
                 case ABOUT:
                 {
@@ -749,6 +808,8 @@ InitZombiesArr(zombieArr);
     //--------------------------------------------------------------------------------------
     UnloadAllTextures();
     UnloadAllSounds();
+    recordPlayersToFile(leaderBoardFile,leaderBoardTop5Players);
+    fclose(leaderBoardFile);
     
     CloseAudioDevice();
     CloseWindow();        // Close window and OpenGL context
