@@ -307,10 +307,7 @@ importZombiesFromFile(zombiesHordesText,zombiesQuantityPerHorde,&quantityOfHorde
                     currentScreen=END_GAME;
                 }
                 
-                // if(collectSun(sunArray,&indexOfNextSun,groundOfTheSuns)){
-                //     PlaySound(SOUND_COLLECTING_SUN);
-                //     addSunToStorage(&sunGamingStorage);
-                // }
+               
                 collectSun(sunArray,&indexOfNextSun,groundOfTheSuns);
                 
                 
