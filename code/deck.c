@@ -1,14 +1,19 @@
  #include "deck.h"
 
- Plant DeckOfPlants [SIZE_OF_DECK]={0};
- Plant cardSelected = {0};
-
+Plant DeckOfPlants [SIZE_OF_DECK]={0};
+Plant cardSelected = {0};
+Rectangle sunDisplayInGamingBarRectangle={0};
  void InitDeckOfPlants(void){
      DeckOfPlants[0] = PLANT_SUNFLOWER;
      DeckOfPlants[1] = PLANT_GREEN_PEASHOOTER;
      DeckOfPlants[2] = PLANT_WALLNUT;
      DeckOfPlants[3] = SHOVEL_REMOVE_PLANTS;
-     
+     sunDisplayInGamingBarRectangle=(Rectangle){
+        .x=(DECK_RECTANGLE_X_VALUE+5)+17,
+        .y=(DECK_RECTANGLE_Y_VALUE+5)+3,
+        .height=DECK_ELEMENT_WIDTH_VALUE-40,
+        .width=DECK_ELEMENT_HEIGHT_VALUE-30
+     };
     }
 
 //DrawMoldureOfSelectedCard:
@@ -27,13 +32,17 @@ void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSu
     //Drawing the sun counter
     int DECK_RECTANGLE_X_VALUECpy = DECK_RECTANGLE_X_VALUE;
     //Drawing the rectangle that subscribes the sun counter
+    //big square box
     DrawRectangle(DECK_RECTANGLE_X_VALUE,DECK_RECTANGLE_Y_VALUE,DECK_ELEMENT_WIDTH_VALUE,DECK_ELEMENT_HEIGHT_VALUE,BROWN);
     DrawRectangleLines(DECK_RECTANGLE_X_VALUE,DECK_RECTANGLE_Y_VALUE,DECK_ELEMENT_WIDTH_VALUE,DECK_ELEMENT_HEIGHT_VALUE,BLACK);
+    //box of the sun
     DrawRectangle(DECK_RECTANGLE_X_VALUE+5,DECK_RECTANGLE_Y_VALUE+5,DECK_ELEMENT_WIDTH_VALUE-10,DECK_ELEMENT_HEIGHT_VALUE-10,DARKBROWN);
+    DrawTexturePro(TEXTURE_SUN_IMG,TEXTURE_SUN_IMG_SOURCE_REC,sunDisplayInGamingBarRectangle,origin,0.0f,RAYWHITE);
     DrawRectangleLines(DECK_RECTANGLE_X_VALUE+5,DECK_RECTANGLE_Y_VALUE+5,DECK_ELEMENT_WIDTH_VALUE-10,DECK_ELEMENT_HEIGHT_VALUE-10,BLACK);
+    //quantity of sun
     DrawRectangle(DECK_RECTANGLE_X_VALUE+5,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,DECK_ELEMENT_WIDTH_VALUE-10,30,RAYWHITE);
     DrawRectangleLines(DECK_RECTANGLE_X_VALUE+5,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,DECK_ELEMENT_WIDTH_VALUE-10,30,BLACK);
-    DrawText(TextFormat(" %d", quantityOfSun),DECK_RECTANGLE_X_VALUE+20,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,20,BLACK);
+    DrawText(TextFormat(" %d", quantityOfSun),DECK_RECTANGLE_X_VALUE+15,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,20,BLACK);
 
     
 

@@ -3,6 +3,7 @@
 #include "stdlib.h"
 #include "main.h"
 #include "lawn.h"
+#include "Sound.h"
 #define SIZE_OF_SUN_ARR 100 //maximum quantity of suns in screen
 #define VALUE_OF_EACH_SUN 25
 #define SUN_HEIGHT 30
@@ -20,7 +21,7 @@ void AddSunToArray(Rectangle array_of_suns[SIZE_OF_SUN_ARR],  int *indexOfNextSu
 void AddRandomlySunToArr(Rectangle array_of_suns[SIZE_OF_SUN_ARR],  int *indexOfNextSun, Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],float groundOfTheSuns[SIZE_OF_SUN_ARR]);
 void updateSunsPosition(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int indexOfSun,float groundOfTheSuns[SIZE_OF_SUN_ARR]);
 void RemoveSunOfArray(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int *indexOfNextSun, int indexOfSunRemoved, float groundOfTheSuns[SIZE_OF_SUN_ARR]);
-int collectSun(Rectangle array_of_suns[SIZE_OF_SUN_ARR],int *indexOfNextSun, float groundOfTheSuns[SIZE_OF_SUN_ARR]);
+void collectSun(Rectangle array_of_suns[SIZE_OF_SUN_ARR],int *indexOfNextSun, float groundOfTheSuns[SIZE_OF_SUN_ARR]);
 void addSunToStorage(unsigned int *gamingSunStorage);
 void DrawSuns(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int indexOfNextSun, Texture2D sunTexture);
 

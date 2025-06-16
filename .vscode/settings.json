@@ -14,6 +14,8 @@
     "*.m": "c",
     "variant": "c",
     "format": "c",
-    "gameplay.h": "c"
+    "gameplay.h": "c",
+    "deck.h": "c",
+    "plants.h": "c"
   }
 }

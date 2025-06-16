@@ -1,7 +1,7 @@
 #pragma once
 //enumaration to reference to the gameScreens of the game
 typedef enum GAME_SCREEN {LOGO = 0, HOMEPAGE, PLAY, LEADERBOARD, ABOUT, CONFIGURATIONS, EXIT 
-    ,USER_DATA, DECK_SELECTION, GAMEPLAY,END_GAME,MENU, RESUME} GAME_SCREEN;
+    ,USER_DATA, DECK_SELECTION, GAMEPLAY,END_GAME,MENU, RESUME, WIN} GAME_SCREEN;
  
 //enumeration to reference the options of the configurations menu
 typedef enum CONFIGURATIONS_OPTIONS{
@@ -32,8 +32,8 @@ typedef enum COST_OF_PLANT{
 //model: ACTION_TIME_(type_of_plant)
 typedef enum action_time{
     //time to generate sun = 5seg
-    ACTION_TIME_SUNFLOWER = 5,
-    ACTION_TIME_PEASHOOTER =5,
+    ACTION_TIME_SUNFLOWER = 4,
+    ACTION_TIME_PEASHOOTER =3,
     
 }ACTION_TIME_PLANT;
 

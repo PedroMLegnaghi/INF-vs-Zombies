@@ -2,10 +2,21 @@
 
 Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]={0};
 
+int quantityOfMaxHordes=10;
+
+int quantityOfHordes =0;
+
+//used to track when to reset a zombie horde
+int zombiesCreatedSinceLastHorde=0;
+
+int indexOfCurrentHorde=0;
+
 //used to track the next zombie to be spawned
 int indexOfNextZombie=0;
 
-double spawnRateZombie = 5.0;
+int zombiesQuantityPerHorde[QUANTITY_MAX_HORDES]={0};
+
+double spawnRateZombie = 4.0;
 
 //used to know if it is the first time to spawn a zombie
 bool firstZombieSpawn =1;
@@ -13,17 +24,18 @@ bool firstZombieSpawn =1;
 //reference for spawn of zombies
 double timeOfLastZombie = 0;
 
-double timeForFirstSpawnZombie=0.0;
+double timeForFirstSpawnZombie=35.0;
 
 //used to spawn zombies appropriately
 double timeSpawnZombieTracking =0;
 
-//InitZombiesArr:
-//given an array of zombies, initialize it (all 0); this function is used not to have a conflict with shooting peas mechanic (memory leak)
-void InitZombiesArr(Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]){
+//InitZombiesArrs:
+//given an array of zombies, initialize it (all 0); Also, initialize the array that controls the hordes this function is used not to have a conflict with shooting peas mechanic (memory leak)
+void InitZombiesArrs(Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]){
     for(int i=0;i<SIZE_OF_ZOMBIES_ARR;i++){
         zombieArr[i].rowOfZombie=-1;
     }
+
 }
 
 //ZOMBIES----
@@ -73,6 +85,35 @@ void AddZombieToZombiesArrRandomly( Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR],Zombi
     //NOTICE: WE DO NOT CHANGE THE X COORDINATE, WE'RE ONLY INTERESTED
     //INT THE Y COORDINATE TO CHOSE THE ROW.
     AddZombieToZombiesArr(zombie, zombiesArr,indexOfNextZombie);
+}
+
+//ResetZombieHorde:
+//resets all variables related to the creation and administration of a zombie horde
+void ResetZombieHorde(){
+    indexOfCurrentHorde++;
+    zombiesCreatedSinceLastHorde=0;
+}
+
+//LastZombieOfHordeSpawned:
+//returns if the last zombie of the horde has spawned
+int LastZombieOfHordeSpawned(){
+    if(zombiesCreatedSinceLastHorde==zombiesQuantityPerHorde[indexOfCurrentHorde]){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+//LastZombieOfHordeDied:
+//returns if the last zombie of the horde has died
+int LastZombieOfHordeDied(){
+    //as the mechanic of removing zombies decrements the index of the next zombie each time, when
+    //that index is 0 and it is not the firstZombieSpawn, then it's in definitely the last zombie of the horde
+    if(indexOfNextZombie==0&&!firstZombieSpawn&&LastZombieOfHordeSpawned()){
+        return 1;
+    }else{
+        return 0;
+    }
 }
 
 //UpdateZombiePosition: Given a zombie, update the position of that zombie according to its velocity

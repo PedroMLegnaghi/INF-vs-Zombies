@@ -10,6 +10,7 @@
 #include "string.h"
 #include "lawn.h"
 #include "sun.h"
+#define QUANTITY_MAX_HORDES 10
 
 //--ZOMBIE
 extern Zombie zombieArr[SIZE_OF_ZOMBIES_ARR];
@@ -18,10 +19,15 @@ extern double spawnRateZombie;
 extern bool firstZombieSpawn;
 extern double timeOfLastZombie ;  //saves the actualTime
 extern double timeForFirstSpawnZombie;
+extern int zombiesQuantityPerHorde[QUANTITY_MAX_HORDES];
+extern int quantityOfHordes;
+extern int zombiesCreatedSinceLastHorde;
+extern int  indexOfCurrentHorde;
+
 //used to spawn zombies appropriately
 extern double timeSpawnZombieTracking;
 
-void InitZombiesArr(Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]);
+void InitZombiesArrs(Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]);
 
 // ZOMBIE FUNCTIONS
 void DrawZombie(Zombie zombie);
@@ -31,3 +37,6 @@ void AddZombieToZombiesArrRandomly(Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR], Zombi
 void UpdateZombiePosition(Zombie *zombie);
 void RemoveZombie(Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR], int *indexOfNextZombie, int indexOfZombieToBeRemoved);
 void UpdateZombieHealth(Zombie *zombie, int damage);
+int LastZombieOfHordeSpawned();
+int LastZombieOfHordeDied();
+void ResetZombieHorde();

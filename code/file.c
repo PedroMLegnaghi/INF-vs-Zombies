@@ -4,8 +4,25 @@
 #include "string.h"
 #include "Textures.h"
 #include "raylib.h"
+#include "zombies.h"
 FILE *leaderBoardFile;
 PLAYER leaderBoardTop5Players[5]={0};
+
+FILE *zombiesHordesText;
+// int zombiesQuantityPerHorde[]
+
+//importZombiesFromFile:
+//given a file, an array(buffer)adn the quantity of hordes, import the zombies to the array (buffer) and updates 
+//the quantity of hordes according to the quantity of elementos of the current zombiesHordes
+//assumes that the file was already opened correctly (with reading permission)
+void importZombiesFromFile(FILE *file, int zombiesHordes[QUANTITY_MAX_HORDES], int *quantityOfHordes){
+    int j=0;
+   while(!(feof(file))&&j<QUANTITY_MAX_HORDES){// varre o arquivo            
+	fscanf(file, "%d ", &zombiesHordes[j]);
+    j++;
+   }
+   (*quantityOfHordes)=j;
+}
 
 //checksIfInTop5:
 //given a player and thethe top5 players, check if it's reached the top five of the leaderboard(true) or not(false)

@@ -3,7 +3,7 @@
 #include "Plants.h"
 #include "Player.h"
 #include "stdbool.h"
-
+#define POINTS_PER_NORMALZOMBIE_KILLED 100
 extern bool gameHasEnded;  
 
 bool verifyPeaShotColisionWithZombie(PeaShot pea, Zombie zombie);

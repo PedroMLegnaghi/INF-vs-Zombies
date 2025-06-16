@@ -87,7 +87,7 @@ InitPlantArr();
 InitLawnRectangles();
 
 //--ZOMBIES
-InitZombiesArr(zombieArr);
+InitZombiesArrs(zombieArr);
 
 //--FILES 
 //criar se nao existir
@@ -95,7 +95,8 @@ if(!(leaderBoardFile = fopen("leaderboard.bin","rb+"))){
     leaderBoardFile=fopen("leaderboard.bin", "wb+");
 }
 importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
-
+zombiesHordesText = fopen("zombies.txt","r");
+importZombiesFromFile(zombiesHordesText,zombiesQuantityPerHorde,&quantityOfHordes);
 // ====================================================================================================================================================================================================
 //MAIN LOOP GAME====================================================================================================================================================================================
 // ====================================================================================================================================================================================================
@@ -119,7 +120,7 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
                 framesCounter++;    // Count frames
 
                 // Wait for 7 seconds (420 frames) before jumping to HOMEPAGE screen
-                if (framesCounter > 240)
+                if (framesCounter > 2)
                 {
                     currentScreen = HOMEPAGE;
                 }
@@ -131,6 +132,7 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
                 //updating the top5 leaderboard and resetting (if had happened) the previous gameplay
                 if(gameHasEnded){
                     reorderTop5(player,leaderBoardTop5Players);
+                    StopSound(SOUND_GAMEPLAY);
                     resetGameplay();
                 }
 
@@ -218,13 +220,6 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
                     
                     PlaySound(SOUND_GAMEPLAY);
                 }
-                //if zombie has gone out of the screen
-                if(updatePlantsAndZombiesGameplay(plantArr,peaShotsArr,zombieArr,occupationOfLawn,&indexOfNextPea,&indexOfNextZombie,SOUND_PEASHOT_IMPACT,SOUND_ZOMBIE_EAT_PLANT)){
-                    PlaySound(SOUND_LOST_MUSIC);
-                    StopSound(SOUND_GAMEPLAY);
-                    currentScreen=END_GAME;
-
-                }
                 
                 updateSunsPosition(sunArray,indexOfNextSun,groundOfTheSuns);
                 
@@ -247,15 +242,15 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
                     timeSpawnZombieTracking =GetTime();
                     
                     UpdateExistanceTime(plantArr,0);
-
-                //if menu was actioned, then deals with spawn considering time spent at menu    
+                    
+                    //if menu was actioned, then deals with spawn considering time spent at menu    
                 }else{
                     //used to spawn sun appropriately
                     timeSpawnSunTracking =GetTime()-timeSpentAtMenu;
-
+                    
                     //used to spawn zombies appropriately
                     timeSpawnZombieTracking =GetTime()-timeSpentAtMenu;
-
+                    
                     UpdateExistanceTime(plantArr,timeSpentAtMenu);
                 }
                 
@@ -265,31 +260,58 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
                     timeOfLastSun=GetTime();
                 }
                 
-                //if it is the first zombie spawn, then spawn it after (timeForFirstSpawnZombie) seconds
-                if(firstZombieSpawn){
+                //quantityOfHordes
+                //flag to control if it is the last zombie (se o zombiesCreated for igual ao hordesZombies[i]), nao spawn ate
+                //flag to control if the last zombie has died (se o zombie[0] é invalido!!!!!)
+                //morrer o ultimo zombie, quando finalmente comecaremos a outra horda (i++, zombiesCreated=0)
+                if(firstZombieSpawn){    
+                    //if it is the first zombie spawn, then spawn it after (timeForFirstSpawnZombie) seconds
                     if((timeSpawnZombieTracking-timeOfLastZombie>timeForFirstSpawnZombie)){
                         PlaySound(SOUND_ZOMBIES_COMING);
                         AddZombieToZombiesArrRandomly(zombieArr,NORMAL_ZOMBIE,&indexOfNextZombie,lawnRectangles);
+                        zombiesCreatedSinceLastHorde++;
                         timeOfLastZombie=GetTime();
                         firstZombieSpawn=0;
                         menuWasACTIONED=0;
                     }
-                    
                     //normal zombie spawn
                 }else{
-                    if((timeSpawnZombieTracking-timeOfLastZombie>spawnRateZombie)&&indexOfNextZombie<SIZE_OF_ZOMBIES_ARR){
+                    if(
+                        (timeSpawnZombieTracking-timeOfLastZombie>spawnRateZombie)&&
+                        (indexOfNextZombie<SIZE_OF_ZOMBIES_ARR)&&
+                        (!LastZombieOfHordeSpawned())
+                    ){
                         PlaySound(SOUND_ZOMBIE_SPAWN);
                         AddZombieToZombiesArrRandomly(zombieArr,NORMAL_ZOMBIE,&indexOfNextZombie,lawnRectangles);
+                        zombiesCreatedSinceLastHorde++;
                         timeOfLastZombie=GetTime();
                         menuWasACTIONED=0;
                     }
                 }
-                
-                
-                if(collectSun(sunArray,&indexOfNextSun,groundOfTheSuns)){
-                    PlaySound(SOUND_COLLECTING_SUN);
-                    addSunToStorage(&sunGamingStorage);
+
+                //reset horde or win
+                if(LastZombieOfHordeDied()){
+                    //win match
+                    if((indexOfCurrentHorde+1)==quantityOfHordes){
+                        currentScreen=WIN;
+                        StopSound(SOUND_GAMEPLAY);
+                        PlaySound(SOUND_WIN);
+                    }
+                    ResetZombieHorde();
                 }
+                
+                //if zombie has gone out of the screen
+                if(updatePlantsAndZombiesGameplay(plantArr,peaShotsArr,zombieArr,occupationOfLawn,&indexOfNextPea,&indexOfNextZombie,SOUND_PEASHOT_IMPACT,SOUND_ZOMBIE_EAT_PLANT)){
+                    PlaySound(SOUND_LOST_MUSIC);
+                    StopSound(SOUND_GAMEPLAY);
+                    currentScreen=END_GAME;
+                }
+                
+                // if(collectSun(sunArray,&indexOfNextSun,groundOfTheSuns)){
+                //     PlaySound(SOUND_COLLECTING_SUN);
+                //     addSunToStorage(&sunGamingStorage);
+                // }
+                collectSun(sunArray,&indexOfNextSun,groundOfTheSuns);
                 
                 
                 PutPlantToField(plantArr,&cardSelected,&sunGamingStorage,occupationOfLawn,lawnRectangles,SOUND_PLANTING_PLANT,SOUND_SHOVEL);
@@ -306,7 +328,6 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
   
             } break;
 
-           //CASE ENDGAME?
 
 
             case MENU:{
@@ -354,28 +375,27 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
 
             }break;
 
-            // case WIN:{
-            //     if (CheckCollisionPointRec(mousePoint, BTN_ENDGAME_GOBACK)) 
-            //         {
-            //             if(!BTN_ENDGAME_GOBACK_HOVER)
-            //             {
-            //                 PlaySound(SOUND_BTN_HOVER);
-            //             }
-            //             BTN_ENDGAME_GOBACK_HOVER = 1;
+            case WIN:{
+                if (CheckCollisionPointRec(mousePoint, BTN_ENDGAME_GOBACK)) 
+                    {
+                        if(!BTN_ENDGAME_GOBACK_HOVER)
+                        {
+                            PlaySound(SOUND_BTN_HOVER);
+                        }
+                        BTN_ENDGAME_GOBACK_HOVER = 1;
 
-            //             if(IsGestureDetected(GESTURE_TAP)){
-            //                 PlaySound(SOUND_BTN_CLICK);
-            //                 previousScreen=currentScreen;
-            //                 currentScreen = HOMEPAGE;
-            //                 resetGameplay();
-            //             }
-            //         }else {
-            //             BTN_ENDGAME_GOBACK_HOVER = 0;
-            //         }
-            //         gameHasEnded=true;
+                        if(IsGestureDetected(GESTURE_TAP)){
+                            PlaySound(SOUND_BTN_CLICK);
+                            previousScreen=currentScreen;
+                            currentScreen = HOMEPAGE;
+                        }
+                    }else {
+                        BTN_ENDGAME_GOBACK_HOVER = 0;
+                    }
+                    gameHasEnded=true;
                     
 
-            // }break;
+            }break;
 
 
             case RESUME:{
@@ -440,6 +460,7 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
                             PlaySound(SOUND_BTN_CLICK);
                             if(configurationsOptions[i]==CONFIGURATIONS_BTN_GOBACK){
                                 StopSound(SOUND_HOMEPAGE_MENU);
+                                timeSpentAtMenu=GetTime()-timeSpawnSunTracking;
                                 currentScreen = previousScreen;
                                 previousScreen=currentScreen;
 
@@ -705,6 +726,11 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
                     DrawTexturePro(TEXTURE_GOBACK_BTN_IMG,TEXTURE_GOBACK_BTN_IMG_SOURCE_REC,BTN_ENDGAME_GOBACK,origin,0.0f,WHITE);
                         }break;
 
+                case WIN:{
+                    DrawTexturePro(TEXTURE_WIN_BACKGROUND_IMG,TEXTURE_WIN_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
+                    DrawTexturePro(TEXTURE_GOBACK_BTN_IMG,TEXTURE_GOBACK_BTN_IMG_SOURCE_REC,BTN_ENDGAME_GOBACK,origin,0.0f,WHITE);
+                        }break;
+
 
                 case MENU:{
                     //Background 
@@ -809,7 +835,7 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
     UnloadAllSounds();
     recordPlayersToFile(leaderBoardFile,leaderBoardTop5Players);
     fclose(leaderBoardFile);
-    
+    fclose(zombiesHordesText);
     CloseAudioDevice();
     CloseWindow();        // Close window and OpenGL context
     //-------------------------------------------------------------------------------------

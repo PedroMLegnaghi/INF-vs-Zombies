@@ -4,13 +4,13 @@
     //array to track the suns, if the x and y coordinates are "-1", then we consider it an empty sun
     Rectangle sunArray[SIZE_OF_SUN_ARR]={0};
     //array to track the quantity of sun that the player has
-    unsigned int sunGamingStorage=800;
+    unsigned int sunGamingStorage=0;
     //array to track where a sun hits the ground. Each index of the array corresponds to the index of that sun in the sunArray
     float groundOfTheSuns[SIZE_OF_SUN_ARR]={0};
     //indexToTrack the end of the array
     int indexOfNextSun = 0;
     //time of spawn of suns = 15s
-    double spawnRateSun = 8.0;   
+    double spawnRateSun = 4.0;   
     //used to spawn sun appropriately
     double timeSpawnSunTracking =0;
    
@@ -75,20 +75,20 @@ void RemoveSunOfArray(Rectangle array_of_suns[SIZE_OF_SUN_ARR], int *indexOfNext
 }
 
 //collectSun:
-//Given an array of suns, the mousePointer,the quantityofSun of the player, the index of the next sun and the array of the grounds of the suns, returns wheter one sun was collected(1) or not(0) and collects it
-int collectSun(Rectangle array_of_suns[SIZE_OF_SUN_ARR],int *indexOfNextSun, float groundOfTheSuns[SIZE_OF_SUN_ARR])
+//Given an array of suns, the mousePointer,the quantityofSun of the player, the index of the next sun and the array of the grounds of the suns, collects a sun (if it was actually collected)
+void collectSun(Rectangle array_of_suns[SIZE_OF_SUN_ARR],int *indexOfNextSun, float groundOfTheSuns[SIZE_OF_SUN_ARR])
 {
     for (int i = 0; i < *indexOfNextSun; i++) {
         
         if (CheckCollisionPointRec(mousePoint, array_of_suns[i])) { //if mouse of player and the sun collided
             if (IsGestureDetected(GESTURE_TAP) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) { //and if the player clicked on the sun
                 RemoveSunOfArray(array_of_suns, indexOfNextSun, i, groundOfTheSuns); //collect the sun
-                return 1;//Sun was collected
+                PlaySound(SOUND_COLLECTING_SUN);
+                addSunToStorage(&sunGamingStorage);
                 break; // removes only one sun per click
             }
         }
     }
-    return 0;//sun was not collected
 }
 //addSunToStorage:
 //given the gamingSunStorage, add the value of one sun to the storage

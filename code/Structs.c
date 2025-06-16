@@ -60,7 +60,7 @@ void InitGameStructs(void) {
             .y=0
         },
         .color=WHITE,
-        .velocity=1,
+        .velocity=1.5,
         .rowOfShot=0,
         .texture = TEXTURE_GREEN_PEASHOT_IMG
     };
@@ -98,7 +98,7 @@ void InitGameStructs(void) {
 
     NORMAL_ZOMBIE = (Zombie){
         .color=GRAY,
-        .velocity = 0.5,
+        .velocity = 1,
         .health =100,
         .rowOfZombie=-10,
         .format={

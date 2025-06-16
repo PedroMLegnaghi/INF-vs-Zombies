@@ -130,7 +130,7 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
                 //if he has died, then i don't need to check the other things, jump to the next iteration
                 RemoveZombie(zombieArr, indexOfNextZombie, i);
                 
-                player.pointsOfPlayer+=50;
+                player.pointsOfPlayer+=POINTS_PER_NORMALZOMBIE_KILLED;
 
                 i--; // Updates the index correctly
                 continue;//jumping to the next iteration
