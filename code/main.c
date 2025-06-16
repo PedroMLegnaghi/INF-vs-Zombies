@@ -125,9 +125,15 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
                 }
             } break;
 
-
+            
             case HOMEPAGE:
             {
+                //updating the top5 leaderboard and resetting (if had happened) the previous gameplay
+                if(gameHasEnded){
+                    reorderTop5(player,leaderBoardTop5Players);
+                    resetGameplay();
+                }
+
                 //playing intromusic once and in loops of its lasting size
                 if(!IsSoundPlaying(SOUND_HOMEPAGE_MENU)){
                     PlaySound(SOUND_HOMEPAGE_MENU);
@@ -156,19 +162,13 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
                     //else, turn off flag btn is being hovered (it isn't)
                     else {homePageOptionsRecHover[i] = 0;}
                     }
-
-                    if(gameHasEnded){
-                        reorderTop5(player,leaderBoardTop5Players);
-                    }
-
-            } break;
-
-
-            case PLAY:
-            {
-                currentScreen = USER_DATA;//first thing to be done, is to ask for the User data          
-                //resetting the player
-                player=(PLAYER){0};
+                    
+                } break;
+                
+                
+                case PLAY:
+                {
+                    currentScreen = USER_DATA;//first thing to be done, is to ask for the User data          
             } break;
 
 
@@ -345,7 +345,6 @@ importPlayersFromFile(leaderBoardFile,leaderBoardTop5Players);
                             PlaySound(SOUND_BTN_CLICK);
                             previousScreen=currentScreen;
                             currentScreen = HOMEPAGE;
-                            resetGameplay();
                         }
                     }else {
                         BTN_ENDGAME_GOBACK_HOVER = 0;

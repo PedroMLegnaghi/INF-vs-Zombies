@@ -10,9 +10,11 @@ PLAYER leaderBoardTop5Players[5]={0};
 //checksIfInTop5:
 //given a player and thethe top5 players, check if it's reached the top five of the leaderboard(true) or not(false)
 int checksIfInTop5(PLAYER player, PLAYER topFivePlayers[5]){
-    if(player.pointsOfPlayer>topFivePlayers[4].pointsOfPlayer){
+    if((player.pointsOfPlayer>topFivePlayers[4].pointsOfPlayer)||
+        (player.pointsOfPlayer==0&&topFivePlayers[4].pointsOfPlayer==0)){
         return 1;
-    } else{
+    } 
+    else{
         return 0;
     }
 }
@@ -20,19 +22,25 @@ int checksIfInTop5(PLAYER player, PLAYER topFivePlayers[5]){
 //reorderTop5:
 //given the points of a player and the points of the top5 players, checks if he's reached the top five and updates the top five
 void reorderTop5(PLAYER player, PLAYER topFivePlayers[5]){
-    int i=4;
+    int i=0;
     if(checksIfInTop5(player,topFivePlayers)){
 
         //searches for the correct index of the new player to be put in the top 5 leaderboard
-        while(player.pointsOfPlayer>topFivePlayers[i].pointsOfPlayer){
-            i--;
+        while(i<4&&player.pointsOfPlayer<=topFivePlayers[i].pointsOfPlayer){
+            i++;
         }
 
         //reorder the rest of the players of the leaderboard
-        for (int j=i;j<4;j++){
-            topFivePlayers[j+1]=topFivePlayers[j];
-        }
+    // calculate how many items must be moved
+    int numToMove = 4-i;
 
+    if (numToMove < 5) {
+        memmove(
+            &topFivePlayers[i+1],          // dest
+            &topFivePlayers[i],      // origin
+            numToMove * sizeof(PLAYER)                   // quantity of bytes
+        );
+    }
         //add the new player to it's correct place
         topFivePlayers[i]=player;
     }
@@ -49,23 +57,15 @@ int importPlayersFromFile(FILE *file, PLAYER players [5]){
 //assumes that the file was already opened correctly (with writing permission)
 //return the quantity of elements written to the file (accordingly to fread from stdio.h)
 int recordPlayersToFile(FILE *file,PLAYER players[5]){
+    //rewind the file to overwrite the informations
+    rewind(file);
     return fwrite(players,sizeof(PLAYER),5,file);
 }
 
 //drawTopFivePlayers:
 //given the top five players, displays them in the screen
 void drawTopFivePlayers(PLAYER players[5]){
-    // players[0].pointsOfPlayer=100;
-    // strcpy(players[0].playerName,"pedro");
-    // players[1].pointsOfPlayer=300;
-    // strcpy(players[1].playerName,"pasdo");
-    // players[2].pointsOfPlayer=200;
-    // strcpy(players[2].playerName,"qweo");
-    // players[3].pointsOfPlayer=100;
-    // strcpy(players[3].playerName,"pedro");
-    // players[4].pointsOfPlayer=100;
-    // strcpy(players[4].playerName,"pedro");
-    int maxCharactersText=30;
+    int maxCharactersText=40;
     int fontOfText = 20;
     //Box display where names will be put
     int BOX_DISPLAY_WIDTH =SCREEN_WIDTH/1.3;

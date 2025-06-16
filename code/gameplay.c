@@ -1,5 +1,5 @@
 #include "gameplay.h"
-
+#include "Sound.h"
 
 // Flag to indicate if the game has (at least once) ended
 // [used to save unnecessary gameplay updates and redeclarations after the game has ended]
@@ -95,6 +95,9 @@ void resetGameplay(){
         player.playerName[i] = '\0';  // Reset each character in the player name to null terminator
     }
     player.pointsOfPlayer= 0;
+
+    //reset gameEnded flag
+    gameHasEnded=false;
 }
 
 //updatePlantsAndZombiesGameplay: Update all projectiles thrown and also manages the 
@@ -118,6 +121,7 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
         UpdatePeaShotPosition(&peaShotsArr[j]);
     }
 
+    //2. ZOMBIES
     for (int i = 0; i < *indexOfNextZombie; i++) 
     {
         //verifies if zombie has already died
@@ -125,6 +129,9 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
         {
                 //if he has died, then i don't need to check the other things, jump to the next iteration
                 RemoveZombie(zombieArr, indexOfNextZombie, i);
+                
+                player.pointsOfPlayer+=50;
+
                 i--; // Updates the index correctly
                 continue;//jumping to the next iteration
         }
@@ -134,7 +141,7 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
                 return 1;
             } 
 
-        // 2. CHECK COLLISIONS WITH PEA AND UPDATE ZOMBIE HEALTH
+        // 3. CHECK COLLISIONS WITH PEA AND UPDATE ZOMBIE HEALTH
 
         for (int j = 0; j < *indexOfNextPea; j++) 
         {
@@ -154,7 +161,7 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
                 }
         }
 
-        //3 CHECK ZOMBIE COLISION WITH PLANT AND UPDATE VARIABLES
+        //4 CHECK ZOMBIE COLISION WITH PLANT AND UPDATE VARIABLES
 
         zombieArr[i].isAttacking=0;
         for(int r=0;r<NUMBER_ROWS_LAWN;r++)

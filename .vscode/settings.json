@@ -13,6 +13,7 @@
     "random": "c",
     "*.m": "c",
     "variant": "c",
-    "format": "c"
+    "format": "c",
+    "gameplay.h": "c"
   }
 }
