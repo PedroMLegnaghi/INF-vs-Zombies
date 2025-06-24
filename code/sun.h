@@ -16,6 +16,8 @@ extern float groundOfTheSuns[SIZE_OF_SUN_ARR];
 extern int indexOfNextSun;
 extern double spawnRateSun;   
 extern double timeSpawnSunTracking;
+extern float timeToIncreaseSpawnRateSunEachHorde;   
+
 
 void AddSunToArray(Rectangle array_of_suns[SIZE_OF_SUN_ARR],  int *indexOfNextSun,Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],int rowOfGround,int columnOfGround,float groundOfTheSuns[SIZE_OF_SUN_ARR], int x, int y);
 void AddRandomlySunToArr(Rectangle array_of_suns[SIZE_OF_SUN_ARR],  int *indexOfNextSun, Rectangle lawn_array[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],float groundOfTheSuns[SIZE_OF_SUN_ARR]);

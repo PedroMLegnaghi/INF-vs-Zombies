@@ -10,6 +10,7 @@
 #include "string.h"
 #include "lawn.h"
 #include "sun.h"
+#include "time.h"
 #define QUANTITY_MAX_HORDES 10
 
 //--ZOMBIE
@@ -26,6 +27,8 @@ extern int  indexOfCurrentHorde;
 
 //used to spawn zombies appropriately
 extern double timeSpawnZombieTracking;
+extern float timeToDecreaseFromSpawnRateZombieEachHorde;
+
 
 void InitZombiesArrs(Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]);
 
@@ -40,3 +43,5 @@ void UpdateZombieHealth(Zombie *zombie, int damage);
 int LastZombieOfHordeSpawned();
 int LastZombieOfHordeDied();
 void ResetZombieHorde();
+Zombie chooseZombieToSpawn(int isLastZombie);
+int isLastZombieOfGame();

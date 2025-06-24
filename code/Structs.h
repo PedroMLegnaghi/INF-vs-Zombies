@@ -15,6 +15,7 @@
     bool isAttacking;
     //damage is given in damage/frames
     float damage;
+    int pointsPerKill;
     Texture2D texture;
 }Zombie;
 //----------------------
@@ -62,7 +63,11 @@ extern Plant PLANT_GREEN_PEASHOOTER;
 extern Plant PLANT_WALLNUT;
 extern Plant SHOVEL_REMOVE_PLANTS;
 extern PeaShot NORMAL_GREEN_PEASHOT;
+
 extern Zombie NORMAL_ZOMBIE;
+extern Zombie CONEHEAD_ZOMBIE;
+extern Zombie FOOTBALL_ZOMBIE;
+extern Zombie FLAG_ZOMBIE;
 
 extern const Plant NULL_PLANT;
 extern const PeaShot NULL_PEA;

@@ -22,6 +22,9 @@ Rectangle TEXTURE_CONFIGURATIONS_BACKGROUND_IMG_SOURCE_REC;
 Texture2D TEXTURE_LEADERBOARD_BACKGROUND_IMG;
 Rectangle TEXTURE_LEADERBOARD_BACKGROUND_IMG_SOURCE_REC;
 
+Texture2D TEXTURE_USERDATA_BACKGROUND_IMG;
+Rectangle TEXTURE_USERDATA_BACKGROUND_IMG_SOURCE_REC;
+
 Texture2D TEXTURE_SUN_IMG;
 Rectangle TEXTURE_SUN_IMG_SOURCE_REC;
 
@@ -80,6 +83,10 @@ Texture2D TEXTURE_ENDGAME_BACKGROUND_IMG;
 Rectangle TEXTURE_ENDGAME_BACKGROUND_IMG_SOURCE_REC;
 
 Texture2D TEXTURE_NORMAL_ZOMBIE_IMG;
+Texture2D TEXTURE_FOOTBALL_ZOMBIE_IMG;
+Texture2D TEXTURE_CONEHEAD_ZOMBIE_IMG;
+Texture2D TEXTURE_FLAG_ZOMBIE_IMG;
+
 
 Texture2D TEXTURE_SUNFLOWER_IMG;
 Texture2D TEXTURE_GREEN_PEASHOOTER_IMG;
@@ -110,6 +117,9 @@ void LoadAllTextures(void) {
     TEXTURE_LEADERBOARD_BACKGROUND_IMG = LoadTexture("./resources/sprites/leaderboard.png");
     TEXTURE_LEADERBOARD_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_LEADERBOARD_BACKGROUND_IMG.width, TEXTURE_LEADERBOARD_BACKGROUND_IMG.height};
 
+    TEXTURE_USERDATA_BACKGROUND_IMG = LoadTexture("./resources/sprites/userData_background.png");
+    TEXTURE_USERDATA_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_USERDATA_BACKGROUND_IMG.width, TEXTURE_USERDATA_BACKGROUND_IMG.height};
+    
 
     // Sun
     TEXTURE_SUN_IMG = LoadTexture("./resources/sprites/sun.png");
@@ -170,6 +180,11 @@ void LoadAllTextures(void) {
 
     // Zombies
     TEXTURE_NORMAL_ZOMBIE_IMG = LoadTexture("./resources/sprites/zombie.png");
+    TEXTURE_FOOTBALL_ZOMBIE_IMG = LoadTexture("./resources/sprites/footballZombie.png");
+    TEXTURE_CONEHEAD_ZOMBIE_IMG = LoadTexture("./resources/sprites/coneHeadZombie.png");
+    TEXTURE_FLAG_ZOMBIE_IMG = LoadTexture("./resources/sprites/flagZombie.png");
+
+
 
     // Plants
     TEXTURE_SUNFLOWER_IMG = LoadTexture("./resources/sprites/sunflower.png");
@@ -187,6 +202,7 @@ void UnloadAllTextures(void) {
     UnloadTexture(TEXTURE_CONFIRMING_QUIT_BACKGROUND_IMG);
     UnloadTexture(TEXTURE_CONFIGURATIONS_BACKGROUND_IMG);
     UnloadTexture(TEXTURE_WIN_BACKGROUND_IMG);
+    UnloadTexture(TEXTURE_USERDATA_BACKGROUND_IMG);
 
     // Sun
     UnloadTexture(TEXTURE_SUN_IMG);
@@ -214,6 +230,8 @@ void UnloadAllTextures(void) {
 
     // Zombies
     UnloadTexture(TEXTURE_NORMAL_ZOMBIE_IMG);
+    UnloadTexture(TEXTURE_FOOTBALL_ZOMBIE_IMG);
+    UnloadTexture(TEXTURE_CONEHEAD_ZOMBIE_IMG);
 
     // Plants
     UnloadTexture(TEXTURE_SUNFLOWER_IMG);

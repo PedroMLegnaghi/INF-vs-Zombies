@@ -194,11 +194,6 @@ importZombiesFromFile(zombiesHordesText,zombiesQuantityPerHorde,&quantityOfHorde
                 }
 
                 if (IsKeyPressed(KEY_BACKSPACE)) {
-                    // if (strlen(player.playerName) == 0){
-                    //     strlen(player.playerName) = 0;
-                    // }else{
-                    //     strlen(player.playerName)--;
-                    // }
                     player.playerName[strlen(player.playerName)-1] = '\0';
                 }
 
@@ -260,15 +255,15 @@ importZombiesFromFile(zombiesHordesText,zombiesQuantityPerHorde,&quantityOfHorde
                     timeOfLastSun=GetTime();
                 }
                 
+
                 //quantityOfHordes
-                //flag to control if it is the last zombie (se o zombiesCreated for igual ao hordesZombies[i]), nao spawn ate
-                //flag to control if the last zombie has died (se o zombie[0] é invalido!!!!!)
-                //morrer o ultimo zombie, quando finalmente comecaremos a outra horda (i++, zombiesCreated=0)
                 if(firstZombieSpawn){    
                     //if it is the first zombie spawn, then spawn it after (timeForFirstSpawnZombie) seconds
                     if((timeSpawnZombieTracking-timeOfLastZombie>timeForFirstSpawnZombie)){
                         PlaySound(SOUND_ZOMBIES_COMING);
-                        AddZombieToZombiesArrRandomly(zombieArr,NORMAL_ZOMBIE,&indexOfNextZombie,lawnRectangles);
+                        //zombie to be spawned this time
+                        Zombie zombieToBeSpawned = chooseZombieToSpawn(0);
+                        AddZombieToZombiesArrRandomly(zombieArr,zombieToBeSpawned,&indexOfNextZombie,lawnRectangles);
                         zombiesCreatedSinceLastHorde++;
                         timeOfLastZombie=GetTime();
                         firstZombieSpawn=0;
@@ -282,7 +277,8 @@ importZombiesFromFile(zombiesHordesText,zombiesQuantityPerHorde,&quantityOfHorde
                         (!LastZombieOfHordeSpawned())
                     ){
                         PlaySound(SOUND_ZOMBIE_SPAWN);
-                        AddZombieToZombiesArrRandomly(zombieArr,NORMAL_ZOMBIE,&indexOfNextZombie,lawnRectangles);
+                        Zombie zombieToBeSpawned = chooseZombieToSpawn(isLastZombieOfGame());
+                        AddZombieToZombiesArrRandomly(zombieArr,zombieToBeSpawned,&indexOfNextZombie,lawnRectangles);
                         zombiesCreatedSinceLastHorde++;
                         timeOfLastZombie=GetTime();
                         menuWasACTIONED=0;
@@ -603,7 +599,6 @@ importZombiesFromFile(zombiesHordesText,zombiesQuantityPerHorde,&quantityOfHorde
        
 
         // Draw
-        //----------------------------------------------------------------------------------
         BeginDrawing();
 
             ClearBackground(RAYWHITE);
@@ -612,23 +607,15 @@ importZombiesFromFile(zombiesHordesText,zombiesQuantityPerHorde,&quantityOfHorde
             {
                 case LOGO:
                 {
-                    // TODO: Draw LOGO screen here!
                     DrawText("Pedrokas's gaming enterprise® \n\t\t\t\t\t\t\t\tpresents... ", 70, 150, 40, DARKGREEN);
                    
-
                 } break;
                 case HOMEPAGE:
                 {
-                    // TODO: Draw HOMEPAGE screen here!
 
                     //Background
                     
                     DrawTexturePro(TEXTURE_BACKGROUND_IMG,TEXTURE_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
-                    
-                    // DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GREEN);
-                    // DrawTexturePro(NORMAL_GREEN_PEASHOT.texture,TEXTURE_GREEN_PEASHOT_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,WHITE);
-
-                    
                     DrawTexturePro(TEXTURE_PLAY_BTN_IMG,TEXTURE_PLAY_BTN_IMG_SOURCE_REC,homePageOptionsRec[0],origin,0.0f,WHITE);
                     DrawTexturePro(TEXTURE_LEADERBOARD_BTN_IMG,TEXTURE_LEADERBOARD_BTN_IMG_SOURCE_REC,homePageOptionsRec[1],origin,0.0f,WHITE);
                     DrawTexturePro(TEXTURE_ABOUT_BTN_IMG,TEXTURE_ABOUT_BTN_IMG_SOURCE_REC,homePageOptionsRec[2],origin,0.0f,WHITE);
@@ -639,29 +626,30 @@ importZombiesFromFile(zombiesHordesText,zombiesQuantityPerHorde,&quantityOfHorde
                 case USER_DATA:
                 {
                     // TODO: Draw USERDATA screen here!
-                  
+                    int textBoxWidth = MeasureText("A",40)*8+(SCREEN_WIDTH/30);
+                    int textBoxHeight = SCREEN_HEIGHT/20;
                     //Draw a fixed rectangle that fits 8 words
-                    Rectangle textBox = { SCREEN_WIDTH/2 - 150, 180,  MeasureText("A",40)*8+30, 50 };
+                    Rectangle textBox = { (SCREEN_WIDTH-textBoxWidth)/2 , (SCREEN_HEIGHT-textBoxHeight)/2, textBoxWidth, textBoxHeight };
                     //if username more than 8 words, update the box
                     if(strlen(player.playerName)>8){
-                        textBox.width = strlen(player.playerName)*MeasureText("A",40)+10;
+                        textBox.width = strlen(player.playerName)*MeasureText("A",40)+(SCREEN_WIDTH/90);
                     }
                     
-                    //Title
-                    DrawText("Tell me your name!", 240, 140, 20, GRAY);
+                    //Background
+                    DrawTexturePro(TEXTURE_USERDATA_BACKGROUND_IMG,TEXTURE_USERDATA_BACKGROUND_IMG_SOURCE_REC,SCREEN_RECTANGLE,origin,0.0f,RAYWHITE);
 
                     //TextInput
                     DrawRectangleRec(textBox, LIGHTGRAY);
-                    DrawRectangleLines(textBox.x, textBox.y, textBox.width, textBox.height, RED);
-                    DrawText(player.playerName, textBox.x + 5, textBox.y + 8, 40, MAROON);
+                    DrawRectangleLines(textBox.x, textBox.y, textBox.width, textBox.height, GREEN);
+                    DrawText(player.playerName, textBox.x + 5, textBox.y + 8, 40, GREEN);
 
                     //Text alone
-                    DrawText(TextFormat("Press enter to confirm: %i/%i", strlen(player.playerName), MAX_SIZE_OF_NAME-1), 315, 250, 20, DARKGRAY);
+                    DrawText(TextFormat("Press enter to confirm: %i/%i", strlen(player.playerName), MAX_SIZE_OF_NAME-1), textBox.x, textBox.y-40, 20, GREEN);
 
 
                     // Draw blinking underscore char
                     if (strlen(player.playerName) < MAX_SIZE_OF_NAME) {
-                     DrawText("_",( textBox.x + 8 + MeasureText(player.playerName, 40)),(textBox.y + 12), 40, MAROON);
+                     DrawText("_",( textBox.x + 8 + MeasureText(player.playerName, 40)),(textBox.y + 12), 40, GREEN);
                     } 
                   
 

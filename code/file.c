@@ -5,6 +5,7 @@
 #include "Textures.h"
 #include "raylib.h"
 #include "zombies.h"
+#include "sun.h"
 FILE *leaderBoardFile;
 PLAYER leaderBoardTop5Players[5]={0};
 
@@ -22,6 +23,8 @@ void importZombiesFromFile(FILE *file, int zombiesHordes[QUANTITY_MAX_HORDES], i
     j++;
    }
    (*quantityOfHordes)=j;
+   timeToDecreaseFromSpawnRateZombieEachHorde= spawnRateZombie/(*quantityOfHordes);
+   timeToIncreaseSpawnRateSunEachHorde=spawnRateSun/(*quantityOfHordes);
 }
 
 //checksIfInTop5:

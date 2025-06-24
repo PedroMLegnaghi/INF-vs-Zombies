@@ -16,6 +16,10 @@
     "format": "c",
     "gameplay.h": "c",
     "deck.h": "c",
-    "plants.h": "c"
+    "plants.h": "c",
+    "zombies.h": "c",
+    "string.h": "c",
+    "file.h": "c",
+    "sun.h": "c"
   }
 }

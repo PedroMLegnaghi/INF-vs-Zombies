@@ -31,8 +31,7 @@ typedef enum COST_OF_PLANT{
 //enumeration to reference the time(in seconds) of the action of each plant.
 //model: ACTION_TIME_(type_of_plant)
 typedef enum action_time{
-    //time to generate sun = 5seg
-    ACTION_TIME_SUNFLOWER = 4,
+    ACTION_TIME_SUNFLOWER = 6,
     ACTION_TIME_PEASHOOTER =3,
     
 }ACTION_TIME_PLANT;
@@ -52,5 +51,5 @@ typedef enum TYPE_OF_PLANT{
 typedef enum HEALTH_OF_PLANT{
     HEALTH_OF_SUNFLOWER = 100,
     HEALTH_OF_GREEN_PEASHOOTER = 100,
-    HEALTH_OF_WALLNUT = 1000
+    HEALTH_OF_WALLNUT = 500
 }HEALTH_OF_PLANT;

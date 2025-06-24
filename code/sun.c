@@ -9,8 +9,9 @@
     float groundOfTheSuns[SIZE_OF_SUN_ARR]={0};
     //indexToTrack the end of the array
     int indexOfNextSun = 0;
-    //time of spawn of suns = 15s
-    double spawnRateSun = 4.0;   
+    //time of spawn of suns = 4s
+    double spawnRateSun = 4.0;
+        float timeToIncreaseSpawnRateSunEachHorde=0;   
     //used to spawn sun appropriately
     double timeSpawnSunTracking =0;
    
@@ -81,12 +82,10 @@ void collectSun(Rectangle array_of_suns[SIZE_OF_SUN_ARR],int *indexOfNextSun, fl
     for (int i = 0; i < *indexOfNextSun; i++) {
         
         if (CheckCollisionPointRec(mousePoint, array_of_suns[i])) { //if mouse of player and the sun collided
-            if (IsGestureDetected(GESTURE_TAP) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) { //and if the player clicked on the sun
                 RemoveSunOfArray(array_of_suns, indexOfNextSun, i, groundOfTheSuns); //collect the sun
                 PlaySound(SOUND_COLLECTING_SUN);
                 addSunToStorage(&sunGamingStorage);
                 break; // removes only one sun per click
-            }
         }
     }
 }

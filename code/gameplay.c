@@ -90,6 +90,10 @@ void resetGameplay(){
     timeOfLastSun = 0; // Reset the last sun spawn time
     timeSpawnSunTracking = 0; // Reset the sun spawn tracking time
 
+    //spawn
+    spawnRateSun=4;
+    spawnRateZombie=6;
+
     //Reset player
     for(int i = 0; i < MAX_SIZE_OF_NAME; i++) {
         player.playerName[i] = '\0';  // Reset each character in the player name to null terminator
@@ -130,7 +134,7 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
                 //if he has died, then i don't need to check the other things, jump to the next iteration
                 RemoveZombie(zombieArr, indexOfNextZombie, i);
                 
-                player.pointsOfPlayer+=POINTS_PER_NORMALZOMBIE_KILLED;
+                player.pointsOfPlayer+=zombieArr[i].pointsPerKill;
 
                 i--; // Updates the index correctly
                 continue;//jumping to the next iteration

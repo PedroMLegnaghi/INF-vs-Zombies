@@ -10,6 +10,9 @@ Plant PLANT_WALLNUT;
 Plant SHOVEL_REMOVE_PLANTS;
 PeaShot NORMAL_GREEN_PEASHOT;
 Zombie NORMAL_ZOMBIE;
+Zombie CONEHEAD_ZOMBIE;
+Zombie FOOTBALL_ZOMBIE;
+Zombie FLAG_ZOMBIE;
 
 //Simple constants, used for initialization of structs or verification of emptiness
 const Plant NULL_PLANT = {0};
@@ -54,8 +57,8 @@ void InitGameStructs(void) {
     NORMAL_GREEN_PEASHOT = (PeaShot){
         .damage=20,
         .format={
-            .height=20,
-            .width=20,
+            .height=45,
+            .width=45,
             .x=0,
             .y=0
         },
@@ -109,6 +112,60 @@ void InitGameStructs(void) {
         },
         .isAttacking=0,
         .damage =0.33,
-        .texture = TEXTURE_NORMAL_ZOMBIE_IMG
+        .texture = TEXTURE_NORMAL_ZOMBIE_IMG,
+        .pointsPerKill=100
+    };
+
+    
+    FOOTBALL_ZOMBIE = (Zombie){
+        .color=GRAY,
+        .velocity = 2.5,
+        .health =80,
+        .rowOfZombie=-10,
+        .format={
+            .x=SCREEN_WIDTH+30,
+            .y=0,
+            .width=80,
+            .height=LAWN_Y_VALUE
+        },
+        .isAttacking=0,
+        .damage =1.5,
+        .texture = TEXTURE_FOOTBALL_ZOMBIE_IMG,
+        .pointsPerKill=300
+    };
+
+    
+    CONEHEAD_ZOMBIE = (Zombie){
+        .color=GRAY,
+        .velocity = 0.6,
+        .health =140,
+        .rowOfZombie=-10,
+        .format={
+            .x=SCREEN_WIDTH+30,
+            .y=0,
+            .width=70,
+            .height=LAWN_Y_VALUE
+        },
+        .isAttacking=0,
+        .damage =0.7,
+        .texture = TEXTURE_CONEHEAD_ZOMBIE_IMG,
+        .pointsPerKill=200
+    };
+
+    FLAG_ZOMBIE = (Zombie){
+        .color=GRAY,
+        .velocity = 1,
+        .health =200,
+        .rowOfZombie=-10,
+        .format={
+            .x=SCREEN_WIDTH+30,
+            .y=0,
+            .width=60,
+            .height=LAWN_Y_VALUE
+        },
+        .isAttacking=0,
+        .damage =0.33,
+        .texture = TEXTURE_FLAG_ZOMBIE_IMG,
+        .pointsPerKill=100
     };
 }

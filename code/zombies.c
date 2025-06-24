@@ -16,8 +16,8 @@ int indexOfNextZombie=0;
 
 int zombiesQuantityPerHorde[QUANTITY_MAX_HORDES]={0};
 
-double spawnRateZombie = 4.0;
-
+double spawnRateZombie = 6.0;
+    float timeToDecreaseFromSpawnRateZombieEachHorde;
 //used to know if it is the first time to spawn a zombie
 bool firstZombieSpawn =1;
 
@@ -40,6 +40,36 @@ void InitZombiesArrs(Zombie zombieArr[SIZE_OF_ZOMBIES_ARR]){
 
 //ZOMBIES----
 
+//chooseZombieToSpawn: chooses a zombie out of the posible zombies of the game to be spawned
+//receives as parameter the flag that indicates wheter it is or not the last zombie of the game, to properly spawn the flag zombie
+//  if that is irrelevant for the use, just pass as parameter "0"
+//returns the zombie chosen
+Zombie chooseZombieToSpawn(int isLastZombie){
+
+    if(isLastZombie){
+        return FLAG_ZOMBIE;
+    }
+
+    srand(time(NULL));
+    Zombie zombieToBeReturned ={0};
+    //percentage of chance to spawn certain zombies:
+        //normal zombie: 65%
+        //footbal zombie: 15%
+        //coneHead zombie: 20%
+
+    //random number taken out from 0-100    
+    int randNumber =(rand()%(100+1));
+    if(0<=randNumber&&randNumber<=50){
+        zombieToBeReturned= NORMAL_ZOMBIE;
+    }
+    else if(50<=randNumber&&randNumber<=70){
+        zombieToBeReturned= FOOTBALL_ZOMBIE;
+    }
+    else if(70<=randNumber&&randNumber<=100){
+        zombieToBeReturned= CONEHEAD_ZOMBIE;
+    }
+    return zombieToBeReturned;
+}
 
 //DrawZombie: Draw a given zombie
 void DrawZombie(Zombie zombie){
@@ -89,9 +119,22 @@ void AddZombieToZombiesArrRandomly( Zombie zombiesArr[SIZE_OF_ZOMBIES_ARR],Zombi
 
 //ResetZombieHorde:
 //resets all variables related to the creation and administration of a zombie horde
+//update values of sun and zombie spawn to make the game harder
 void ResetZombieHorde(){
     indexOfCurrentHorde++;
+    spawnRateSun+=timeToIncreaseSpawnRateSunEachHorde;
+    spawnRateZombie-=timeToDecreaseFromSpawnRateZombieEachHorde;
     zombiesCreatedSinceLastHorde=0;
+}
+
+//isLastZombieOfGame:
+//returns if it is last zombie of the game to be spawned
+int isLastZombieOfGame(){
+    if(indexOfCurrentHorde==(quantityOfHordes-1)&&zombiesCreatedSinceLastHorde==(zombiesQuantityPerHorde[indexOfCurrentHorde]-1)){
+        return 1;
+    }else{
+        return 0;
+    }
 }
 
 //LastZombieOfHordeSpawned:
@@ -108,13 +151,14 @@ int LastZombieOfHordeSpawned(){
 //returns if the last zombie of the horde has died
 int LastZombieOfHordeDied(){
     //as the mechanic of removing zombies decrements the index of the next zombie each time, when
-    //that index is 0 and it is not the firstZombieSpawn, then it's in definitely the last zombie of the horde
+    //that index is 0 and it is not the firstZombieSpawn, then it's definitely the last zombie of the horde
     if(indexOfNextZombie==0&&!firstZombieSpawn&&LastZombieOfHordeSpawned()){
         return 1;
     }else{
         return 0;
     }
 }
+
 
 //UpdateZombiePosition: Given a zombie, update the position of that zombie according to its velocity
 void UpdateZombiePosition(Zombie *zombie){
