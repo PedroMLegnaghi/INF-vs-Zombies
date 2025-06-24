@@ -307,7 +307,7 @@ importZombiesFromFile(zombiesHordesText,zombiesQuantityPerHorde,&quantityOfHorde
                 collectSun(sunArray,&indexOfNextSun,groundOfTheSuns);
                 
                 
-                PutPlantToField(plantArr,&cardSelected,&sunGamingStorage,occupationOfLawn,lawnRectangles,SOUND_PLANTING_PLANT,SOUND_SHOVEL);
+                PutPlantToField();
 
                 
                 GenerateSunSunflower(plantArr,lawnRectangles,groundOfTheSuns,sunArray,&indexOfNextSun);
@@ -698,10 +698,11 @@ importZombiesFromFile(zombiesHordesText,zombiesQuantityPerHorde,&quantityOfHorde
                     DrawSuns(sunArray,indexOfNextSun,TEXTURE_SUN_IMG);
 
                     //Gaming deck
-                    DrawGamingDeck(DeckOfPlants,sunGamingStorage, &cardSelected);
-                    DrawMoldureOfSelectedCard(cardSelected);
-                    RemoveSelectedCard(&cardSelected);
-
+                    DrawGamingDeck();
+                    DrawMoldureOfSelectedCard();
+                    if (IsKeyPressed(KEY_W) || IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
+                        RemoveSelectedCard();
+                    }
                 }break;
 
 

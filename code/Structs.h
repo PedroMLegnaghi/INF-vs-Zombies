@@ -4,19 +4,19 @@
 
 //ZOMBIE
     typedef struct Zombie{
-    Color color;
-    //given in pixels/frame
-    float velocity;
-    Rectangle format;
-    float health;
-    //row where zombie was placed
-    int rowOfZombie;
-    //used to track wheter the zombie is attacking
-    bool isAttacking;
-    //damage is given in damage/frames
-    float damage;
-    int pointsPerKill;
-    Texture2D texture;
+        Color color;
+        //given in pixels/frame
+        float velocity;
+        Rectangle format;
+        float health;
+        //row where zombie was placed
+        int rowOfZombie;
+        //used to track wheter the zombie is attacking
+        bool isAttacking;
+        //damage is given in damage/frames
+        float damage;
+        int pointsPerKill;
+        Texture2D texture;
 }Zombie;
 //----------------------
 
@@ -56,6 +56,13 @@ typedef struct Plant
     
 }Plant;
 
+
+//GAMING_DECK
+typedef struct{
+    Plant plant;
+    COOLDOWN_OF_PLANT cooldown;
+    float timeToTrackCooldown;
+} Gaming_Deck;
 //STRUCT CONSTANTS--------------------------------
 
 extern Plant PLANT_SUNFLOWER;

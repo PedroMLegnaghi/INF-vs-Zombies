@@ -1,13 +1,18 @@
  #include "deck.h"
 
-Plant DeckOfPlants [SIZE_OF_DECK]={0};
-Plant cardSelected = {0};
+Gaming_Deck DeckOfPlants [SIZE_OF_DECK]={0};
+Gaming_Deck *cardSelected= NULL;
 Rectangle sunDisplayInGamingBarRectangle={0};
  void InitDeckOfPlants(void){
-     DeckOfPlants[0] = PLANT_SUNFLOWER;
-     DeckOfPlants[1] = PLANT_GREEN_PEASHOOTER;
-     DeckOfPlants[2] = PLANT_WALLNUT;
-     DeckOfPlants[3] = SHOVEL_REMOVE_PLANTS;
+     DeckOfPlants[0].plant = PLANT_SUNFLOWER;
+     DeckOfPlants[1].plant = PLANT_GREEN_PEASHOOTER;
+     DeckOfPlants[2].plant = PLANT_WALLNUT;
+     DeckOfPlants[3].plant = SHOVEL_REMOVE_PLANTS;
+
+     DeckOfPlants[0].cooldown = COOLDOWN_OF_SUNFLOWER;
+     DeckOfPlants[1].cooldown = COOLDOWN_OF_GREEN_PEASHOOTER;
+     DeckOfPlants[2].cooldown = COOLDOWN_OF_WALLNUT;
+
      sunDisplayInGamingBarRectangle=(Rectangle){
         .x=(DECK_RECTANGLE_X_VALUE+5)+17,
         .y=(DECK_RECTANGLE_Y_VALUE+5)+3,
@@ -18,16 +23,16 @@ Rectangle sunDisplayInGamingBarRectangle={0};
 
 //DrawMoldureOfSelectedCard:
 //given a plant that is selected in the deck of cards, dray a moldure for it. If there isn't plant selected, return void
-void DrawMoldureOfSelectedCard(Plant cardSelected){
+void DrawMoldureOfSelectedCard(){
     //if the cardSelected is nulled, return void, because there's no card selected
-    if(cardSelected.format.x==0) return;
+    if(cardSelected==NULL||(*cardSelected).plant.format.x==0) return;
     //else
-    DrawRectangleLinesEx(cardSelected.format,2.5f, DARKGREEN);
+    DrawRectangleLinesEx((*cardSelected).plant.format,2.5f, DARKGREEN);
 }
 
 //DrawGamingDeck:
 //given the deck of plants, the quantity of suns adn the card selected, draw the interface, checking if one card is being hovered and highlightening it, and updating the card selected(if needed)
-void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSun, Plant *cardSelected){
+void DrawGamingDeck(){
     Vector2 origin = {0,0};
     //Drawing the sun counter
     int DECK_RECTANGLE_X_VALUECpy = DECK_RECTANGLE_X_VALUE;
@@ -42,7 +47,7 @@ void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSu
     //quantity of sun
     DrawRectangle(DECK_RECTANGLE_X_VALUE+5,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,DECK_ELEMENT_WIDTH_VALUE-10,30,RAYWHITE);
     DrawRectangleLines(DECK_RECTANGLE_X_VALUE+5,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,DECK_ELEMENT_WIDTH_VALUE-10,30,BLACK);
-    DrawText(TextFormat(" %d", quantityOfSun),DECK_RECTANGLE_X_VALUE+15,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,20,BLACK);
+    DrawText(TextFormat(" %d", sunGamingStorage),DECK_RECTANGLE_X_VALUE+15,DECK_RECTANGLE_Y_VALUE+DECK_ELEMENT_HEIGHT_VALUE-20,20,BLACK);
 
     
 
@@ -52,18 +57,17 @@ void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSu
     //Drawing the deck of plants
     for (int i=0;i<SIZE_OF_DECK;i++){
         DECK_RECTANGLE_X_VALUECpy+= DECK_ELEMENT_WIDTH_VALUE;
-        Plant plantBoxOfCard =DeckOfPlants[i];
-        plantBoxOfCard.format.x= DECK_RECTANGLE_X_VALUECpy;
-        plantBoxOfCard.format.y =DECK_RECTANGLE_Y_VALUE;
-        plantBoxOfCard.format.width= DECK_ELEMENT_WIDTH_VALUE;
-        plantBoxOfCard.format.height= DECK_ELEMENT_HEIGHT_VALUE;
-        plantBoxOfCard.existanceTime=0;
-        plantBoxOfCard.referenceTime=0;
-        plantBoxOfCard.creationTime = 0;
+        DeckOfPlants[i].plant.format.x= DECK_RECTANGLE_X_VALUECpy;
+        DeckOfPlants[i].plant.format.y =DECK_RECTANGLE_Y_VALUE;
+        DeckOfPlants[i].plant.format.width= DECK_ELEMENT_WIDTH_VALUE;
+        DeckOfPlants[i].plant.format.height= DECK_ELEMENT_HEIGHT_VALUE;
+        DeckOfPlants[i].plant.existanceTime=0;
+        DeckOfPlants[i].plant.referenceTime=0;
+        DeckOfPlants[i].plant.creationTime = 0;
 
         Rectangle textureSourceRectanglePlant = {
-            .height=DeckOfPlants[i].texture.height,
-            .width=DeckOfPlants[i].texture.width,
+            .height=DeckOfPlants[i].plant.texture.height,
+            .width=DeckOfPlants[i].plant.texture.width,
             .x=0,
             .y=0
         };
@@ -71,25 +75,32 @@ void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSu
         
         //user pressing number 1,2,3... selects the cards
         if(IsKeyPressed(keyOfCard)){
-            *cardSelected=plantBoxOfCard;
+            cardSelected=&DeckOfPlants[i];
         }
         
         //if the box is being hovered,
-        if (CheckCollisionPointRec(mousePoint, plantBoxOfCard.format)) {
+        if (CheckCollisionPointRec(mousePoint, DeckOfPlants[i].plant.format)) {
             
             //highlight it
-            DrawRectangleRec(plantBoxOfCard.format,GRAY);
+            DrawRectangleRec(DeckOfPlants[i].plant.format,GRAY);
 
             //if its being hovered and also has been clicked, selected card = that plant
             if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)||IsKeyPressed(KEY_ENTER)){
-                *cardSelected=plantBoxOfCard;
+                cardSelected=&DeckOfPlants[i];
             }
         }else{
             //else, draw it normaly
-            DrawRectangleRec(plantBoxOfCard.format,BROWN);
+            DrawRectangleRec(DeckOfPlants[i].plant.format,BROWN);
         }
-        //Drawing the plants within the boxes
-        DrawTexturePro(plantBoxOfCard.texture,textureSourceRectanglePlant,plantBoxOfCard.format,origin,0.0f,WHITE);
+        //if the card is available, draw it normaly
+        if((GetTime()-(DeckOfPlants[i].timeToTrackCooldown)>(DeckOfPlants[i].cooldown))){
+            //Drawing the plants within the boxes
+            DrawTexturePro(DeckOfPlants[i].plant.texture,textureSourceRectanglePlant,DeckOfPlants[i].plant.format,origin,0.0f,WHITE);
+        }
+        else{
+            //if the card isn't available, draw it with gray filter
+            DrawTexturePro(DeckOfPlants[i].plant.texture,textureSourceRectanglePlant,DeckOfPlants[i].plant.format,origin,0.0f,GRAY);
+        }
 
         //updating the key of the cards accordingly to its order in the InGameDeck
         keyOfCard++;
@@ -98,23 +109,16 @@ void DrawGamingDeck(Plant DeckOfPlants [SIZE_OF_DECK], unsigned int quantityOfSu
 }
 
 // RemoveSelectedCard: 
-// Checks if a selected card should be removed and removes it. A selected card is removed if 'W' or the right mouse button is pressed.
-void RemoveSelectedCard(Plant *cardSelected) {
-    if (IsKeyPressed(KEY_W) || IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
-        cardSelected->format.height = 0;
-        cardSelected->format.width = 0;
-        cardSelected->format.x = 0;  
-        cardSelected->format.y = 0;
-    }
+//Removes the selected card
+void RemoveSelectedCard() {
+        cardSelected=NULL;
+        //can't null the cooldown tracking variable here, because if a card is removed, it wasn't necessarily put in the field
 }
 
 //PutPlantToField:Plant[lawnRow*lawnColumns], Plant, int*, bool[lawnRows][lawnColumns],->void
 //Given the array of plants in *the field,the card selected , the *sunStorage, the occupationLawn
 //checks if plant can be put and properly put it
-void PutPlantToField
-(Plant plantArr [NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], 
-    Plant *cardSelected, unsigned int *sunStorage,bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],Rectangle lawnRectangles[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN],Sound soundOfPlantingPlant,Sound shovelSound)
-    {
+void PutPlantToField(){
         //checks if there's a lawn being hovered
         bool isHovered =0;
         
@@ -131,36 +135,39 @@ void PutPlantToField
         }
         //  a plant is selected && check-colision with a block of lawn(for loop,checks if an element has lawnRecHover [i][j]=1,save that i and j) 
         //&& eventClick tapping
-        if(isHovered&&cardSelected->format.x!=0&&IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-            //if it is a shovel that is being selected, siimply just remove de plant in the spot selected
-            if((*cardSelected).type==TYPE_SHOVEL){
-                PlaySound(shovelSound);
+        if(cardSelected!=NULL&&isHovered&&IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+            //if it is a shovel that is being selected, simply just remove the plant in the spot selected
+            if((*cardSelected).plant.type==TYPE_SHOVEL){
+                PlaySound(SOUND_SHOVEL);
                 RemovePlantFromArr(plantArr,occupationOfLawn,r,c);
             }
 
             //     else if the amount of suns is sufficient to put a plant in the field  &&
-            //          the position chosen is free to be used (checks if occupationLawn[i][j]!=1)
-            else if(*sunStorage>=cardSelected->cost&&occupationOfLawn[r][c]!=1){
-            //my selected card, by default, has, already, color, type, cost,height and width. But i doesn't have a proper x and y to be displayed on the lawn
+            //          the position chosen is free to be used (checks if occupationLawn[i][j]!=1) &&
+            //          this card is available (time of last use is greater than the cooldown of that plant)
+            else if(cardSelected!=NULL
+                    &&sunGamingStorage>=(*cardSelected).plant.cost
+                    &&occupationOfLawn[r][c]!=1
+                    &&((GetTime()-(*cardSelected).timeToTrackCooldown) > (float)(*cardSelected).cooldown)){
+            //my selected card, by default, has, already, color, type, cost,height and width. But it doesn't have a proper x and y to be displayed on the lawn
             //              *add that plant to the array of plants
-            PlaySound(soundOfPlantingPlant);
-            Plant plant = *cardSelected;
+            PlaySound(SOUND_PLANTING_PLANT);
+            Plant plant = (*cardSelected).plant;
             plant.format.x=lawnRectangles[r][c].x+(lawnRectangles[r][c].width-plant.format.width)/2;
             plant.format.y=lawnRectangles[r][c].y+(lawnRectangles[r][c].height-plant.format.height)/2;
             plant.creationTime=GetTime();
             plant.rowOfPlant = r;
             plantArr[r][c]=plant;
             //              *discount that amount of the sunStorage
-            *sunStorage-=cardSelected->cost;
+            sunGamingStorage-=(*cardSelected).plant.cost;
             //              *update the occupationLawn
             occupationOfLawn[r][c]=1;
             
+            //              *update the cooldown tracking variable
+            (*cardSelected).timeToTrackCooldown=GetTime();
+            //              *reset the cardSelected
+            RemoveSelectedCard();
         }
-        //              *reset the selectedCard
-        cardSelected->format.x = 0;
-        cardSelected->format.y = 0;
-        cardSelected->format.width = 0;
-        cardSelected->format.height = 0;
     }
 }
 

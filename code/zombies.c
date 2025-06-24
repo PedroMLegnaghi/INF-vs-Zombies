@@ -16,7 +16,7 @@ int indexOfNextZombie=0;
 
 int zombiesQuantityPerHorde[QUANTITY_MAX_HORDES]={0};
 
-double spawnRateZombie = 6.0;
+double spawnRateZombie = 10.0;
     float timeToDecreaseFromSpawnRateZombieEachHorde;
 //used to know if it is the first time to spawn a zombie
 bool firstZombieSpawn =1;
