@@ -20,6 +20,11 @@
     "zombies.h": "c",
     "string.h": "c",
     "file.h": "c",
-    "sun.h": "c"
+    "sun.h": "c",
+    "textures.h": "c",
+    "enums.h": "c",
+    "structs.h": "c",
+    "raylib.h": "c",
+    "stdbool.h": "c"
   }
 }

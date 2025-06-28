@@ -1,8 +1,7 @@
 #include "Textures.h"
 #include "raylib.h"
 
-
-Vector2 origin = {0,0};
+Vector2 origin = {0, 0};
 
 Texture2D TEXTURE_BACKGROUND_IMG;
 Rectangle TEXTURE_BACKGROUND_IMG_SOURCE_REC;
@@ -86,7 +85,7 @@ Texture2D TEXTURE_NORMAL_ZOMBIE_IMG;
 Texture2D TEXTURE_FOOTBALL_ZOMBIE_IMG;
 Texture2D TEXTURE_CONEHEAD_ZOMBIE_IMG;
 Texture2D TEXTURE_FLAG_ZOMBIE_IMG;
-
+Texture2D TEXTURE_GIGA_GARGANTUAR_BOSS_ZOMBIE_IMG;
 
 Texture2D TEXTURE_SUNFLOWER_IMG;
 Texture2D TEXTURE_GREEN_PEASHOOTER_IMG;
@@ -94,13 +93,14 @@ Texture2D TEXTURE_GREEN_PEASHOT_IMG;
 Texture2D TEXTURE_WALLNUT_IMG;
 Texture2D TEXTURE_SHOVEL_IMG;
 
-void LoadAllTextures(void) {
+void LoadAllTextures(void)
+{
     // Backgrounds
     TEXTURE_BACKGROUND_IMG = LoadTexture("./resources/sprites/coloredBackGroundPVZ.png");
     TEXTURE_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_BACKGROUND_IMG.width, TEXTURE_BACKGROUND_IMG.height};
 
     TEXTURE_GAMING_BACKGROUND_IMG = LoadTexture("./resources/sprites/dayBackgroundGame.png");
-    TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_GAMING_BACKGROUND_IMG.width, TEXTURE_GAMING_BACKGROUND_IMG.height};
+    TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, SCREEN_WIDTH * 1.2, TEXTURE_GAMING_BACKGROUND_IMG.height};
 
     TEXTURE_ENDGAME_BACKGROUND_IMG = LoadTexture("./resources/sprites/endGame.png");
     TEXTURE_ENDGAME_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_ENDGAME_BACKGROUND_IMG.width, TEXTURE_ENDGAME_BACKGROUND_IMG.height};
@@ -119,7 +119,6 @@ void LoadAllTextures(void) {
 
     TEXTURE_USERDATA_BACKGROUND_IMG = LoadTexture("./resources/sprites/userData_background.png");
     TEXTURE_USERDATA_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_USERDATA_BACKGROUND_IMG.width, TEXTURE_USERDATA_BACKGROUND_IMG.height};
-    
 
     // Sun
     TEXTURE_SUN_IMG = LoadTexture("./resources/sprites/sun.png");
@@ -180,11 +179,10 @@ void LoadAllTextures(void) {
 
     // Zombies
     TEXTURE_NORMAL_ZOMBIE_IMG = LoadTexture("./resources/sprites/zombie.png");
+    TEXTURE_GIGA_GARGANTUAR_BOSS_ZOMBIE_IMG = LoadTexture("./resources/sprites/giga_gargantuar_boss.png");
     TEXTURE_FOOTBALL_ZOMBIE_IMG = LoadTexture("./resources/sprites/footballZombie.png");
     TEXTURE_CONEHEAD_ZOMBIE_IMG = LoadTexture("./resources/sprites/coneHeadZombie.png");
     TEXTURE_FLAG_ZOMBIE_IMG = LoadTexture("./resources/sprites/flagZombie.png");
-
-
 
     // Plants
     TEXTURE_SUNFLOWER_IMG = LoadTexture("./resources/sprites/sunflower.png");
@@ -194,7 +192,8 @@ void LoadAllTextures(void) {
     TEXTURE_SHOVEL_IMG = LoadTexture("./resources/sprites/shovel.png");
 }
 
-void UnloadAllTextures(void) {
+void UnloadAllTextures(void)
+{
     // Backgrounds
     UnloadTexture(TEXTURE_BACKGROUND_IMG);
     UnloadTexture(TEXTURE_LEADERBOARD_BACKGROUND_IMG);

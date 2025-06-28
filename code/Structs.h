@@ -1,69 +1,71 @@
 #pragma once
 #include "raylib.h"
-#include "Enums.h"  
+#include "Enums.h"
 
-//ZOMBIE
-    typedef struct Zombie{
-        Color color;
-        //given in pixels/frame
-        float velocity;
-        Rectangle format;
-        float health;
-        //row where zombie was placed
-        int rowOfZombie;
-        //used to track wheter the zombie is attacking
-        bool isAttacking;
-        //damage is given in damage/frames
-        float damage;
-        int pointsPerKill;
-        Texture2D texture;
-}Zombie;
+// ZOMBIE
+typedef struct Zombie
+{
+    Color color;
+    // given in pixels/frame
+    float velocity;
+    Rectangle format;
+    float health;
+    // row where zombie was placed
+    int rowOfZombie;
+    // used to track wheter the zombie is attacking
+    bool isAttacking;
+    // damage is given in damage/frames
+    float damage;
+    int pointsPerKill;
+    TYPE_OF_ZOMBIE type;
+    Texture2D texture;
+} Zombie;
 //----------------------
 
-//PEASHOT
+// PEASHOT
 typedef struct PeaShot
 {
     unsigned int damage;
     Rectangle format;
     Color color;
-    //velocity:in pixels/frame
+    // velocity:in pixels/frame
     float velocity;
-    //usedto optimize the verification of colision with zombies
+    // usedto optimize the verification of colision with zombies
     int rowOfShot;
     Texture2D texture;
-}PeaShot;
+} PeaShot;
 
 //-----------------
 
-//PLANT
-typedef struct Plant    
+// PLANT
+typedef struct Plant
 {
     Rectangle format;
     TYPE_OF_PLANT type;
     COST_OF_PLANT cost;
     ACTION_TIME_PLANT actionTime;
-    //uses enum of health
+    // uses enum of health
     float health;
     double creationTime;
     double existanceTime;
-    //referenceTime:Auxilar variable to enable time tracking and habilities triggered of each plant
-    //      :-> referenceTime goes from 0 to actionTime. When referenceTime == actionTime, Hability is triggered and referenceTime =0;
+    // referenceTime:Auxilar variable to enable time tracking and habilities triggered of each plant
+    //       :-> referenceTime goes from 0 to actionTime. When referenceTime == actionTime, Hability is triggered and referenceTime =0;
     double referenceTime;
     Color color;
     int rowOfPlant;
     Texture2D texture;
     PeaShot peashot;
-    
-}Plant;
 
+} Plant;
 
-//GAMING_DECK
-typedef struct{
+// GAMING_DECK
+typedef struct
+{
     Plant plant;
     COOLDOWN_OF_PLANT cooldown;
     float timeToTrackCooldown;
 } Gaming_Deck;
-//STRUCT CONSTANTS--------------------------------
+// STRUCT CONSTANTS--------------------------------
 
 extern Plant PLANT_SUNFLOWER;
 extern Plant PLANT_GREEN_PEASHOOTER;
@@ -75,10 +77,11 @@ extern Zombie NORMAL_ZOMBIE;
 extern Zombie CONEHEAD_ZOMBIE;
 extern Zombie FOOTBALL_ZOMBIE;
 extern Zombie FLAG_ZOMBIE;
+extern Zombie GIGA_GARGANTUAR_BOSS_ZOMBIE;
 
 extern const Plant NULL_PLANT;
 extern const PeaShot NULL_PEA;
 extern const Zombie NULL_ZOMBIE;
 
-//FUNCTIONS-------------------------------------
+// FUNCTIONS-------------------------------------
 void InitGameStructs(void);

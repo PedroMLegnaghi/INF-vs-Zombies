@@ -1,4 +1,5 @@
 #pragma once
+#include "main.h"
 #include "raylib.h"
 extern Vector2 origin;
 extern Texture2D TEXTURE_BACKGROUND_IMG;
@@ -26,8 +27,7 @@ extern Texture2D TEXTURE_CONFIGURATIONS_BACKGROUND_IMG;
 extern Rectangle TEXTURE_CONFIGURATIONS_BACKGROUND_IMG_SOURCE_REC;
 
 extern Texture2D TEXTURE_SUN_IMG;
-extern Rectangle  TEXTURE_SUN_IMG_SOURCE_REC;
-
+extern Rectangle TEXTURE_SUN_IMG_SOURCE_REC;
 
 extern Texture2D TEXTURE_DIRT_IMG;
 extern Rectangle TEXTURE_DIRT_IMG_SOURCE_REC;
@@ -84,7 +84,7 @@ extern Texture2D TEXTURE_NORMAL_ZOMBIE_IMG;
 extern Texture2D TEXTURE_FOOTBALL_ZOMBIE_IMG;
 extern Texture2D TEXTURE_CONEHEAD_ZOMBIE_IMG;
 extern Texture2D TEXTURE_FLAG_ZOMBIE_IMG;
-
+extern Texture2D TEXTURE_GIGA_GARGANTUAR_BOSS_ZOMBIE_IMG;
 
 extern Texture2D TEXTURE_SUNFLOWER_IMG;
 extern Texture2D TEXTURE_GREEN_PEASHOOTER_IMG;
@@ -93,4 +93,3 @@ extern Texture2D TEXTURE_WALLNUT_IMG;
 extern Texture2D TEXTURE_SHOVEL_IMG;
 void LoadAllTextures(void);
 void UnloadAllTextures(void);
-
