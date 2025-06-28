@@ -4,7 +4,7 @@ double timeOfLastSun = 0;
 // array to track the suns, if the x and y coordinates are "-1", then we consider it an empty sun
 Rectangle sunArray[SIZE_OF_SUN_ARR] = {0};
 // array to track the quantity of sun that the player has
-unsigned int sunGamingStorage = 10000;
+unsigned int sunGamingStorage = 0;
 // array to track where a sun hits the ground. Each index of the array corresponds to the index of that sun in the sunArray
 float groundOfTheSuns[SIZE_OF_SUN_ARR] = {0};
 // indexToTrack the end of the array

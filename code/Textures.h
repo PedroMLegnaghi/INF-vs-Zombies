@@ -85,11 +85,14 @@ extern Texture2D TEXTURE_FOOTBALL_ZOMBIE_IMG;
 extern Texture2D TEXTURE_CONEHEAD_ZOMBIE_IMG;
 extern Texture2D TEXTURE_FLAG_ZOMBIE_IMG;
 extern Texture2D TEXTURE_GIGA_GARGANTUAR_BOSS_ZOMBIE_IMG;
+extern Texture2D TEXTURE_YETI_ZOMBIE_IMG;
 
 extern Texture2D TEXTURE_SUNFLOWER_IMG;
 extern Texture2D TEXTURE_GREEN_PEASHOOTER_IMG;
 extern Texture2D TEXTURE_GREEN_PEASHOT_IMG;
 extern Texture2D TEXTURE_WALLNUT_IMG;
 extern Texture2D TEXTURE_SHOVEL_IMG;
+extern Texture2D TEXTURE_POTATO_MINE_IMG;
+
 void LoadAllTextures(void);
 void UnloadAllTextures(void);

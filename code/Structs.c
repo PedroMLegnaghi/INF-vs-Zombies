@@ -7,13 +7,17 @@
 Plant PLANT_SUNFLOWER;
 Plant PLANT_GREEN_PEASHOOTER;
 Plant PLANT_WALLNUT;
+Plant PLANT_POTATO_MINE;
 Plant SHOVEL_REMOVE_PLANTS;
+
 PeaShot NORMAL_GREEN_PEASHOT;
+
 Zombie NORMAL_ZOMBIE;
 Zombie CONEHEAD_ZOMBIE;
 Zombie FOOTBALL_ZOMBIE;
 Zombie FLAG_ZOMBIE;
 Zombie GIGA_GARGANTUAR_BOSS_ZOMBIE;
+Zombie YETI_ZOMBIE;
 
 // Simple constants, used for initialization of structs or verification of emptiness
 const Plant NULL_PLANT = {0};
@@ -53,6 +57,21 @@ void InitGameStructs(void)
         .health = HEALTH_OF_SUNFLOWER,
         .texture = TEXTURE_SUNFLOWER_IMG,
         .rowOfPlant = -1};
+
+    PLANT_POTATO_MINE = (Plant){
+        .format.height = LAWN_HEIGHT_VALUE - 20,
+        .format.width = LAWN_WIDTH_VALUE - 40,
+        .format.x = 0,
+        .format.y = 0,
+        .type = TYPE_POTATO_MINE,
+        .cost = COST_POTATO_MINE,
+        .color = BROWN,
+        .existanceTime = 0,
+        .referenceTime = 0,
+        .health = HEALTH_OF_POTATO_MINE,
+        .texture = TEXTURE_POTATO_MINE_IMG,
+        .rowOfPlant = -1,
+        .damage = 600};
 
     NORMAL_GREEN_PEASHOT = (PeaShot){
         .damage = 20,
@@ -97,7 +116,7 @@ void InitGameStructs(void)
 
     NORMAL_ZOMBIE = (Zombie){
         .color = GRAY,
-        .velocity = 1,
+        .velocity = 0.8,
         .health = HEALTH_OF_NORMAL_ZOMBIE,
         .rowOfZombie = -10,
         .format = {
@@ -113,7 +132,7 @@ void InitGameStructs(void)
 
     FOOTBALL_ZOMBIE = (Zombie){
         .color = GRAY,
-        .velocity = 2.5,
+        .velocity = 2,
         .health = HEALTH_OF_FOOTBALL_ZOMBIE,
         .rowOfZombie = -10,
         .format = {
@@ -129,7 +148,7 @@ void InitGameStructs(void)
 
     CONEHEAD_ZOMBIE = (Zombie){
         .color = GRAY,
-        .velocity = 1,
+        .velocity = 0.7,
         .health = HEALTH_OF_CONEHEAD_ZOMBIE,
         .rowOfZombie = -10,
         .format = {
@@ -161,7 +180,7 @@ void InitGameStructs(void)
 
     GIGA_GARGANTUAR_BOSS_ZOMBIE = (Zombie){
         .color = GRAY,
-        .velocity = 0.33,
+        .velocity = 0.4,
         .health = HEALTH_OF_GIGA_GARGANTUAR_BOSS_ZOMBIE,
         .rowOfZombie = -10,
         .format = {
@@ -174,4 +193,20 @@ void InitGameStructs(void)
         .texture = TEXTURE_GIGA_GARGANTUAR_BOSS_ZOMBIE_IMG,
         .pointsPerKill = 500,
         .type = TYPE_GIGA_GARGANTUAR_BOSS_ZOMBIE};
+
+    YETI_ZOMBIE = (Zombie){
+        .color = GRAY,
+        .velocity = 0.4,
+        .health = HEALTH_OF_YETI_ZOMBIE,
+        .rowOfZombie = -10,
+        .format = {
+            .x = SCREEN_WIDTH + 30,
+            .y = 0,
+            .width = LAWN_WIDTH_VALUE,
+            .height = LAWN_HEIGHT_VALUE},
+        .isAttacking = 0,
+        .damage = 2,
+        .texture = TEXTURE_YETI_ZOMBIE_IMG,
+        .pointsPerKill = 700,
+        .type = TYPE_YETI_ZOMBIE};
 }

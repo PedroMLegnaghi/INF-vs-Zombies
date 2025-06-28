@@ -76,12 +76,14 @@ void resetGameplay()
     // Reset zombies
     for (int i = 0; i < SIZE_OF_ZOMBIES_ARR; i++)
     {
-        zombieArr[i] = (Zombie){0}; // Reset each zombie to default values
+        InitZombiesArrs(zombieArr);
     }
     firstZombieSpawn = 1;        // Reset the first zombie spawn flag
     timeOfLastZombie = 0;        // Reset the last zombie spawn time
     timeSpawnZombieTracking = 0; // Reset the zombie spawn tracking time
     indexOfNextZombie = 0;
+    zombiesCreatedSinceLastHorde = 0; // Reset the count of zombies created since the last horde
+    indexOfCurrentHorde = 0;          // Reset the index of the current horde
 
     // Reset lawn occupation
     for (int i = 0; i < NUMBER_ROWS_LAWN; i++)
@@ -100,12 +102,14 @@ void resetGameplay()
     }
     indexOfNextSun = 0;
     sunGamingStorage = 0;
-    timeOfLastSun = 0;        // Reset the last sun spawn time
-    timeSpawnSunTracking = 0; // Reset the sun spawn tracking time
+    timeOfLastSun = 0;           // Reset the last sun spawn time
+    timeSpawnSunTracking = 0;    // Reset the sun spawn tracking time
+    timeOfLastZombie = 0;        // Reset the last zombie spawn time
+    timeSpawnZombieTracking = 0; // Reset the zombie spawn tracking time
 
     // spawn
     spawnRateSun = 4;
-    spawnRateZombie = 6;
+    spawnRateZombie = 3.0;
 
     // Reset player
     for (int i = 0; i < MAX_SIZE_OF_NAME; i++)
@@ -146,6 +150,19 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
         // verifies if zombie has already died
         if (zombieArr[i].health <= 0)
         {
+            if (zombieArr[i].type == TYPE_YETI_ZOMBIE)
+            {
+                // yeti zombie is a special zombie, so, when it dies, it will take of some random plants with it (10 plants)
+                // and also reset the sun storage
+                sunGamingStorage = 0;
+                // remove 10 random plants from the game
+                for (int j = 0; j < 10; j++)
+                {
+                    int randomRow = rand() % NUMBER_ROWS_LAWN;
+                    int randomCol = rand() % NUMBER_COLUMN_LAWN;
+                    RemovePlantFromArr(plantArr, occupationOfLawn, randomRow, randomCol);
+                }
+            }
             // if he has died, then i don't need to check the other things, jump to the next iteration
             RemoveZombie(zombieArr, indexOfNextZombie, i);
 
@@ -188,10 +205,6 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
         {
             for (int c = 0; c < NUMBER_COLUMN_LAWN; c++)
             {
-                // if(plantArr[r][c].type!=TYPE_NULL_PLANT)
-                // {
-                //     RemovePlantFromArr(plantArr,occupationOfLawn,r,c);
-                // }
 
                 // if a colision zombie/plant is happening
                 if (verifyPlantColisionWithZombie(plantArr[r][c], zombieArr[i]))
@@ -199,12 +212,18 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
                     // update isAttacking propriety
                     // DONT UPDATE THE POSITION OF THE ZOMBIE IF HE'S ATTACKING
                     // Update healthOfPlant according to the damage that the zombie gives per frame
+
                     UpdateHealthOfPlant(&plantArr[r][c], zombieArr[i].damage);
                     zombieArr[i].isAttacking = 1;
                     // if the plant died, remove it from the screen
                     if (plantArr[r][c].health <= 0)
                     {
-                        PlaySound(zombieAtePlant);
+                        if (plantArr[r][c].type == TYPE_POTATO_MINE)
+                        {
+                            // if the plant is a potato mine, play the sound of explosion
+                            PlaySound(SOUND_POTATO_MINE_EXPLOSION);
+                            UpdateZombieHealth(&zombieArr[i], plantArr[r][c].damage);
+                        }
                         RemovePlantFromArr(plantArr, occupationOfLawn, r, c);
                     }
                 }

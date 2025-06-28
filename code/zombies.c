@@ -16,7 +16,7 @@ int indexOfNextZombie = 0;
 
 int zombiesQuantityPerHorde[QUANTITY_MAX_HORDES] = {0};
 
-double spawnRateZombie = 5.0;
+double spawnRateZombie = 3.0;
 float timeToDecreaseFromSpawnRateZombieEachHorde;
 // used to know if it is the first time to spawn a zombie
 bool firstZombieSpawn = 1;
@@ -24,7 +24,7 @@ bool firstZombieSpawn = 1;
 // reference for spawn of zombies
 double timeOfLastZombie = 0;
 
-double timeForFirstSpawnZombie = 0.0;
+double timeForFirstSpawnZombie = 40.0;
 
 // used to spawn zombies appropriately
 double timeSpawnZombieTracking = 0;
@@ -74,9 +74,13 @@ Zombie chooseZombieToSpawn(int isLastZombie)
     {
         zombieToBeReturned = FOOTBALL_ZOMBIE;
     }
-    else if (75 <= randNumber && randNumber <= 100)
+    else if (75 <= randNumber && randNumber <= 90)
     {
         zombieToBeReturned = CONEHEAD_ZOMBIE;
+    }
+    else
+    {
+        zombieToBeReturned = YETI_ZOMBIE;
     }
     return zombieToBeReturned;
 }

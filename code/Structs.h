@@ -55,6 +55,7 @@ typedef struct Plant
     int rowOfPlant;
     Texture2D texture;
     PeaShot peashot;
+    float damage;
 
 } Plant;
 
@@ -71,6 +72,8 @@ extern Plant PLANT_SUNFLOWER;
 extern Plant PLANT_GREEN_PEASHOOTER;
 extern Plant PLANT_WALLNUT;
 extern Plant SHOVEL_REMOVE_PLANTS;
+extern Plant PLANT_POTATO_MINE;
+
 extern PeaShot NORMAL_GREEN_PEASHOT;
 
 extern Zombie NORMAL_ZOMBIE;
@@ -78,6 +81,7 @@ extern Zombie CONEHEAD_ZOMBIE;
 extern Zombie FOOTBALL_ZOMBIE;
 extern Zombie FLAG_ZOMBIE;
 extern Zombie GIGA_GARGANTUAR_BOSS_ZOMBIE;
+extern Zombie YETI_ZOMBIE;
 
 extern const Plant NULL_PLANT;
 extern const PeaShot NULL_PEA;

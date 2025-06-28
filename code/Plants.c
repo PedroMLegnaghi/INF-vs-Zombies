@@ -19,6 +19,7 @@ void InitPlantArr(void)
         }
     }
 }
+
 // UpdateHealthOfPlant: Given a plant, updates it's health accordingly with a given damage
 void UpdateHealthOfPlant(Plant *plant, float damage)
 {
@@ -36,6 +37,8 @@ void RemovePlantFromArr(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], bo
         plantArr[rowOfPlantToBeRemoved][columnOfPlantToBeRemoved] = NULL_PLANT; // null the plant == remove
         occupationOfLawn[rowOfPlantToBeRemoved][columnOfPlantToBeRemoved] = 0;  // update the occupation of the lawn
     }
+    else
+        return; // if the plant is already null, do nothing
 }
 
 // UpdateExistanceTime:
