@@ -159,7 +159,6 @@ int main(void)
                     {
                         PlaySound(SOUND_BTN_CLICK);
                         previousScreen = currentScreen;
-                        StopSound(SOUND_HOMEPAGE_MENU);
                         currentScreen = homePageOptions[i];
                     }
                 }
@@ -215,6 +214,7 @@ int main(void)
 
         case GAMEPLAY:
         {
+            StopSound(SOUND_HOMEPAGE_MENU);
             previousScreen = currentScreen;
             if (!IsSoundPlaying(SOUND_GAMEPLAY))
             {
@@ -436,7 +436,6 @@ int main(void)
                 {
                     PlaySound(SOUND_BTN_CLICK);
                     previousScreen = currentScreen;
-                    StopSound(SOUND_HOMEPAGE_MENU);
                     currentScreen = HOMEPAGE;
                 }
             }
@@ -461,7 +460,6 @@ int main(void)
                 {
                     PlaySound(SOUND_BTN_CLICK);
                     previousScreen = currentScreen;
-                    StopSound(SOUND_HOMEPAGE_MENU);
                     currentScreen = HOMEPAGE;
                 }
             }
@@ -752,38 +750,13 @@ int main(void)
 
         case GAMEPLAY:
         {
-            DrawTexturePro(TEXTURE_GAMING_BACKGROUND_IMG, TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC, SCREEN_RECTANGLE, origin, 0.0f, WHITE);
 
             // Lawn drawing
+            DrawTexturePro(TEXTURE_GAMING_BACKGROUND_IMG, TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC, SCREEN_RECTANGLE, origin, 0.0f, WHITE);
             for (int i = 0; i < NUMBER_ROWS_LAWN; i++)
             {
                 for (int j = 0; j < NUMBER_COLUMN_LAWN; j++)
                 {
-                    // if "i" is odd, if "j" is odd, dirt, else, grass
-                    if (i & 1)
-                    {
-                        if (j & 1)
-                        {
-                            DrawTexturePro(TEXTURE_DIRT_IMG, TEXTURE_DIRT_IMG_SOURCE_REC, lawnRectangles[i][j], origin, 0.0f, WHITE);
-                            // DrawRectangleRec( lawnRectangles[i][j], dirt);
-                        }
-                        else
-                        {
-                            // DrawRectangleRec( lawnRectangles[i][j], grass);
-                            DrawTexturePro(TEXTURE_GRASS_IMG, TEXTURE_GRASS_IMG_SOURCE_REC, lawnRectangles[i][j], origin, 0.0f, WHITE);
-                        }
-                    }
-                    else
-                    {
-                        if (j & 1)
-                        {
-                            DrawTexturePro(TEXTURE_GRASS_IMG, TEXTURE_GRASS_IMG_SOURCE_REC, lawnRectangles[i][j], origin, 0.0f, WHITE);
-                        }
-                        else
-                        {
-                            DrawTexturePro(TEXTURE_DIRT_IMG, TEXTURE_DIRT_IMG_SOURCE_REC, lawnRectangles[i][j], origin, 0.0f, WHITE);
-                        }
-                    }
                     // tracking hover over the options
                     if (lawnRectanglesHover[i][j] == true)
                     {
@@ -860,12 +833,6 @@ int main(void)
         {
             // Background
             DrawTexturePro(TEXTURE_CONFIGURATIONS_BACKGROUND_IMG, TEXTURE_CONFIGURATIONS_BACKGROUND_IMG_SOURCE_REC, SCREEN_RECTANGLE, origin, 0.0f, WHITE);
-
-            DrawTexturePro(TEXTURE_PLAY_BTN_IMG, TEXTURE_PLAY_BTN_IMG_SOURCE_REC, homePageOptionsRec[0], origin, 0.0f, WHITE);
-            DrawTexturePro(TEXTURE_LEADERBOARD_BTN_IMG, TEXTURE_LEADERBOARD_BTN_IMG_SOURCE_REC, homePageOptionsRec[1], origin, 0.0f, WHITE);
-            DrawTexturePro(TEXTURE_ABOUT_BTN_IMG, TEXTURE_ABOUT_BTN_IMG_SOURCE_REC, homePageOptionsRec[2], origin, 0.0f, WHITE);
-            DrawTexturePro(TEXTURE_CONFIGURATIONS_BTN_IMG, TEXTURE_CONFIGURATIONS_BTN_IMG_SOURCE_REC, homePageOptionsRec[3], origin, 0.0f, WHITE);
-            DrawTexturePro(TEXTURE_EXIT_BTN_IMG, TEXTURE_EXIT_BTN_IMG_SOURCE_REC, homePageOptionsRec[4], origin, 0.0f, WHITE);
 
             DrawTexturePro(TEXTURE_MUTE_BTN_IMG, TEXTURE_MUTE_BTN_IMG_SOURCE_REC, configurationsOptionsRec[CONFIGURATIONS_SOUND_BACKGROUND], origin, 0.0f, WHITE);
             if (mutedSounds[CONFIGURATIONS_SOUND_BACKGROUND])

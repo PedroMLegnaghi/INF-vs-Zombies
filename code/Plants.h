@@ -1,5 +1,5 @@
 #pragma once
-#define SIZE_OF_PEASHOT_ARR 1000 //maximum quantity of peashots in screen
+#define SIZE_OF_PEASHOT_ARR 1000 // maximum quantity of peashots in screen
 
 #include "raylib.h"
 #include <stdbool.h>
@@ -12,15 +12,13 @@
 #include "lawn.h"
 #include "zombies.h"
 
-
-
-//used to track which plants are deployed in the field(lawn)
+// used to track which plants are deployed in the field(lawn)
 extern Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN];
 
 //--PEASHOOTER AND PEASHOT
-extern PeaShot peaShotsArr [SIZE_OF_PEASHOT_ARR];
+extern PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR];
 extern int indexOfNextPea;
-    
+
 // PLANT FUNCTIONS
 void UpdateHealthOfPlant(Plant *plant, float damage);
 void RemovePlantFromArr(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], bool occupationOfLawn[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], int rowOfPlantToBeRemoved, int columnOfPlantToBeRemoved);
@@ -36,7 +34,5 @@ void DrawPeaShots(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int indexOfNextPea);
 void UpdatePeaShotPosition(PeaShot *pea);
 void RemovePeaFromArr(PeaShot peaShotsArr[SIZE_OF_PEASHOT_ARR], int indexOfPeaToBeRemoved, int *indexOfNextPea);
 
-
-
-//ABOUT FUNCTIONS
+// ABOUT FUNCTIONS
 void DrawAboutScreen(void);

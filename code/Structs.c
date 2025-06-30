@@ -28,14 +28,16 @@ const Zombie NULL_ZOMBIE = {0};
 //  Function that initializes game structures
 void InitGameStructs(void)
 {
+    float plant_width = LAWN_WIDTH_VALUE - 30;
+    float plant_height = LAWN_HEIGHT_VALUE - 10;
     SHOVEL_REMOVE_PLANTS = (Plant){
         .actionTime = 0,
         .color = 0,
         .cost = 0,
         .creationTime = 0,
         .existanceTime = 0,
-        .format.height = LAWN_HEIGHT_VALUE - 20,
-        .format.width = LAWN_WIDTH_VALUE - 40,
+        .format.height = plant_height,
+        .format.width = plant_width,
         .health = 0,
         .peashot = 0,
         .referenceTime = 0,
@@ -44,8 +46,8 @@ void InitGameStructs(void)
         .type = TYPE_SHOVEL};
 
     PLANT_SUNFLOWER = (Plant){
-        .format.height = LAWN_HEIGHT_VALUE - 20,
-        .format.width = LAWN_WIDTH_VALUE - 40,
+        .format.height = plant_height,
+        .format.width = plant_width,
         .format.x = 0,
         .format.y = 0,
         .type = TYPE_SUNFLOWER,
@@ -59,8 +61,8 @@ void InitGameStructs(void)
         .rowOfPlant = -1};
 
     PLANT_POTATO_MINE = (Plant){
-        .format.height = LAWN_HEIGHT_VALUE - 20,
-        .format.width = LAWN_WIDTH_VALUE - 40,
+        .format.height = plant_height,
+        .format.width = plant_width,
         .format.x = 0,
         .format.y = 0,
         .type = TYPE_POTATO_MINE,
@@ -86,8 +88,8 @@ void InitGameStructs(void)
         .texture = TEXTURE_GREEN_PEASHOT_IMG};
 
     PLANT_GREEN_PEASHOOTER = (Plant){
-        .format.height = LAWN_HEIGHT_VALUE - 20,
-        .format.width = LAWN_WIDTH_VALUE - 40,
+        .format.height = plant_height,
+        .format.width = plant_width,
         .format.x = 0,
         .format.y = 0,
         .type = TYPE_GREEN_PEASHOOTER,
@@ -102,8 +104,8 @@ void InitGameStructs(void)
         .rowOfPlant = -1};
 
     PLANT_WALLNUT = (Plant){
-        .format.height = LAWN_HEIGHT_VALUE - 20,
-        .format.width = LAWN_WIDTH_VALUE - 40,
+        .format.height = plant_height,
+        .format.width = plant_width,
         .format.x = 0,
         .format.y = 0,
         .type = TYPE_WALLNUT,
@@ -122,7 +124,7 @@ void InitGameStructs(void)
         .format = {
             .x = SCREEN_WIDTH + 30,
             .y = 0,
-            .width = 60,
+            .width = LAWN_WIDTH_VALUE - 30,
             .height = LAWN_HEIGHT_VALUE},
         .isAttacking = 0,
         .damage = 0.33,
@@ -138,7 +140,7 @@ void InitGameStructs(void)
         .format = {
             .x = SCREEN_WIDTH + 30,
             .y = 0,
-            .width = 80,
+            .width = LAWN_WIDTH_VALUE - 30,
             .height = LAWN_HEIGHT_VALUE},
         .isAttacking = 0,
         .damage = 1.5,
@@ -154,7 +156,7 @@ void InitGameStructs(void)
         .format = {
             .x = SCREEN_WIDTH + 30,
             .y = 0,
-            .width = 70,
+            .width = LAWN_WIDTH_VALUE - 30,
             .height = LAWN_HEIGHT_VALUE},
         .isAttacking = 0,
         .damage = 0.7,
@@ -170,7 +172,7 @@ void InitGameStructs(void)
         .format = {
             .x = SCREEN_WIDTH + 30,
             .y = 0,
-            .width = 60,
+            .width = LAWN_WIDTH_VALUE - 30,
             .height = LAWN_HEIGHT_VALUE},
         .isAttacking = 0,
         .damage = 0.33,

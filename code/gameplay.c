@@ -173,7 +173,7 @@ int updatePlantsAndZombiesGameplay(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUM
         }
 
         // verifies if zombie has gone out of the screen, return true
-        if (zombieArr[i].format.x <= 0)
+        if (zombieArr[i].format.x <= DISTANCE_LAWN_LEFT_EDGE / 2.5)
         {
             return 1;
         }

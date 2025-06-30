@@ -106,9 +106,9 @@ void drawTopFivePlayers(PLAYER players[5])
     int BOX_DISPLAY_CENTERED_X = (SCREEN_WIDTH - BOX_DISPLAY_WIDTH) / 2;
     int BOX_DISPLAY_HEIGHT = SCREEN_HEIGHT - marginFromTitle - marginFromBottom;
     Rectangle BOX_DISPLAY_RECTANGLE = {.x = BOX_DISPLAY_CENTERED_X, .y = marginFromTitle, .width = BOX_DISPLAY_WIDTH, .height = BOX_DISPLAY_HEIGHT};
+
     // margin from title from homepage and menu
-    int marginFromBoxDisplay = 40;
-    int TEXTBOX_HEIGHT = (SCREEN_WIDTH - marginFromTitle - marginFromBoxDisplay) / fontOfText;
+    int TEXTBOX_HEIGHT = fontOfText + 10;
     int TEXTBOX_INITIAL_Y = SCREEN_HEIGHT / 2.2;
     int TEXTBOX_DYNAMIC_Y = TEXTBOX_INITIAL_Y;
 

@@ -3,8 +3,19 @@
 Gaming_Deck DeckOfPlants[SIZE_OF_DECK] = {0};
 Gaming_Deck *cardSelected = NULL;
 Rectangle sunDisplayInGamingBarRectangle = {0};
+
+// Constants of deck display
+int DECK_RECTANGLE_X_VALUE;
+int DECK_RECTANGLE_Y_VALUE;
+int DECK_ELEMENT_WIDTH_VALUE;
+int DECK_ELEMENT_HEIGHT_VALUE;
 void InitDeckOfPlants(void)
 {
+    // Constants of deck display
+    DECK_RECTANGLE_X_VALUE = 10;
+    DECK_RECTANGLE_Y_VALUE = 10;
+    DECK_ELEMENT_WIDTH_VALUE = LAWN_WIDTH_VALUE;
+    DECK_ELEMENT_HEIGHT_VALUE = LAWN_HEIGHT_VALUE / 2;
     DeckOfPlants[0].plant = PLANT_SUNFLOWER;
     DeckOfPlants[1].plant = PLANT_GREEN_PEASHOOTER;
     DeckOfPlants[2].plant = PLANT_WALLNUT;

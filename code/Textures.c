@@ -102,7 +102,7 @@ void LoadAllTextures(void)
     TEXTURE_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_BACKGROUND_IMG.width, TEXTURE_BACKGROUND_IMG.height};
 
     TEXTURE_GAMING_BACKGROUND_IMG = LoadTexture("./resources/sprites/dayBackgroundGame.png");
-    TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, SCREEN_WIDTH * 1.2, TEXTURE_GAMING_BACKGROUND_IMG.height};
+    TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, (TEXTURE_GAMING_BACKGROUND_IMG.width / 5) * 4, TEXTURE_GAMING_BACKGROUND_IMG.height};
 
     TEXTURE_ENDGAME_BACKGROUND_IMG = LoadTexture("./resources/sprites/endGame.png");
     TEXTURE_ENDGAME_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_ENDGAME_BACKGROUND_IMG.width, TEXTURE_ENDGAME_BACKGROUND_IMG.height};
@@ -189,7 +189,7 @@ void LoadAllTextures(void)
 
     // Plants
     TEXTURE_SUNFLOWER_IMG = LoadTexture("./resources/sprites/sunflower.png");
-    TEXTURE_GREEN_PEASHOOTER_IMG = LoadTexture("./resources/sprites/peashooter.png");
+    TEXTURE_GREEN_PEASHOOTER_IMG = LoadTexture("./resources/sprites/peashooter2.png");
     TEXTURE_GREEN_PEASHOT_IMG = LoadTexture("./resources/sprites/peashooter-proj.png");
     TEXTURE_WALLNUT_IMG = LoadTexture("./resources/sprites/wallnut.png");
     TEXTURE_SHOVEL_IMG = LoadTexture("./resources/sprites/shovel.png");

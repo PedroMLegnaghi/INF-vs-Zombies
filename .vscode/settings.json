@@ -25,6 +25,7 @@
     "enums.h": "c",
     "structs.h": "c",
     "raylib.h": "c",
-    "stdbool.h": "c"
+    "stdbool.h": "c",
+    "main.h": "c"
   }
 }
