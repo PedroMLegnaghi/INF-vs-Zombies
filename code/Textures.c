@@ -89,8 +89,13 @@ Texture2D TEXTURE_GIGA_GARGANTUAR_BOSS_ZOMBIE_IMG;
 Texture2D TEXTURE_YETI_ZOMBIE_IMG;
 
 Texture2D TEXTURE_SUNFLOWER_IMG;
+Texture2D TEXTURE_SUNFLOWER_IDLE_IMG;
+
 Texture2D TEXTURE_GREEN_PEASHOOTER_IMG;
+Texture2D TEXTURE_GREEN_PEASHOOTER_IDLE_IMG;
+Texture2D TEXTURE_GREEN_PEASHOOTER_SHOOTING_IMG;
 Texture2D TEXTURE_GREEN_PEASHOT_IMG;
+
 Texture2D TEXTURE_WALLNUT_IMG;
 Texture2D TEXTURE_SHOVEL_IMG;
 Texture2D TEXTURE_POTATO_MINE_IMG;
@@ -189,8 +194,13 @@ void LoadAllTextures(void)
 
     // Plants
     TEXTURE_SUNFLOWER_IMG = LoadTexture("./resources/sprites/sunflower.png");
+    TEXTURE_SUNFLOWER_IDLE_IMG = LoadTexture("./resources/sprites/sunflower_idle.png");
+
     TEXTURE_GREEN_PEASHOOTER_IMG = LoadTexture("./resources/sprites/peashooter2.png");
+    TEXTURE_GREEN_PEASHOOTER_IDLE_IMG = LoadTexture("./resources/sprites/peashooter_idle.png");
+    TEXTURE_GREEN_PEASHOOTER_SHOOTING_IMG = LoadTexture("./resources/sprites/peashooter_shooting.png");
     TEXTURE_GREEN_PEASHOT_IMG = LoadTexture("./resources/sprites/peashooter-proj.png");
+
     TEXTURE_WALLNUT_IMG = LoadTexture("./resources/sprites/wallnut.png");
     TEXTURE_SHOVEL_IMG = LoadTexture("./resources/sprites/shovel.png");
     TEXTURE_POTATO_MINE_IMG = LoadTexture("./resources/sprites/potato_mine.png");
@@ -245,4 +255,8 @@ void UnloadAllTextures(void)
     UnloadTexture(TEXTURE_GREEN_PEASHOT_IMG);
     UnloadTexture(TEXTURE_WALLNUT_IMG);
     UnloadTexture(TEXTURE_SHOVEL_IMG);
+    UnloadTexture(TEXTURE_GREEN_PEASHOOTER_IDLE_IMG);
+    UnloadTexture(TEXTURE_GREEN_PEASHOOTER_SHOOTING_IMG);
+    UnloadTexture(TEXTURE_POTATO_MINE_IMG);
+    UnloadTexture(TEXTURE_SUNFLOWER_IDLE_IMG);
 }

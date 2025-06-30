@@ -58,7 +58,26 @@ void InitGameStructs(void)
         .referenceTime = 0,
         .health = HEALTH_OF_SUNFLOWER,
         .texture = TEXTURE_SUNFLOWER_IMG,
-        .rowOfPlant = -1};
+        .rowOfPlant = -1,
+
+        // Animação
+        .idleTexture = TEXTURE_SUNFLOWER_IDLE_IMG,
+        .frames_per_row_idle_animation = 36,                   // Total de quadros na animação idle
+        .frames_per_column_idle_animation = 1,                 // Total de colunas na animação idle (1 coluna)
+        .idle_animation_duration = 36 * 1 / (float)TARGET_FPS, // Duração da animação idle em segundos (36 frames / 60 FPS)
+
+        .actionTexture = 0,
+        .frames_per_row_action_animation = 0,
+        .frames_per_column_action_animation = 0,
+        .action_animation_duration = 0,
+
+        .rowOfPlant = -1,
+        // Novos campos de animação
+        .isAction = false,
+        .actionStartTime = 0,
+        .currentFrame = 0,
+        .frameTime = 3.0f / TARGET_FPS // 60 FPS (ajuste conforme necessário)
+    };
 
     PLANT_POTATO_MINE = (Plant){
         .format.height = plant_height,
@@ -100,8 +119,26 @@ void InitGameStructs(void)
         .referenceTime = 0,
         .health = HEALTH_OF_GREEN_PEASHOOTER,
         .peashot = NORMAL_GREEN_PEASHOT,
-        .texture = TEXTURE_GREEN_PEASHOOTER_IMG,
-        .rowOfPlant = -1};
+        .texture = TEXTURE_GREEN_PEASHOOTER_IMG, // Mantém para compatibilidade
+
+        // Animação
+        .idleTexture = TEXTURE_GREEN_PEASHOOTER_IDLE_IMG,
+        .frames_per_row_idle_animation = 60,            // Total de quadros na animação idle
+        .frames_per_column_idle_animation = 1,          // Total de colunas na animação idle (1 coluna)
+        .idle_animation_duration = 60 * 1 / TARGET_FPS, // Duração da animação idle em segundos (60 frames / 60 FPS)
+
+        .actionTexture = TEXTURE_GREEN_PEASHOOTER_SHOOTING_IMG,
+        .frames_per_row_action_animation = 60,            // Total de quadros na animação de ação
+        .frames_per_column_action_animation = 1,          // Total de colunas na animação de ação (1 coluna)
+        .action_animation_duration = 60 * 1 / TARGET_FPS, // Duração da animação de ação em segundos (60 frames / 60 FPS)
+
+        .rowOfPlant = -1,
+        // Novos campos de animação
+        .isAction = false,
+        .actionStartTime = 0,
+        .currentFrame = 0,
+        .frameTime = 1.0f / TARGET_FPS // 60 FPS (ajuste conforme necessário)
+    };
 
     PLANT_WALLNUT = (Plant){
         .format.height = plant_height,

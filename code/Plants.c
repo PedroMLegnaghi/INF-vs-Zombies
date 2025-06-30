@@ -1,6 +1,10 @@
 #include "raylib.h"
 #include "Plants.h"
 #include "Player.h"
+#define TOTAL_FRAMES 60 // Total de frames na spritesheet
+
+float SHOOT_ANIMATION_DURATION = TOTAL_FRAMES / TARGET_FPS; // Duração da animação de tiro
+
 // used to track which plants are deployed in the field(lawn)
 Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN] = {0};
 
@@ -68,23 +72,105 @@ void UpdateReferenceTime(Plant *plant)
 
 // DrawPlants:
 // draw all plants until indexOfNextPlant within the array of Plant passed
+
 void DrawPlants(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN])
 {
+    Vector2 origin = {0, 0};
+
     for (int i = 0; i < NUMBER_ROWS_LAWN; i++)
     {
         for (int j = 0; j < NUMBER_COLUMN_LAWN; j++)
         {
-            // if the plant [i][j] isn't empty(NULLED)
+            // Se a planta não está vazia (NULLED)
             if (plantArr[i][j].type != TYPE_NULL_PLANT)
             {
-                Vector2 origin = {0, 0};
-                Rectangle PlantTextureSourceRectangle = {
-                    .width = plantArr[i][j].texture.width,
-                    .height = plantArr[i][j].texture.height,
-                    .y = 0,
-                    .x = 0};
-                DrawTexturePro(plantArr[i][j].texture, PlantTextureSourceRectangle, plantArr[i][j].format, origin, 0.0f, WHITE);
-                // DrawRectangleRec(plantArr[i][j].format,plantArr[i][j].color );
+
+                Texture2D currentTexture;
+                // Se tem uma animacao de acao
+                if (plantArr[i][j].action_animation_duration > 0 && plantArr[i][j].isAction)
+                {
+                    float tempoDesdeQueComecouAShootar = plantArr[i][j].existanceTime - plantArr[i][j].actionStartTime;
+
+                    // Verifica se está em acao e dentro da duração da animação
+                    if (tempoDesdeQueComecouAShootar < plantArr[i][j].action_animation_duration)
+                    {
+                        // Usa a textura de acao
+                        currentTexture = plantArr[i][j].actionTexture;
+
+                        // Avança o quadro da animação baseado no tempo
+                        // faco esse sistema (em vez de ir aumentando de 1 em um o frameCounter para evitar fazer depois quando framecounter== TOTAL_FRAMES um if e depois igualar a 0)
+                        // em essencia, vai ser a mesma coisa, por o tempo Desde que comecou a atirar aumenta de um em um a cada unidade de tempo
+                        int frameCount = (int)(tempoDesdeQueComecouAShootar / plantArr[i][j].frameTime) % TOTAL_FRAMES;
+                        plantArr[i][j].currentFrame = frameCount;
+
+                        // Calcula qual parte da spritesheet usar (nesse caso, estamos usando uma spritesheet com todos os frames na mesma linha)
+                        // o int ira truncar a parte inteira, quando o frameCounter for > FramesPerRow, ele vai identificar automaticamente que a linha foi
+                        // trocada, ou seja, a frameRow nao mais sera, por exemplo, 0, mas sim 1, e assim por diante
+                        // o frameCol ira identificar a coluna, que sempre sera 0, pois estamos usando uma spritesheet com todos os frames na mesma linha
+                        int frameRow = plantArr[i][j].currentFrame / plantArr[i][j].frames_per_row_action_animation;
+                        int frameCol = plantArr[i][j].currentFrame % plantArr[i][j].frames_per_row_action_animation;
+
+                        float frameWidth = (float)currentTexture.width / plantArr[i][j].frames_per_row_action_animation;
+                        float frameHeight = (float)currentTexture.height / plantArr[i][j].frames_per_column_action_animation;
+
+                        // Configura o retângulo fonte para o quadro correto
+                        Rectangle frameRec = {
+                            .x = frameCol * frameWidth,
+                            .y = frameRow * frameHeight,
+                            .width = frameWidth,
+                            .height = frameHeight};
+
+                        // Desenha o quadro atual da animação
+                        DrawTexturePro(currentTexture, frameRec, plantArr[i][j].format, origin, 0.0f, WHITE);
+                    }
+                    else
+                    {
+                        plantArr[i][j].isAction = false; // Reseta a planta para acabar a acao
+                    }
+                }
+                // ja que nao pode ser feita sua animacao de acao, se tem uma animacao idle, desenhá-la
+                else if (plantArr[i][j].idle_animation_duration > 0)
+                {
+                    currentTexture = plantArr[i][j].idleTexture;
+
+                    // Avança o quadro da animação idle
+                    // Aqui, o tempo de existanceTime é usado para calcular o quadro atual, seguindo a mesma logica, mas nao precisando de uma variavel auxiliar, pois nao precisamos
+                    // de um outro referencial
+                    plantArr[i][j].currentFrame = ((int)(plantArr[i][j].existanceTime / plantArr[i][j].frameTime)) % TOTAL_FRAMES;
+
+                    // Calcula qual parte da spritesheet usar (nesse caso, estamos usando uma spritesheet com todos os frames na mesma linha)
+                    // o int ira truncar a parte inteira, quando o frameCounter for > FramesPerRow, ele vai identificar automaticamente que a linha foi
+                    // trocada, ou seja, a frameRow nao mais sera, por exemplo, 0, mas sim 1, e assim por diante
+                    // o frameCol ira identificar a coluna, que sempre sera 0, pois estamos usando uma spritesheet com todos os frames na mesma linha
+                    int frameRow = plantArr[i][j].currentFrame / plantArr[i][j].frames_per_row_idle_animation;
+                    int frameCol = plantArr[i][j].currentFrame % plantArr[i][j].frames_per_row_idle_animation;
+
+                    float frameWidth = (float)currentTexture.width / plantArr[i][j].frames_per_row_idle_animation;
+                    float frameHeight = (float)currentTexture.height / plantArr[i][j].frames_per_column_idle_animation;
+
+                    // Configura o retângulo fonte para o quadro correto
+                    Rectangle frameRec = {
+                        .x = frameCol * frameWidth,
+                        .y = frameRow * frameHeight,
+                        .width = frameWidth,
+                        .height = frameHeight};
+
+                    // Desenha o quadro atual da animação
+                    DrawTexturePro(currentTexture, frameRec, plantArr[i][j].format, origin, 0.0f, WHITE);
+                }
+                // senao, se nao tiver animacao idle, desenhar a imagem estatica mesmo
+                else
+                {
+                    // Para outras plantas, mantém o desenho normal
+                    Rectangle PlantTextureSourceRectangle = {
+                        .width = plantArr[i][j].texture.width,
+                        .height = plantArr[i][j].texture.height,
+                        .y = 0,
+                        .x = 0};
+
+                    DrawTexturePro(plantArr[i][j].texture, PlantTextureSourceRectangle,
+                                   plantArr[i][j].format, origin, 0.0f, WHITE);
+                }
             }
         }
     }
@@ -106,6 +192,15 @@ void GenerateSunSunflower(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], 
                 // if the plant exists and is a sunflower
                 if (plantArr[i][j].type == TYPE_SUNFLOWER && plantArr[i][j].format.x != NULL_PLANT.format.x)
                 {
+                    // Se é quase a hora de gerar sol e ela ainda nao foi definida como gerando sol, iniciar a animacao de gerar sol
+                    if (!plantArr[i][j].isAction && ((float)plantArr[i][j].actionTime - (float)(SHOOT_ANIMATION_DURATION - 0.4) <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime)))
+                    {
+                        // NOVO: Define a planta como gerando sol e salva o tempo inicial
+                        plantArr[i][j].isAction = true;
+                        plantArr[i][j].actionStartTime = plantArr[i][j].existanceTime;
+                        plantArr[i][j].currentFrame = 0; // Reinicia o frame para a animação
+                    }
+
                     // if it is time to generate a sun
                     if (plantArr[i][j].actionTime <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime))
                     {
@@ -122,6 +217,7 @@ void GenerateSunSunflower(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], 
 
                         // add that sun to the array of suns
                         AddSunToArray(arr_of_suns, indexOfNextSun, lawn_array, i, j, groundOfTheSuns, (int)x, (int)y);
+                        plantArr[i][j].actionStartTime = plantArr[i][j].existanceTime; // save the time it started generating a sun
                     }
                 }
             }
@@ -149,30 +245,40 @@ void shootPea(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], PeaShot peaS
         {
             for (int j = 0; j < NUMBER_COLUMN_LAWN; j++)
             {
-                // if there's a zombie in the same row of the plant or if it is the boss (then shoot always every plant, without checking the row)
-                if (((zombieArr[w].rowOfZombie == plantArr[i][j].rowOfPlant) && (zombieArr[w].format.x <= (SCREEN_WIDTH - DISTANCE_LAWN_RIGHT_EDGE - DISTANCE_LAWN_RIGHT_EDGE))) || (zombieArr[w].type == TYPE_GIGA_GARGANTUAR_BOSS_ZOMBIE && (zombieArr[w].format.x <= (SCREEN_WIDTH - DISTANCE_LAWN_RIGHT_EDGE - DISTANCE_LAWN_RIGHT_EDGE))))
+                // Verifica se há um zumbi na mesma linha ou se é um boss
+                if (((zombieArr[w].rowOfZombie == plantArr[i][j].rowOfPlant) &&
+                     (zombieArr[w].format.x <= (SCREEN_WIDTH - DISTANCE_LAWN_RIGHT_EDGE - DISTANCE_LAWN_RIGHT_EDGE))) ||
+                    (zombieArr[w].type == TYPE_GIGA_GARGANTUAR_BOSS_ZOMBIE &&
+                     (zombieArr[w].format.x <= (SCREEN_WIDTH - DISTANCE_LAWN_RIGHT_EDGE - DISTANCE_LAWN_RIGHT_EDGE))))
                 {
 
-                    // if the plant is a green peashooter and is not a empty (nulled) plant
+                    // Se a planta é um peashooter e não está nula
                     if (plantArr[i][j].type == TYPE_GREEN_PEASHOOTER && plantArr[i][j].format.x != NULL_PLANT.format.x)
                     {
                         if (*indexOfNextPea < SIZE_OF_PEASHOT_ARR)
                         {
-                            // if it's time to shoot a pea
+                            // Se é quase a hora de atirar e ela ainda nao foi definida como atirando, iniciar a animacao de tiro
+                            if (!plantArr[i][j].isAction && ((float)plantArr[i][j].actionTime - (float)(plantArr[i][j].action_animation_duration - 0.4) <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime)))
+                            {
+                                // NOVO: Define a planta como atirando e salva o tempo inicial
+                                plantArr[i][j].isAction = true;
+                                plantArr[i][j].actionStartTime = plantArr[i][j].existanceTime;
+                                plantArr[i][j].currentFrame = 0; // Reinicia o frame para a animação
+                            }
+
+                            // se esta na hora de atirar
                             if (plantArr[i][j].actionTime <= (plantArr[i][j].existanceTime - plantArr[i][j].referenceTime))
                             {
-                                // update reference time properly, to enable the tracking of the next time to shot a pea for that plant
-                                UpdateReferenceTime(&plantArr[i][j]);
-
-                                // shot the pea (accordingly to it's type, in that case, normal_green_peashooteer) at a position near the green peashooter
-                                float x = plantArr[i][j].format.x + plantArr[i][j].format.width;
-                                float y = plantArr[i][j].format.y + 15;
+                                // Cria o projétil
+                                float x = plantArr[i][j].format.x + plantArr[i][j].format.width - 35;
+                                float y = plantArr[i][j].format.y + 10;
                                 PeaShot pea = plantArr[i][j].peashot;
                                 pea.format.x = x;
                                 pea.format.y = y;
                                 pea.rowOfShot = i;
-
-                                // add that pea to the arr
+                                // Atualiza o tempo de referência
+                                UpdateReferenceTime(&plantArr[i][j]);
+                                // Adiciona a ervilha ao array
                                 addPeaToArr(peaShotsArr, pea, indexOfNextPea);
                             }
                         }
@@ -302,9 +408,4 @@ void DrawAboutScreen()
         if (aboutText[i] == '\n')
             j++;
     }
-
-    // Draw return instruction
-    const char *returnText = "Press ESC to return";
-    DrawText(returnText, SCREEN_WIDTH - MeasureText(returnText, 18) - 20,
-             SCREEN_HEIGHT - 30, 18, GRAY);
 }

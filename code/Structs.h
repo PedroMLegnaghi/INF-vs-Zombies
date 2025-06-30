@@ -44,19 +44,29 @@ typedef struct Plant
     TYPE_OF_PLANT type;
     COST_OF_PLANT cost;
     ACTION_TIME_PLANT actionTime;
-    // uses enum of health
     float health;
     double creationTime;
     double existanceTime;
-    // referenceTime:Auxilar variable to enable time tracking and habilities triggered of each plant
-    //       :-> referenceTime goes from 0 to actionTime. When referenceTime == actionTime, Hability is triggered and referenceTime =0;
     double referenceTime;
     Color color;
     int rowOfPlant;
-    Texture2D texture;
+    Texture2D texture;                      // Mantenha para compatibilidade
+    Texture2D idleTexture;                  // Textura para estado idle
+    Texture2D actionTexture;                // Textura para estado action
+    int frames_per_row_idle_animation;      // Total de quadros na animação idle
+    int frames_per_column_idle_animation;   // Total de colunas na animação idle
+    float idle_animation_duration;          // Duração da animação em segundos (frames_per_row_idle_animation/TARGET_FPS)
+    int frames_per_row_action_animation;    // Total de quadros na animação de ação
+    int frames_per_column_action_animation; // Total de colunas na animação de ação
+    float action_animation_duration;        // Duração da animação de ação em segundos (frames_per_row_action_animation/TARGET_FPS)
     PeaShot peashot;
     float damage;
 
+    // Novos campos para animação
+    bool isAction;         // Indica se a planta está em ação
+    float actionStartTime; // Tempo em que começou a ação
+    int currentFrame;      // Quadro atual da animação
+    float frameTime;       // Tempo por quadro (será calculado automaticamente)
 } Plant;
 
 // GAMING_DECK

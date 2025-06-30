@@ -24,7 +24,7 @@ bool firstZombieSpawn = 1;
 // reference for spawn of zombies
 double timeOfLastZombie = 0;
 
-double timeForFirstSpawnZombie = 40.0;
+double timeForFirstSpawnZombie = 0.0;
 
 // used to spawn zombies appropriately
 double timeSpawnZombieTracking = 0;

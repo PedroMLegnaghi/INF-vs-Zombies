@@ -42,7 +42,7 @@ int main(void)
     srand(time(NULL));
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic screen manager");
     // tracks the screen of the user
-    GAME_SCREEN currentScreen = LOGO;
+    GAME_SCREEN currentScreen = GAMEPLAY;
     GAME_SCREEN previousScreen = HOMEPAGE;
 
     //--audio
