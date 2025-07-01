@@ -4,7 +4,7 @@
 #include "Plants.h"
 #include "Textures.h"
 #include "lawn.h"
-
+#include "string.h"
 #define SIZE_OF_DECK 4 + 1 // maximum size of deck (4 plants + 1 shovel)
 
 // Constants of deck display

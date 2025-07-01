@@ -98,6 +98,7 @@ extern Texture2D TEXTURE_GREEN_PEASHOT_IMG;
 extern Texture2D TEXTURE_WALLNUT_IMG;
 extern Texture2D TEXTURE_SHOVEL_IMG;
 extern Texture2D TEXTURE_POTATO_MINE_IMG;
+extern Texture2D TEXTURE_POTATO_MINE_IDLE_IMG;
 
 void LoadAllTextures(void);
 void UnloadAllTextures(void);

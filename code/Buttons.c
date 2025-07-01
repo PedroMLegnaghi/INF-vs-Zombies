@@ -30,10 +30,10 @@ bool BTN_ENDGAME_GOBACK_HOVER;
 void InitButtons(void)
 {
     // Btn display
-    BTN_WIDTH = SCREEN_WIDTH / 4;
+    BTN_WIDTH = SCREEN_WIDTH / 6;
 
     // margin from title from homepage and menu
-    BTN_HEIGHT = (SCREEN_WIDTH - marginFromTitle) / 8;
+    BTN_HEIGHT = (SCREEN_WIDTH - marginFromTitle) / 10;
     BTN_CENTERED_X_FOR_TWO_BUTTONS = (SCREEN_WIDTH - BTN_WIDTH * 2) / 2;
     BTN_ALONE_CENTERED_X = (SCREEN_WIDTH - BTN_WIDTH) / 2;
     BTN_INITIAL_Y = marginFromTitle;

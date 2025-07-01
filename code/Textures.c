@@ -99,6 +99,7 @@ Texture2D TEXTURE_GREEN_PEASHOT_IMG;
 Texture2D TEXTURE_WALLNUT_IMG;
 Texture2D TEXTURE_SHOVEL_IMG;
 Texture2D TEXTURE_POTATO_MINE_IMG;
+Texture2D TEXTURE_POTATO_MINE_IDLE_IMG;
 
 void LoadAllTextures(void)
 {
@@ -128,7 +129,7 @@ void LoadAllTextures(void)
     TEXTURE_USERDATA_BACKGROUND_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_USERDATA_BACKGROUND_IMG.width, TEXTURE_USERDATA_BACKGROUND_IMG.height};
 
     // Sun
-    TEXTURE_SUN_IMG = LoadTexture("./resources/sprites/sun.png");
+    TEXTURE_SUN_IMG = LoadTexture("./resources/sprites/sun2.png");
     TEXTURE_SUN_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_SUN_IMG.width, TEXTURE_SUN_IMG.height};
 
     // Lawn
@@ -203,7 +204,9 @@ void LoadAllTextures(void)
 
     TEXTURE_WALLNUT_IMG = LoadTexture("./resources/sprites/wallnut.png");
     TEXTURE_SHOVEL_IMG = LoadTexture("./resources/sprites/shovel.png");
+
     TEXTURE_POTATO_MINE_IMG = LoadTexture("./resources/sprites/potato_mine.png");
+    TEXTURE_POTATO_MINE_IDLE_IMG = LoadTexture("./resources/sprites/potato_mine_idle.png");
 }
 
 void UnloadAllTextures(void)
@@ -259,4 +262,5 @@ void UnloadAllTextures(void)
     UnloadTexture(TEXTURE_GREEN_PEASHOOTER_SHOOTING_IMG);
     UnloadTexture(TEXTURE_POTATO_MINE_IMG);
     UnloadTexture(TEXTURE_SUNFLOWER_IDLE_IMG);
+    UnloadTexture(TEXTURE_POTATO_MINE_IDLE_IMG);
 }

@@ -92,7 +92,26 @@ void InitGameStructs(void)
         .health = HEALTH_OF_POTATO_MINE,
         .texture = TEXTURE_POTATO_MINE_IMG,
         .rowOfPlant = -1,
-        .damage = 600};
+        .damage = 600,
+
+        // Animação
+        .idleTexture = TEXTURE_POTATO_MINE_IDLE_IMG,
+        .frames_per_row_idle_animation = 29,                   // Total de quadros na animação idle
+        .frames_per_column_idle_animation = 1,                 // Total de colunas na animação idle (1 coluna)
+        .idle_animation_duration = 29 * 1 / (float)TARGET_FPS, // Duração da animação idle em segundos (29 frames / 60 FPS)
+
+        .actionTexture = 0,
+        .frames_per_row_action_animation = 0,
+        .frames_per_column_action_animation = 0,
+        .action_animation_duration = 0,
+
+        .rowOfPlant = -1,
+        // Novos campos de animação
+        .isAction = false,
+        .actionStartTime = 0,
+        .currentFrame = 0,
+        .frameTime = 3.0f / TARGET_FPS // 60 FPS (ajuste conforme necessário)
+    };
 
     NORMAL_GREEN_PEASHOT = (PeaShot){
         .damage = 20,

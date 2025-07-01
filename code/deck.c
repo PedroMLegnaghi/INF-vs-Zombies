@@ -1,4 +1,5 @@
 #include "deck.h"
+#include "stdio.h"
 
 Gaming_Deck DeckOfPlants[SIZE_OF_DECK] = {0};
 Gaming_Deck *cardSelected = NULL;
@@ -28,10 +29,10 @@ void InitDeckOfPlants(void)
     DeckOfPlants[3].cooldown = COOLDOWN_OF_POTATO_MINE;
 
     sunDisplayInGamingBarRectangle = (Rectangle){
-        .x = (DECK_RECTANGLE_X_VALUE + 5) + 17,
+        .x = (DECK_RECTANGLE_X_VALUE + 5) + 20,
         .y = (DECK_RECTANGLE_Y_VALUE + 5) + 3,
-        .height = DECK_ELEMENT_WIDTH_VALUE - 40,
-        .width = DECK_ELEMENT_HEIGHT_VALUE - 30};
+        .height = DECK_ELEMENT_WIDTH_VALUE - 50,
+        .width = DECK_ELEMENT_HEIGHT_VALUE + 10};
 }
 
 // DrawMoldureOfSelectedCard:
@@ -49,21 +50,22 @@ void DrawMoldureOfSelectedCard()
 // given the deck of plants, the quantity of suns adn the card selected, draw the interface, checking if one card is being hovered and highlightening it, and updating the card selected(if needed)
 void DrawGamingDeck()
 {
+    int fontSize = 20;
     Vector2 origin = {0, 0};
     // Drawing the sun counter
     int DECK_RECTANGLE_X_VALUECpy = DECK_RECTANGLE_X_VALUE;
     // Drawing the rectangle that subscribes the sun counter
     // big square box
-    DrawRectangle(DECK_RECTANGLE_X_VALUE, DECK_RECTANGLE_Y_VALUE, DECK_ELEMENT_WIDTH_VALUE, DECK_ELEMENT_HEIGHT_VALUE, BROWN);
-    DrawRectangleLines(DECK_RECTANGLE_X_VALUE, DECK_RECTANGLE_Y_VALUE, DECK_ELEMENT_WIDTH_VALUE, DECK_ELEMENT_HEIGHT_VALUE, BLACK);
+    DrawRectangle(DECK_RECTANGLE_X_VALUE, DECK_RECTANGLE_Y_VALUE, DECK_ELEMENT_WIDTH_VALUE, DECK_ELEMENT_HEIGHT_VALUE + 30, BROWN);
+    DrawRectangleLines(DECK_RECTANGLE_X_VALUE, DECK_RECTANGLE_Y_VALUE, DECK_ELEMENT_WIDTH_VALUE, DECK_ELEMENT_HEIGHT_VALUE + 30, BLACK);
     // box of the sun
-    DrawRectangle(DECK_RECTANGLE_X_VALUE + 5, DECK_RECTANGLE_Y_VALUE + 5, DECK_ELEMENT_WIDTH_VALUE - 10, DECK_ELEMENT_HEIGHT_VALUE - 10, DARKBROWN);
+    DrawRectangle(DECK_RECTANGLE_X_VALUE + 5, DECK_RECTANGLE_Y_VALUE + 5, DECK_ELEMENT_WIDTH_VALUE - 10, DECK_ELEMENT_HEIGHT_VALUE + 20, DARKBROWN);
     DrawTexturePro(TEXTURE_SUN_IMG, TEXTURE_SUN_IMG_SOURCE_REC, sunDisplayInGamingBarRectangle, origin, 0.0f, RAYWHITE);
-    DrawRectangleLines(DECK_RECTANGLE_X_VALUE + 5, DECK_RECTANGLE_Y_VALUE + 5, DECK_ELEMENT_WIDTH_VALUE - 10, DECK_ELEMENT_HEIGHT_VALUE - 10, BLACK);
+    DrawRectangleLines(DECK_RECTANGLE_X_VALUE + 5, DECK_RECTANGLE_Y_VALUE + 5, DECK_ELEMENT_WIDTH_VALUE - 10, DECK_ELEMENT_HEIGHT_VALUE + 20, BLACK);
     // quantity of sun
-    DrawRectangle(DECK_RECTANGLE_X_VALUE + 5, DECK_RECTANGLE_Y_VALUE + DECK_ELEMENT_HEIGHT_VALUE - 20, DECK_ELEMENT_WIDTH_VALUE - 10, 30, RAYWHITE);
-    DrawRectangleLines(DECK_RECTANGLE_X_VALUE + 5, DECK_RECTANGLE_Y_VALUE + DECK_ELEMENT_HEIGHT_VALUE - 20, DECK_ELEMENT_WIDTH_VALUE - 10, 30, BLACK);
-    DrawText(TextFormat(" %d", sunGamingStorage), DECK_RECTANGLE_X_VALUE + 15, DECK_RECTANGLE_Y_VALUE + DECK_ELEMENT_HEIGHT_VALUE - 20, 20, BLACK);
+    DrawRectangle(DECK_RECTANGLE_X_VALUE + 5, DECK_RECTANGLE_Y_VALUE + DECK_ELEMENT_HEIGHT_VALUE + 10, DECK_ELEMENT_WIDTH_VALUE - 10, 30, RAYWHITE);
+    DrawRectangleLines(DECK_RECTANGLE_X_VALUE + 5, DECK_RECTANGLE_Y_VALUE + DECK_ELEMENT_HEIGHT_VALUE + 10, DECK_ELEMENT_WIDTH_VALUE - 10, 30, BLACK);
+    DrawText(TextFormat(" %d", sunGamingStorage), DECK_RECTANGLE_X_VALUE + 15, DECK_RECTANGLE_Y_VALUE + DECK_ELEMENT_HEIGHT_VALUE + 10, 20, BLACK);
 
     // used to attribute keys to options
     int keyOfCard = KEY_ONE;
@@ -123,7 +125,15 @@ void DrawGamingDeck()
             DrawTexturePro(DeckOfPlants[i].plant.texture, textureSourceRectanglePlant, DeckOfPlants[i].plant.format, origin, 0.0f, GRAY);
         }
 
-        // updating the key of the cards accordingly to its order in the InGameDeck
+        if (i != SIZE_OF_DECK - 1)
+        {
+            char priceOfCard[5] = {0};
+            snprintf(priceOfCard, sizeof(priceOfCard), "%d", DeckOfPlants[i].plant.cost);
+            DrawRectangle(DeckOfPlants[i].plant.format.x, DeckOfPlants[i].plant.format.height + 10, DeckOfPlants[i].plant.format.width, fontSize + 5, BROWN);
+            DrawText(priceOfCard, DeckOfPlants[i].plant.format.x + (DeckOfPlants[i].plant.format.width - fontSize * 2) / 2, DeckOfPlants[i].plant.format.height + (float)fontSize * 0.75, fontSize, BLACK);
+            DrawRectangleLines(DeckOfPlants[i].plant.format.x, DeckOfPlants[i].plant.format.height + 10, DeckOfPlants[i].plant.format.width, fontSize + 5, BLACK);
+            // updating the key of the cards accordingly to its order in the InGameDeck
+        }
         keyOfCard++;
     }
 }

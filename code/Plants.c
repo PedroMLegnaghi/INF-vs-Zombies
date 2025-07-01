@@ -246,10 +246,10 @@ void shootPea(Plant plantArr[NUMBER_ROWS_LAWN][NUMBER_COLUMN_LAWN], PeaShot peaS
             for (int j = 0; j < NUMBER_COLUMN_LAWN; j++)
             {
                 // Verifica se há um zumbi na mesma linha ou se é um boss
-                if (((zombieArr[w].rowOfZombie == plantArr[i][j].rowOfPlant) &&
-                     (zombieArr[w].format.x <= (SCREEN_WIDTH - DISTANCE_LAWN_RIGHT_EDGE - DISTANCE_LAWN_RIGHT_EDGE))) ||
+                if ((zombieArr[w].health > 0 && (zombieArr[w].rowOfZombie == plantArr[i][j].rowOfPlant) &&
+                     (zombieArr[w].format.x <= (SCREEN_WIDTH - DISTANCE_LAWN_RIGHT_EDGE))) ||
                     (zombieArr[w].type == TYPE_GIGA_GARGANTUAR_BOSS_ZOMBIE &&
-                     (zombieArr[w].format.x <= (SCREEN_WIDTH - DISTANCE_LAWN_RIGHT_EDGE - DISTANCE_LAWN_RIGHT_EDGE))))
+                     (zombieArr[w].format.x <= (SCREEN_WIDTH - DISTANCE_LAWN_RIGHT_EDGE))))
                 {
 
                     // Se a planta é um peashooter e não está nula
