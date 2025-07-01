@@ -26,6 +26,14 @@
     "structs.h": "c",
     "raylib.h": "c",
     "stdbool.h": "c",
-    "main.h": "c"
+    "main.h": "c",
+    "player.h": "c",
+    "stdio.h": "c",
+    "lawn.h": "c",
+    "menu.h": "c",
+    "homepage.h": "c",
+    "sound.h": "c",
+    "configmenu.h": "c",
+    "buttons.h": "c"
   }
 }
