@@ -52,7 +52,7 @@ typedef enum COST_OF_PLANT
 typedef enum action_time
 {
     ACTION_TIME_SUNFLOWER = 6,
-    ACTION_TIME_PEASHOOTER = 2,
+    ACTION_TIME_PEASHOOTER = 1,
 
 } ACTION_TIME_PLANT;
 

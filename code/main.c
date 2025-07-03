@@ -625,17 +625,17 @@ int main(void)
 
             // Lawn drawing
             DrawTexturePro(TEXTURE_GAMING_BACKGROUND_IMG, TEXTURE_GAMING_BACKGROUND_IMG_SOURCE_REC, SCREEN_RECTANGLE, origin, 0.0f, WHITE);
-            for (int i = 0; i < NUMBER_ROWS_LAWN; i++)
-            {
-                for (int j = 0; j < NUMBER_COLUMN_LAWN; j++)
-                {
-                    // // tracking the hover over the options
-                    // if (lawnRectanglesHover[i][j] == true)
-                    // {
-                    //     DrawRectangleLines(lawnRectangles[i][j].x, lawnRectangles[i][j].y, lawnRectangles[i][j].width, lawnRectangles[i][j].height, BLACK);
-                    // }
-                }
-            }
+            // for (int i = 0; i < NUMBER_ROWS_LAWN; i++)
+            // {
+            //     for (int j = 0; j < NUMBER_COLUMN_LAWN; j++)
+            //     {
+            //         // // tracking the hover over the options
+            //         // if (lawnRectanglesHover[i][j] == true)
+            //         // {
+            //         //     DrawRectangleLines(lawnRectangles[i][j].x, lawnRectangles[i][j].y, lawnRectangles[i][j].width, lawnRectangles[i][j].height, BLACK);
+            //         // }
+            //     }
+            // }
 
             // Plants
             DrawPlants(plantArr);

@@ -33,12 +33,6 @@ Rectangle TEXTURE_USERDATA_BACKGROUND_IMG_SOURCE_REC;
 Texture2D TEXTURE_SUN_IMG;
 Rectangle TEXTURE_SUN_IMG_SOURCE_REC;
 
-Texture2D TEXTURE_DIRT_IMG;
-Rectangle TEXTURE_DIRT_IMG_SOURCE_REC;
-
-Texture2D TEXTURE_GRASS_IMG;
-Rectangle TEXTURE_GRASS_IMG_SOURCE_REC;
-
 Texture2D TEXTURE_EXIT_BTN_IMG;
 Rectangle TEXTURE_EXIT_BTN_IMG_SOURCE_REC;
 
@@ -144,13 +138,6 @@ void LoadAllTextures(void)
     TEXTURE_SUN_IMG = LoadTexture("./resources/sprites/sun2.png");
     TEXTURE_SUN_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_SUN_IMG.width, TEXTURE_SUN_IMG.height};
 
-    // Lawn
-    TEXTURE_DIRT_IMG = LoadTexture("./resources/sprites/dirt.png");
-    TEXTURE_DIRT_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_DIRT_IMG.width, TEXTURE_DIRT_IMG.height};
-
-    TEXTURE_GRASS_IMG = LoadTexture("./resources/sprites/grass.png");
-    TEXTURE_GRASS_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_GRASS_IMG.width, TEXTURE_GRASS_IMG.height};
-
     // Buttons
     TEXTURE_EXIT_BTN_IMG = LoadTexture("./resources/sprites/exit-button.png");
     TEXTURE_EXIT_BTN_IMG_SOURCE_REC = (Rectangle){0, 0, TEXTURE_EXIT_BTN_IMG.width, TEXTURE_EXIT_BTN_IMG.height};
@@ -236,10 +223,6 @@ void UnloadAllTextures(void)
 
     // Sun
     UnloadTexture(TEXTURE_SUN_IMG);
-
-    // Lawn
-    UnloadTexture(TEXTURE_DIRT_IMG);
-    UnloadTexture(TEXTURE_GRASS_IMG);
 
     // Buttons
     UnloadTexture(TEXTURE_EXIT_BTN_IMG);
