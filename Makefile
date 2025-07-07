@@ -351,9 +351,11 @@ rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst 
 OBJ_DIR = obj
 
 # Define all object files from source files
-SRC = $(call rwildcard, ./, *.c, *.h)
+SRC_DIR = code
+# NOTE: This will search recursively for all .c and .h files in ./code directory
+SRC = $(call rwildcard, ./code, *.c, *.h)
 #OBJS = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-OBJS = $(patsubst %.c,%.o,$(filter %.c,$(SRC)))
+OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(filter %.c,$(SRC)))
 
 # For Android platform we call a custom Makefile.Android
 ifeq ($(PLATFORM),PLATFORM_ANDROID)
@@ -374,6 +376,7 @@ $(PROJECT_NAME): $(OBJS)
 	$(CC) -o $(PROJECT_NAME)$(EXT) $(OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
 
 # Compile source files
+
 # NOTE: This pattern will compile every module defined on $(OBJS)
 #%.o: %.c
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
